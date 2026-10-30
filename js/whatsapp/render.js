@@ -7,11 +7,11 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.14";
-import { colorForName } from "../shared/colors.js?v=1.8.14";
-import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.14";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.14";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.14";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.15";
+import { colorForName } from "../shared/colors.js?v=1.8.15";
+import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.15";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.15";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.15";
 import {
     clampRenderRange,
     isAtConversationEnd,
@@ -19,12 +19,13 @@ import {
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.14";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.14";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.14";
-import { lazyMedia } from "./media.js?v=1.8.14";
-import { closeMenu } from "./ui.js?v=1.8.14";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.14";
+} from "../shared/virtual-list.js?v=1.8.15";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.15";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.15";
+import { lazyMedia } from "./media.js?v=1.8.15";
+import { closeMenu } from "./ui.js?v=1.8.15";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.15";
+import { syncDayFilterUI } from "./filter.js?v=1.8.15";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -71,6 +72,7 @@ export function renderChatList() {
     list.innerHTML = html;
     syncFocusedSearchResult();
     updateFavoriteControls();
+    syncDayFilterUI();
     lazyMedia.hydrate();
     syncScrollLatest();
 }

@@ -1142,6 +1142,36 @@ body.light-theme .chat-bg {
 }
 
 /* ── Sender filter control ── */
+.date-filter-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    min-height: var(--control-height);
+    padding: 0 5px 0 9px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-input);
+}
+.date-filter-container[hidden] { display: none !important; }
+.date-filter-btn, .date-filter-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 30px;
+    padding: 0 3px;
+    border: 0;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.date-filter-btn.active { color: var(--primary); }
+.date-filter-clear { width: 24px; font-size: 13px; }
+.date-filter-btn:focus-visible, .date-filter-clear:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
 .sender-filter-container {
     position: relative;
     display: inline-flex;

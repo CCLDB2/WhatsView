@@ -7,7 +7,7 @@
  * session.js returns the per-chat fields to their defaults before each load.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS } from "../settings.js?v=1.8.14";
+import { DEFAULT_SETTINGS } from "../settings.js?v=1.8.15";
 
 /** Rows added to the virtual window per scroll step. */
 export const BATCH_SIZE = 60;
@@ -35,6 +35,7 @@ export const state = {
     filteredMessages: [],    // what the list renders from (all messages or filtered by senders)
     messageOnlyCount: 0,     // entries of type "msg"
     selectedSenders: [],     // active sender filter (array of sender names, empty for all participants)
+    selectedDay: "",         // ISO calendar day for the optional message filter
     myName: "",              // the participant whose messages sit on the right
     chatTitle: "Chat History",
     inferredDateOrder: "DMY",

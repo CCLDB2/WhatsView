@@ -6,12 +6,16 @@
  * marker, or to the closest earlier one when that day has no messages.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.14";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.14";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.14";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.14";
-import { renderChatList } from "./render.js?v=1.8.14";
-import { closeMenu, showToast } from "./ui.js?v=1.8.14";
+import { $ } from "../shared/dom.js?v=1.8.15";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.15";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.15";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.15";
+import { renderChatList, resetRenderToBottom } from "./render.js?v=1.8.15";
+import { applyDayFilter } from "./filter.js?v=1.8.15";
+import { handleSearch } from "./search.js?v=1.8.15";
+import { closeMenu, showToast } from "./ui.js?v=1.8.15";
+
+let dateSheetMode = "jump";
 
 export function handleDateJumpAction(event) {
     event.preventDefault();
@@ -22,15 +26,31 @@ export function handleDateJumpAction(event) {
         return;
     }
 
-    openDateSheet();
+    openDateSheet("jump");
 }
 
-export function openDateSheet() {
+export function handleDateFilterAction(event) {
+    event.preventDefault();
+    closeMenu();
+    if (!state.messages.length) {
+        showToast("Load a chat first", "warn");
+        return;
+    }
+    openDateSheet("filter");
+}
+
+export function openDateSheet(mode = "jump") {
     const sheet = $("date-sheet");
     const input = $("date-sheet-input");
     if (!sheet || !input) return;
 
-    input.value = "";
+    dateSheetMode = mode;
+    input.value = mode === "filter" ? state.selectedDay : "";
+    $("date-sheet-title").textContent = mode === "filter" ? "Filtrar por día" : "Ir a una fecha";
+    $("date-sheet-description").textContent = mode === "filter"
+        ? "Elige un día para mostrar solo sus mensajes."
+        : "Elige una fecha para saltar a esa parte del chat.";
+    $("date-sheet-apply").textContent = mode === "filter" ? "Filtrar" : "Ir";
     sheet.hidden = false;
     requestAnimationFrame(() => {
         sheet.classList.add("open");
@@ -66,7 +86,15 @@ export function applyDateSheetSelection() {
 
     closeDateSheet();
     popOverlayState();
-    handleDateSelection(selectedDate);
+    if (dateSheetMode === "filter") {
+        applyDayFilter(selectedDate, {
+            onRender: resetRenderToBottom,
+            onSearch: handleSearch,
+            onToast: showToast
+        });
+    } else {
+        handleDateSelection(selectedDate);
+    }
 }
 
 /**

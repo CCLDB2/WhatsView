@@ -9,8 +9,71 @@
  * with in-chat search and date filters.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.14";
-import { state } from "./state.js?v=1.8.14";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.15";
+import { state } from "./state.js?v=1.8.15";
+import { parseExportDateLabel } from "./format.js?v=1.8.15";
+
+/** Keeps messages and their day divider only for the selected ISO calendar day. */
+export function filterMessagesByDate(messages, dateValue) {
+    if (!dateValue) return messages;
+    const filtered = [];
+    let inSelectedDay = false;
+    for (const item of messages) {
+        if (item.type === "date") {
+            const parsed = parseExportDateLabel(item.rawDate || item.content);
+            const key = parsed
+                ? `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`
+                : "";
+            inSelectedDay = key === dateValue;
+            if (inSelectedDay) filtered.push(item);
+        } else if (inSelectedDay) {
+            filtered.push(item);
+        }
+    }
+    return filtered;
+}
+
+export function syncDayFilterUI() {
+    const container = $("date-filter-container");
+    const button = $("date-filter-btn");
+    const label = $("date-filter-label");
+    const clear = $("date-filter-clear");
+    const active = Boolean(state.selectedDay);
+    if (container) container.hidden = state.messageOnlyCount === 0;
+    if (label) {
+        label.textContent = active
+            ? new Date(`${state.selectedDay}T00:00:00`).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+            : "Día";
+    }
+    if (button) {
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-label", active ? `Filtrado por día ${label?.textContent || state.selectedDay}. Cambiar día` : "Filtrar mensajes por día");
+        button.title = active ? `Filtrado por día ${label?.textContent || state.selectedDay}` : "Filtrar por día";
+    }
+    if (clear) clear.hidden = !active;
+}
+
+export function applyDayFilter(dateValue, { onRender, onSearch, onToast } = {}) {
+    const nextDay = dateValue || "";
+    const filtered = filterMessagesByDate(
+        filterMessagesBySender(state.messages, state.selectedSenders),
+        nextDay
+    );
+    if (nextDay && !filtered.some((item) => item.type === "msg")) {
+        onToast?.("No hay mensajes para ese día con los participantes seleccionados");
+        return false;
+    }
+    state.selectedDay = nextDay;
+    state.filteredMessages = filtered;
+    updateFilterHeaderMeta();
+    syncDayFilterUI();
+    const liveSearch = $("live-search");
+    if (state.isSearchOpen && liveSearch) onSearch?.(liveSearch.value);
+    else onRender?.();
+    if (state.selectedDay) onToast?.(`Mostrando mensajes del ${new Date(`${state.selectedDay}T00:00:00`).toLocaleDateString()}`);
+    else onToast?.("Filtro por día eliminado");
+    return true;
+}
 
 /**
  * Returns true if the sender represents the current user ("You" or myName).
@@ -217,18 +280,16 @@ export function updateFilterHeaderMeta() {
     if (!headerMeta) return;
 
     const withMedia = state.mediaCount ? ` • ${state.mediaCount.toLocaleString()} media` : "";
-    const hasSelection = Boolean(state.selectedSenders && state.selectedSenders.length > 0);
+    const hasSelection = Boolean((state.selectedSenders && state.selectedSenders.length > 0) || state.selectedDay);
 
     if (!hasSelection) {
         headerMeta.innerText = `${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
         return;
     }
 
-    const filteredCount = state.selectedSenders.reduce(
-        (total, sender) => total + (state.senderStats[sender] || 0),
-        0
-    );
-    headerMeta.innerText = `${filteredCount.toLocaleString()} of ${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
+    const filteredCount = state.filteredMessages.filter((item) => item.type === "msg").length;
+    const dayLabel = state.selectedDay ? ` · ${new Date(`${state.selectedDay}T00:00:00`).toLocaleDateString()}` : "";
+    headerMeta.innerText = `${filteredCount.toLocaleString()} of ${state.messageOnlyCount.toLocaleString()} messages${dayLabel}${withMedia}`;
 }
 
 /**
@@ -281,7 +342,10 @@ export function applySenderFilter(senders, { onRender, onSearch, onToast, silent
         });
     }
 
-    state.filteredMessages = filterMessagesBySender(state.messages, state.selectedSenders);
+    state.filteredMessages = filterMessagesByDate(
+        filterMessagesBySender(state.messages, state.selectedSenders),
+        state.selectedDay
+    );
     updateFilterHeaderMeta();
 
     const liveSearch = $("live-search");
@@ -294,7 +358,9 @@ export function applySenderFilter(senders, { onRender, onSearch, onToast, silent
     }
 
     if (!silent && typeof onToast === "function") {
-        if (list.length === 0) {
+        if (state.selectedDay && !state.filteredMessages.some((item) => item.type === "msg")) {
+            onToast("No messages from those participants on the selected day");
+        } else if (list.length === 0) {
             onToast("Showing all participants");
         } else if (list.length === 1) {
             onToast(`Showing messages from ${list[0]}`);

@@ -5,6 +5,7 @@ import { versioned } from "./versioned.mjs";
 const { state } = await versioned("../js/whatsapp/state.js");
 const {
     filterMessagesBySender,
+    filterMessagesByDate,
     applySenderFilter,
     getChatSenders,
     getSenderFilterSummary,
@@ -26,6 +27,13 @@ describe("whatsapp/filter filterMessagesBySender - multi-participant support", (
         { type: "date", content: "04/01/2024", rawDate: "04/01/2024", id: "date-10" },
         { type: "msg", id: "msg-11", sender: "Suresh", text: "Thanks Ravi!", mediaItems: [] }
     ];
+
+    test("day filter keeps only the selected day's divider and messages", () => {
+        state.inferredDateOrder = "DMY";
+        const filtered = filterMessagesByDate(sampleMessages, "2024-01-02");
+        assert.deepEqual(filtered.map((entry) => entry.id), ["date-4", "msg-5", "msg-6"]);
+        assert.deepEqual(filterMessagesByDate(sampleMessages, "2024-02-01"), []);
+    });
 
     test("zero selected → returns all messages unchanged (array, set, empty string, null, undefined)", () => {
         assert.equal(filterMessagesBySender(sampleMessages, []), sampleMessages);
