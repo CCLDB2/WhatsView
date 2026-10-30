@@ -13,15 +13,15 @@
  * the dependency pointing one way (session → persistence).
  * ============================================================================
  */
-import * as storage from "../storage.js?v=1.8.11";
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.11";
-import { formatBytes } from "../shared/media-types.js?v=1.8.11";
-import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.11";
-import { STORAGE_KEYS, state } from "./state.js?v=1.8.11";
-import { askConfirm, isMobileLayout, setSidebarState, showToast } from "./ui.js?v=1.8.11";
-import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.11";
-import { filterSidebarChats } from "./sidebar-search.js?v=1.8.11";
-import { captureScrollPosition } from "./render.js?v=1.8.11";
+import * as storage from "../storage.js?v=1.8.12";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.12";
+import { formatBytes } from "../shared/media-types.js?v=1.8.12";
+import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.12";
+import { STORAGE_KEYS, state } from "./state.js?v=1.8.12";
+import { askConfirm, isMobileLayout, setSidebarState, showToast } from "./ui.js?v=1.8.12";
+import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.12";
+import { filterSidebarChats } from "./sidebar-search.js?v=1.8.12";
+import { captureScrollPosition } from "./render.js?v=1.8.12";
 
 /**
  * Callbacks supplied by session.js:

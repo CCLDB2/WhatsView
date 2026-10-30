@@ -7,11 +7,11 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.11";
-import { colorForName } from "../shared/colors.js?v=1.8.11";
-import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.11";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.11";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.11";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.12";
+import { colorForName } from "../shared/colors.js?v=1.8.12";
+import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.12";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.12";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.12";
 import {
     clampRenderRange,
     isAtConversationEnd,
@@ -19,12 +19,12 @@ import {
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.11";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.11";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.11";
-import { lazyMedia } from "./media.js?v=1.8.11";
-import { closeMenu } from "./ui.js?v=1.8.11";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.11";
+} from "../shared/virtual-list.js?v=1.8.12";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.12";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.12";
+import { lazyMedia } from "./media.js?v=1.8.12";
+import { closeMenu } from "./ui.js?v=1.8.12";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.12";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);

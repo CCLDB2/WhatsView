@@ -9,7 +9,7 @@
 ![Stars](https://img.shields.io/github/stars/ParasSharma2306/chatlume?style=flat-square)
 ![Forks](https://img.shields.io/github/forks/ParasSharma2306/chatlume?style=flat-square)
 ![License](https://img.shields.io/github/license/ParasSharma2306/chatlume?style=flat-square)
-![Version](https://img.shields.io/badge/version-v1.8.11-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-v1.8.12-blue?style=flat-square)
 
 ---
 
@@ -77,14 +77,14 @@ It turned out better than I expected, so I cleaned it up and put it online. It n
 | Feature | Details |
 |---------|---------|
 | HTML export | Save a standalone `.html` without attachments, or a `.zip` with `index.html` and referenced attachments for offline viewing |
-| Persistent Storage | WhatsApp imports are kept in this local setup so the last chat, display name and reading position return after reload. The ZIP is copied to browser-private storage; Instagram storage remains opt-in. Disable it or delete stored imports in Settings. |
+| Persistent Storage | In Docker self-hosting, WhatsApp ZIP/TXT files can be stored on the server's mounted disk and reopened after reload. The static/browser-only deployment continues to use browser-private storage. |
 | Drag & drop | Drop a file anywhere on the page, or use the file picker |
 | Installable PWA | Add to your home screen or dock; opens on the ChatLume homepage and works fully offline thanks to a service-worker cache |
 
 ### Principles
 | Feature | Details |
 |---------|---------|
-| 100% private | Files are processed in your browser. Nothing is uploaded, ever. |
+| Private by design | Chats are parsed in your browser. In the optional Docker storage mode, WhatsApp archives are uploaded to your own server disk; protect the domain with your trusted access proxy. |
 | No account needed | Open the page, drop a file, done |
 | No dependencies | Vanilla HTML, CSS and JavaScript; zip.js is the only runtime library |
 | Open source | MIT licensed, self-hostable, forkable |
@@ -94,11 +94,11 @@ It turned out better than I expected, so I cleaned it up and put it online. It n
 ## Privacy
 
 - All parsing happens in the browser via JavaScript
-- Your chat files never leave your device
-- No server receives any chat content
+- In browser-only mode, chat files never leave your device
+- Optional self-hosted Docker storage sends WhatsApp archives only to your own server
 - No analytics on chat data, no logging
-- WhatsApp export ZIPs are copied to this browser's private storage by default in this local setup; the app keeps the display name and last message position so it can reopen where you left off. Turn off **Persistent Storage** or delete the saved chat in Settings at any time.
-- Even self-hosted: no backend, no database. It's all static files
+- Browser-only WhatsApp export ZIPs can be copied to private browser storage; the optional Docker build instead offers server-disk storage.
+- Self-hosted Docker mode includes a small backend for persistent WhatsApp archive storage; static hosting remains browser-only
 
 Full details: [Privacy Policy](https://chatlume.app/privacy.html)
 
@@ -106,13 +106,20 @@ Full details: [Privacy Policy](https://chatlume.app/privacy.html)
 
 ## Persistent Storage
 
-For WhatsApp, **Persistent Storage is on by default in this local setup**. Each ZIP is copied unchanged into the browser's Origin Private File System (media is not extracted), with metadata in IndexedDB, including its filename, your display name and the last visible message anchor. The last chat reopens after reload at that position. The browser does not reveal the original filesystem path, so ChatLume keeps a private browser copy instead. Instagram storage remains opt-in. Turn off the setting or delete a saved import in Settings to remove it.
+For WhatsApp, browser-only mode uses the browser's private storage. Docker self-hosting additionally offers server storage: upload chunks are written to the persistent `/data` volume, with metadata and files surviving container replacement. Set a persistent volume mount to `/data` in Dokploy (named volume or a host path). The server does not provide a separate login; put the app behind Pangolin/access control and do not expose its origin publicly. Instagram remains browser-only.
 
-- Turning storage off never deletes stored chats — deletion is always explicit and confirmed
-- Large copies run in a Web Worker in 16 MB chunks with a progress card and a Cancel button
-- Space is checked before copying; interrupted copies are cleaned up on the next launch
+- Deleting a server-stored chat is explicit and confirmed in the server chat list
+- Server uploads use resumable 8 MiB chunks (so Cloudflare's per-request limit does not apply to the full archive); the default maximum archive size is 10 GiB
+- Use enough disk space on the Docker host; named Docker volumes are stored on that host unless configured otherwise
+- Browser-only storage space is checked before copying; interrupted local copies are cleaned up on the next launch
 - Needs a current browser and HTTPS (Chrome/Edge 102+, Firefox 111+, Safari 15.2+); on other browsers the toggle is disabled and importing works as usual
 - On iOS, a Home Screen install and a Safari tab keep separate storage, and Safari may evict data from sites you haven't visited in a while — install ChatLume to the Home Screen for the most reliable experience
+
+### Docker / Dokploy server storage
+
+The Docker image serves the app and its upload API on **container port 80**. In Dokploy, keep build type **Dockerfile**, build path `/`, and route the domain to port `80`. Under Advanced → Mounts, create a persistent volume mounted at `/data` (the repository Compose file uses the named volume `whatsview_data`). This directory stores original `.zip`/`.txt` exports and the chat index; deleting/redeploying a container does not delete the mounted volume. The default archive limit is 10 GiB (`MAX_UPLOAD_BYTES` can override it).
+
+No app-level login is included: this single-user deployment assumes Pangolin protects the entire domain/API. Ensure Cloudflare cannot route around that protection. Uploads are sent as resumable 8 MiB requests, then stored on the Docker host's disk; chunking avoids sending one >100 MB request through Cloudflare, but each proxy layer must permit PATCH and the upload API path. Keep a backup of `/data` if these chats matter.
 
 ---
 

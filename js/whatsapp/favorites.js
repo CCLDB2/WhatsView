@@ -1,7 +1,7 @@
 /** Local, per-chat bookmarks for quickly returning to important messages. */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.11";
-import { state } from "./state.js?v=1.8.11";
-import { jumpToMessage } from "./search.js?v=1.8.11";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.12";
+import { state } from "./state.js?v=1.8.12";
+import { jumpToMessage } from "./search.js?v=1.8.12";
 
 const PREFIX = "chatlume-favorites:";
 

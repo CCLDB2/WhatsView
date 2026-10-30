@@ -1,6 +1,12 @@
-FROM nginx:alpine
+FROM node:22-alpine
 
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY . /usr/share/nginx/html
+ENV NODE_ENV=production PORT=80 DATA_DIR=/data
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY . .
 
 EXPOSE 80
+CMD ["node", "server/server.mjs"]

@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — ChatLume</title>
-  <meta name="description" content="ChatLume privacy policy. Your files never leave your device. We collect no data.">
+  <meta name="description" content="ChatLume privacy policy. Browser-only processing, with optional self-hosted Docker storage for WhatsApp exports.">
   <link rel="icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/style.css?v=1.8.11">
+  <link rel="stylesheet" href="css/style.css?v=1.8.12">
   <style>
     * {
       margin: 0;
@@ -330,12 +330,12 @@
 
   <div class="privacy">
     <div class="privacy-highlight">
-      <p>🔒 Your files never leave your device. ChatLume runs 100% in your browser. We don't collect, store, or transmit any data.</p>
+      <p>🔒 In browser-only mode, files stay on your device. In the optional self-hosted Docker mode, WhatsApp files are sent to your own server and stored on its mounted disk.</p>
     </div>
 
     <section>
       <h2>How ChatLume works</h2>
-      <p>ChatLume is a fully static website. When you open a chat export file, it is read and processed entirely within your browser using JavaScript. The file is never sent to any server. In this local setup, WhatsApp exports are copied into this browser's private storage so the last chat can be restored after reload; you can disable this or delete saved imports in Settings.</p>
+      <p>ChatLume reads and processes chat exports in your browser using JavaScript. A static/browser-only deployment never sends the file to a server. An optional self-hosted Docker deployment can upload WhatsApp exports to the administrator's server disk for persistent storage; use only behind your own access proxy.</p>
     </section>
 
     <section>
@@ -355,7 +355,7 @@
 
     <section>
       <h2>Your chat data</h2>
-      <p>Your chat files are processed locally in your browser and are never transmitted. WhatsApp ZIPs are written to this browser's private storage in this local setup so they can be reopened after a reload. You can remove them from Settings.</p>
+      <p>Your chat files are processed locally in your browser. In Docker storage mode, the WhatsApp archive is also transmitted to and kept on your self-hosted server so it can be reopened after reload. You can delete stored server copies from the chat list.</p>
     </section>
 
     <section>
@@ -412,6 +412,6 @@
         document.querySelectorAll('.dynamic-year').forEach(el => el.textContent = new Date().getFullYear());
     </script>
 </footer>
-    <script src="js/site.js?v=1.8.11" defer></script>
+    <script src="js/site.js?v=1.8.12" defer></script>
 </body>
 </html>

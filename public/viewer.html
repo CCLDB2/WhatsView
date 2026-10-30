@@ -7,14 +7,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">     
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">     
     <title>Chat Viewer — ChatLume</title>
-    <meta name="description" content="View your WhatsApp and Instagram chat exports privately in your browser. Open .txt and .zip files — no uploads, no server, 100% local.">
+    <meta name="description" content="View WhatsApp and Instagram exports in your browser. Self-hosted copies can be stored on your own server.">
     <meta name="author" content="ChatLume">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chatlume.app/viewer">
     <meta property="og:site_name" content="ChatLume">
     <meta property="og:title" content="Chat Viewer — ChatLume">
-    <meta property="og:description" content="View WhatsApp and Instagram chat exports privately. 100% local, no uploads.">
+    <meta property="og:description" content="View WhatsApp and Instagram exports in your browser; self-hosted instances can store copies on your own server.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chatlume.app/viewer">
     <meta property="og:image" content="https://chatlume.app/assets/og-image.png">
@@ -25,18 +25,19 @@
     <meta name="twitter:image:alt" content="ChatLume — a private WhatsApp and Instagram chat viewer that runs entirely in your browser.">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Chat Viewer — ChatLume">
-    <meta name="twitter:description" content="View WhatsApp and Instagram chat exports privately. 100% local, no uploads.">
+    <meta name="twitter:description" content="View WhatsApp and Instagram exports privately. Optional self-hosted Docker storage for WhatsApp chats.">
     <meta name="twitter:image" content="https://chatlume.app/assets/og-image.png">     
     <link rel="icon" href="../assets/favicon.ico" sizes="any">
     <link rel="icon" href="../assets/logo-192.png" type="image/png">
-    <link rel="stylesheet" href="../css/style.css?v=1.8.11">
+    <link rel="stylesheet" href="../css/style.css?v=1.8.12">
     <link rel="manifest" href="../manifest.json">     
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">     
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script type="module" src="../js/script.js?v=1.8.11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" defer></script>
+    <script type="module" src="../js/script.js?v=1.8.12"></script>
     <script defer src="https://umami.parassharma.in/script.js" data-website-id="f3047984-3a15-4f29-8410-82a6d68f0746"></script>
     <script>
         // Apply the saved theme before first paint. Without this the viewer
@@ -118,14 +119,17 @@
                     </button>
                     <button class="btn-primary" id="load-chat" type="button">Load Chat</button>
                     <button class="btn-secondary upload-back" id="upload-back" type="button" hidden><i class="ph ph-arrow-left"></i> Back to open chat</button>
-                    <div class="load-hint" id="load-hint">
-                        Your Data Never Leaves Your Device. Large ZIP exports can take a moment to parse.
-                    </div>
+                    <div class="load-hint" id="load-hint">Large ZIP exports can take a moment to parse.</div>
+                    <section class="server-storage" data-server-storage hidden aria-label="Almacenamiento del servidor">
+                        <div class="server-storage-heading"><strong>Guardado privado en Dockploy</strong><button type="button" data-server-refresh aria-label="Actualizar archivos del servidor" title="Actualizar"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i></button></div>
+                        <p class="server-storage-note">Al cargar un chat, se subirá una copia al disco del servidor. Mantén Pangolin protegiendo este dominio.</p>
+                        <p class="server-storage-usage" data-server-usage></p>
+                        <p class="server-storage-status" data-server-status role="status"></p>
+                        <div class="server-chat-list" data-server-chat-list></div>
+                    </section>
                     <div class="stored-list" data-stored-list hidden></div>
-                    <div class="privacy-pill">
-                        <i class="ph-fill ph-shield-check"></i> 100% Local Processing. No Uploads.
-                    </div>
-                    <div class="app-version-label" data-app-version>v1.8.11</div>
+                    <div class="privacy-pill"><i class="ph-fill ph-shield-check"></i> <span id="privacy-mode-copy">Chat parsing runs in your browser.</span></div>
+                    <div class="app-version-label" data-app-version>v1.8.12</div>
                 </section>
                 <section class="chat-list hidden" id="chat-list-skeleton" aria-hidden="true">
                     <div class="chat-skeleton">
@@ -147,6 +151,12 @@
                         </div>
                     </button>
                     <div class="stored-list" data-stored-list hidden></div>
+                    <section class="server-storage" data-server-storage hidden aria-label="Almacenamiento del servidor">
+                        <div class="server-storage-heading"><strong>Chats en Dockploy</strong><button type="button" data-server-refresh aria-label="Actualizar archivos del servidor" title="Actualizar"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i></button></div>
+                        <p class="server-storage-usage" data-server-usage></p>
+                        <p class="server-storage-status" data-server-status role="status"></p>
+                        <div class="server-chat-list" data-server-chat-list></div>
+                    </section>
                     <button class="btn-secondary import-another" id="import-another" type="button"><i class="ph ph-plus"></i> Import another chat</button>
                 </section>
             </div>             
@@ -350,7 +360,7 @@
                     <div class="info-block">
                         <h3>About ChatLume</h3>
                         <p>ChatLume is a privacy-first WhatsApp chat viewer and analytics tool. It turns exported chats into a familiar interface with deep analytics while keeping processing fully inside your browser.</p>
-                        <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)">Version 1.8.11 &nbsp;&middot;&nbsp; by <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Paras Sharma</a></p>
+                        <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)">Version 1.8.12 &nbsp;&middot;&nbsp; by <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Paras Sharma</a></p>
                         <p style="font-size:13px;color:var(--text-secondary);margin-top:4px"><a href="mailto:hello@parassharma.com" style="color:var(--primary)">hello@parassharma.com</a></p>
                         <div class="ph-badge-wrap" style="justify-content:flex-start;margin-top:16px">
                             <a href="https://www.producthunt.com/products/chatlume?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-chatlume" target="_blank" rel="noopener noreferrer">
@@ -361,7 +371,7 @@
                     <div class="info-block">                         
                         <h3>Capabilities</h3>                         
                         <ul class="feature-list">                             
-                            <li><i class="ph-fill ph-shield-check"></i> <strong>Zero Data Transfer:</strong> No uploads, no servers, completely private.</li>                             
+                            <li><i class="ph-fill ph-shield-check"></i> <strong>Private by design:</strong> Parsing stays in your browser; optional Docker storage saves WhatsApp archives only on your own server disk.</li>
                             <li><i class="ph-fill ph-file-text"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally. Persistent Storage keeps a private browser copy, your display name and the last reading position so the chat resumes after reload. This local setup has storage on by default; manage or delete it in Settings.</li>
                             <li><i class="ph-fill ph-image"></i> <strong>Memory-aware Media:</strong> Keeps ZIP attachments local and loads media only when it is needed.</li>                             
                             <li><i class="ph-fill ph-arrows-out-line-horizontal"></i> <strong>Sliding Message Window:</strong> Adds nearby messages as you scroll and drops older rendered content from the opposite side.</li>                             
@@ -591,6 +601,6 @@
         <div id="toast" aria-live="polite">Copied to Clipboard</div>
 
     </div>
-    <script src="../js/site.js?v=1.8.11" defer></script>
+    <script src="../js/site.js?v=1.8.12" defer></script>
 </body>
 </html>

@@ -9,26 +9,27 @@
  * ============================================================================
  */
 import { BlobReader, ZipReader } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { exportChatAsHTML } from "../export.js?v=1.8.11";
-import { showSponsorPrompt } from "../support.js?v=1.8.11";
-import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.11";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.11";
-import { baseName } from "../shared/media-types.js?v=1.8.11";
-import { ISSUES_URL, state } from "./state.js?v=1.8.11";
-import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.11";
-import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.11";
-import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.11";
+import { exportChatAsHTML } from "../export.js?v=1.8.12";
+import { showSponsorPrompt } from "../support.js?v=1.8.12";
+import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.12";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.12";
+import { baseName } from "../shared/media-types.js?v=1.8.12";
+import { ISSUES_URL, state } from "./state.js?v=1.8.12";
+import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.12";
+import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.12";
+import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.12";
 import {
     isPersistentStorageEnabled,
     markStoredImportOpened,
     persistCurrentImport,
     renderStoredImports,
     saveActiveScrollPosition
-} from "./persistence.js?v=1.8.11";
-import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.11";
-import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.11";
-import { generateStats } from "./stats.js?v=1.8.11";
-import { loadFavorites } from "./favorites.js?v=1.8.11";
+} from "./persistence.js?v=1.8.12";
+import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.12";
+import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.12";
+import { generateStats } from "./stats.js?v=1.8.12";
+import { loadFavorites } from "./favorites.js?v=1.8.12";
+import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.12";
 import {
     closeMenu,
     isMobileLayout,
@@ -40,7 +41,7 @@ import {
     showEmptyState,
     showToast,
     updateLoadingCopy
-} from "./ui.js?v=1.8.11";
+} from "./ui.js?v=1.8.12";
 
 const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> How to export WhatsApp chats</a>`;
 
@@ -64,7 +65,8 @@ export async function initViewer() {
 
     await loadChatFile(file, {
         displayName,
-        persist: isPersistentStorageEnabled()
+        persist: !isServerStorageEnabled() && isPersistentStorageEnabled(),
+        uploadToServer: isServerStorageEnabled()
     });
 }
 
@@ -80,7 +82,7 @@ export async function initViewer() {
  * @param {boolean} [options.persist]   Copy the export to persistent storage after it opens.
  * @param {string} [options.importId]   Stored import being reopened, if any.
  */
-export async function loadChatFile(file, { displayName, fileLabel = file.name, persist = false, importId = "", scrollPosition = null } = {}) {
+export async function loadChatFile(file, { displayName, fileLabel = file.name, persist = false, importId = "", remoteImportId = "", uploadToServer = false, scrollPosition = null } = {}) {
     if (state.isLoading) return;
 
     state.myName = displayName;
@@ -137,17 +139,35 @@ export async function loadChatFile(file, { displayName, fileLabel = file.name, p
             return;
         }
 
+        let completedRemoteId = remoteImportId;
+        let remoteSaveError = null;
+        if (uploadToServer) {
+            updateLoadingCopy("Saving a private copy to the Dockploy server…");
+            try {
+                completedRemoteId = await uploadChatToServer(file, displayName, (percentage) => {
+                    updateLoadingCopy(`Saving a private copy to the Dockploy server… ${percentage}%`);
+                });
+            } catch (error) {
+                remoteSaveError = error;
+                console.warn("The chat opened but its server copy was not completed:", error);
+            }
+        }
+
         loadFavorites({ importId, fileLabel });
         updateUIState(fileLabel);
+        state.activeImportId = completedRemoteId ? `server:${completedRemoteId}` : "";
+        if (completedRemoteId) rememberServerChat(completedRemoteId);
         renderChatList();
         if (importId) markStoredImportOpened(importId);
         if (!scrollPosition || !restoreScrollPosition(scrollPosition)) {
             requestAnimationFrame(() => {
                 scrollToBottom();
-                if (importId) saveActiveScrollPosition(captureScrollPosition());
+                if (importId || completedRemoteId) saveActiveScrollPosition(captureScrollPosition());
             });
         }
-        showToast(`Loaded ${state.messageOnlyCount.toLocaleString()} messages`);
+        showToast(remoteSaveError
+            ? `Chat opened, but no server copy was saved (${remoteSaveError.message})`
+            : `Loaded ${state.messageOnlyCount.toLocaleString()} messages`);
         showSponsorPrompt();
 
         if (!importId && persist) {

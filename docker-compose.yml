@@ -2,6 +2,8 @@ services:
   chatlume:
     build: .
     restart: unless-stopped
+    volumes:
+      - whatsview_data:/data
     expose:
       - "80"
     healthcheck:
@@ -10,3 +12,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+volumes:
+  whatsview_data:

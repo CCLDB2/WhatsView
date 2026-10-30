@@ -81,6 +81,7 @@ export const VERSIONED_FILES = [
     "js/whatsapp/search.js",
     "js/whatsapp/sidebar-search.js",
     "js/whatsapp/session.js",
+    "js/whatsapp/server-storage.js",
     "js/whatsapp/settings-store.js",
     "js/whatsapp/settings-ui.js",
     "js/whatsapp/state.js",
