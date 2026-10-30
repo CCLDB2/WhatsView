@@ -7,11 +7,11 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.15";
-import { colorForName } from "../shared/colors.js?v=1.8.15";
-import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.15";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.15";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.15";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.16";
+import { colorForName } from "../shared/colors.js?v=1.8.16";
+import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.16";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.16";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.16";
 import {
     clampRenderRange,
     isAtConversationEnd,
@@ -19,13 +19,13 @@ import {
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.15";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.15";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.15";
-import { lazyMedia } from "./media.js?v=1.8.15";
-import { closeMenu } from "./ui.js?v=1.8.15";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.15";
-import { syncDayFilterUI } from "./filter.js?v=1.8.15";
+} from "../shared/virtual-list.js?v=1.8.16";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.16";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.16";
+import { lazyMedia } from "./media.js?v=1.8.16";
+import { closeMenu } from "./ui.js?v=1.8.16";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.16";
+import { syncDayFilterUI } from "./filter.js?v=1.8.16";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -35,6 +35,7 @@ const CALL_PATTERN = /^(Missed voice call|Missed video call|Voice call|Video cal
 
 /** Decorative bar heights for the voice-note waveform. */
 const WAVEFORM_BARS = [30, 50, 70, 45, 80, 60, 35, 90, 55, 75, 40, 85, 65, 50, 70, 45, 80, 35, 65, 90, 50, 40, 75, 60, 85, 45, 70, 55, 80, 40];
+let floatingDateFrame = 0;
 
 // ── Main render ─────────────────────────────────────────────────────────────
 
@@ -47,6 +48,14 @@ export function renderChatList() {
     releaseOffscreenMediaUrls(state);
 
     let lastSender = null;
+    let currentDayLabel = "";
+    for (let index = Math.min(state.renderRange.start - 1, state.filteredMessages.length - 1); index >= 0; index -= 1) {
+        const previous = state.filteredMessages[index];
+        if (previous.type === "date") {
+            currentDayLabel = formatDateLabel(previous.rawDate || previous.content);
+            break;
+        }
+    }
     let html = "";
 
     for (let index = state.renderRange.start; index < state.renderRange.end; index += 1) {
@@ -54,7 +63,8 @@ export function renderChatList() {
         if (!item) continue;
 
         if (item.type === "date") {
-            html += `<div class="system-msg sticky-date" id="${item.id}">${escapeHtml(formatDateLabel(item.rawDate || item.content))}</div>`;
+            currentDayLabel = formatDateLabel(item.rawDate || item.content);
+            html += `<div class="system-msg sticky-date" id="${item.id}" data-day-label="${escapeAttribute(currentDayLabel)}">${escapeHtml(currentDayLabel)}</div>`;
             lastSender = null;
             continue;
         }
@@ -65,7 +75,7 @@ export function renderChatList() {
             continue;
         }
 
-        html += renderMessageRow(item, item.sender !== lastSender);
+        html += renderMessageRow(item, item.sender !== lastSender, currentDayLabel);
         lastSender = item.sender;
     }
 
@@ -75,10 +85,11 @@ export function renderChatList() {
     syncDayFilterUI();
     lazyMedia.hydrate();
     syncScrollLatest();
+    scheduleFloatingDateSync();
 }
 
 /** One bubble. `isFirst` adds the tail and (for others) the sender name. */
-function renderMessageRow(item, isFirst) {
+function renderMessageRow(item, isFirst, dayLabel) {
     const tailClass = isFirst ? (item.isMe ? "tail-out" : "tail-in") : "";
     const rowClass = `msg-row ${item.isMe ? "sent" : "received"} ${isFirst ? "tail" : ""} ${tailClass}`.trim();
     const senderHtml = state.settings.showSenderNames && !item.isMe && isFirst
@@ -95,7 +106,7 @@ function renderMessageRow(item, isFirst) {
     const readTick = item.isMe && state.settings.showReadTicks ? '<i class="ph-bold ph-checks" style="color:#53bdeb"></i>' : "";
 
     return `
-        <article class="${rowClass}" id="${item.id}">
+        <article class="${rowClass}" id="${item.id}" data-day-label="${escapeAttribute(dayLabel || "")}">
             <div class="bubble">
                 ${senderHtml}
                 ${textHtml}
@@ -277,10 +288,37 @@ export function syncFocusedSearchResult() {
 export function handleViewportScroll(event) {
     const viewport = event.currentTarget;
     syncScrollLatest(viewport);
+    scheduleFloatingDateSync(viewport);
     paginateOnScroll(viewport, state, {
         batchSize: BATCH_SIZE,
         maxRendered: MAX_RENDERED_ITEMS,
         render: renderChatList
+    });
+}
+
+function scheduleFloatingDateSync(viewport = $("viewport")) {
+    if (floatingDateFrame || !viewport) return;
+    floatingDateFrame = requestAnimationFrame(() => {
+        floatingDateFrame = 0;
+        const capsule = $("floating-date-capsule");
+        const label = $("floating-date-label");
+        if (!capsule || !label || state.messageOnlyCount === 0) {
+            if (capsule) capsule.hidden = true;
+            return;
+        }
+
+        const bounds = viewport.getBoundingClientRect();
+        const firstVisible = [...viewport.querySelectorAll("#message-list .msg-row")].find((row) => {
+            const rect = row.getBoundingClientRect();
+            return rect.bottom > bounds.top + 4 && rect.top < bounds.bottom;
+        });
+        const currentDay = firstVisible?.dataset.dayLabel || "";
+        if (!currentDay) {
+            capsule.hidden = true;
+            return;
+        }
+        label.textContent = currentDay;
+        capsule.hidden = false;
     });
 }
 

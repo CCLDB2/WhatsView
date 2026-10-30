@@ -7,9 +7,9 @@
  * js/settings.js; this module has no opinion on what the values mean.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.15";
-import { readStored, writeStored } from "../shared/safe-storage.js?v=1.8.15";
-import { STORAGE_KEYS, state } from "./state.js?v=1.8.15";
+import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.16";
+import { readStored, writeStored } from "../shared/safe-storage.js?v=1.8.16";
+import { STORAGE_KEYS, state } from "./state.js?v=1.8.16";
 
 const AUTO_CACHE_MIGRATION_KEY = "chatlume-auto-cache-enabled-v1";
 

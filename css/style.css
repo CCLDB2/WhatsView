@@ -1587,17 +1587,51 @@ body.light-theme .sender-filter-count {
 }
 
 .sticky-date {
-    position: sticky;
-    top: 10px;
-    z-index: 50;
     border-radius: 14px;
+    background: var(--system-msg);
+}
+
+.floating-date-capsule {
+    position: sticky;
+    top: 8px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: max-content;
+    max-width: min(85%, 320px);
+    min-height: 30px;
+    margin: 0 auto -38px;
+    padding: 5px 13px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 999px;
     background: rgba(24, 34, 41, 0.82);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: var(--shadow-sm);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.floating-date-capsule[hidden] { display: none; }
+.floating-date-capsule i { flex: none; color: var(--primary); font-size: 14px; }
+
+body.light-theme .floating-date-capsule {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-primary);
+    border-color: rgba(17, 27, 33, 0.08);
 }
 
 body.light-theme .sticky-date {
-    background: rgba(255, 255, 255, 0.82);
+    background: var(--system-msg);
     color: var(--text-secondary);
     border-color: rgba(17, 27, 33, 0.06);
 }

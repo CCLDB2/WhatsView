@@ -13,18 +13,18 @@
  * NFC/NFD spellings and case never keep a file from being found.
  * ============================================================================
  */
-import { attachmentLookupKey } from "../whatsapp-parser.js?v=1.8.15";
-import { baseName, detectMediaType, formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.15";
-import { createLazyMediaLoader } from "../shared/lazy-media.js?v=1.8.15";
-import { createMediaModal } from "../shared/media-modal.js?v=1.8.15";
+import { attachmentLookupKey } from "../whatsapp-parser.js?v=1.8.16";
+import { baseName, detectMediaType, formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.16";
+import { createLazyMediaLoader } from "../shared/lazy-media.js?v=1.8.16";
+import { createMediaModal } from "../shared/media-modal.js?v=1.8.16";
 import {
     clearMediaStore,
     downloadMediaItem,
     ensureMediaUrl as ensureUrl,
     releaseMediaUrlIfUnused
-} from "../shared/media-urls.js?v=1.8.15";
-import { state } from "./state.js?v=1.8.15";
-import { showToast } from "./ui.js?v=1.8.15";
+} from "../shared/media-urls.js?v=1.8.16";
+import { state } from "./state.js?v=1.8.16";
+import { showToast } from "./ui.js?v=1.8.16";
 
 /** Decodes an attachment (once) and returns its blob URL. */
 export const ensureMediaUrl = (media) => ensureUrl(state, media);

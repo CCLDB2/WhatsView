@@ -1,5 +1,5 @@
 /** Finds the first message on a selected local calendar date. */
-import { localDateBounds } from "./format.js?v=1.8.15";
+import { localDateBounds } from "./format.js?v=1.8.16";
 
 export function findMessageIdForDate(messages, dateValue) {
     const bounds = localDateBounds(dateValue);
