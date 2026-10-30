@@ -1153,7 +1153,7 @@ body.light-theme .chat-bg {
     background: var(--bg-input);
 }
 .date-filter-container[hidden] { display: none !important; }
-.date-filter-btn, .date-filter-clear {
+.date-jump-btn, .date-filter-btn, .date-filter-clear {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1168,9 +1168,11 @@ body.light-theme .chat-bg {
     font-weight: 500;
     cursor: pointer;
 }
+.date-jump-btn { padding: 0 5px; border-right: 1px solid var(--border); color: var(--text-primary); }
+.date-jump-btn:hover { color: var(--primary); }
 .date-filter-btn.active { color: var(--primary); }
 .date-filter-clear { width: 24px; font-size: 13px; }
-.date-filter-btn:focus-visible, .date-filter-clear:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.date-jump-btn:focus-visible, .date-filter-btn:focus-visible, .date-filter-clear:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .sender-filter-container {
     position: relative;
@@ -1694,7 +1696,7 @@ body.light-theme .sticky-date {
     position: absolute;
     z-index: 24;
     top: 72px;
-    right: 18px;
+    left: 18px;
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -1710,7 +1712,7 @@ body.light-theme .sticky-date {
     position: absolute;
     z-index: 30;
     top: 112px;
-    right: 16px;
+    left: 16px;
     width: min(360px, calc(100vw - 32px));
     max-height: min(65vh, 520px);
     overflow: auto;
