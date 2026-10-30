@@ -9,9 +9,9 @@
  * with in-chat search and date filters.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.21";
-import { state } from "./state.js?v=1.8.21";
-import { parseExportDateLabel } from "./format.js?v=1.8.21";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.22";
+import { state } from "./state.js?v=1.8.22";
+import { parseExportDateLabel } from "./format.js?v=1.8.22";
 
 /** Keeps messages and their day divider only for the selected ISO calendar day. */
 export function filterMessagesByDate(messages, dateValue) {
@@ -33,24 +33,10 @@ export function filterMessagesByDate(messages, dateValue) {
     return filtered;
 }
 
+/** Shows the single date-jump control once the chat has messages. */
 export function syncDayFilterUI() {
     const container = $("date-filter-container");
-    const button = $("date-filter-btn");
-    const label = $("date-filter-label");
-    const clear = $("date-filter-clear");
-    const active = Boolean(state.selectedDay);
     if (container) container.hidden = state.messageOnlyCount === 0;
-    if (label) {
-        label.textContent = active
-            ? new Date(`${state.selectedDay}T00:00:00`).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
-            : "Día";
-    }
-    if (button) {
-        button.classList.toggle("active", active);
-        button.setAttribute("aria-label", active ? `Filtrado por día ${label?.textContent || state.selectedDay}. Cambiar día` : "Filtrar mensajes por día");
-        button.title = active ? `Filtrado por día ${label?.textContent || state.selectedDay}` : "Filtrar por día";
-    }
-    if (clear) clear.hidden = !active;
 }
 
 export function applyDayFilter(dateValue, { onRender, onSearch, onToast } = {}) {

@@ -11,8 +11,8 @@
  * must expose `activeMediaId` (also read by the blob-URL release logic).
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "./dom.js?v=1.8.21";
-import { pushOverlayState } from "./history.js?v=1.8.21";
+import { $, escapeAttribute, escapeHtml } from "./dom.js?v=1.8.22";
+import { pushOverlayState } from "./history.js?v=1.8.22";
 
 /**
  * @param {Object}   options

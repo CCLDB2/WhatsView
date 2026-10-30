@@ -5,11 +5,12 @@ import { describe, test } from "node:test";
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("WhatsApp floating current-date capsule", () => {
-    test("date navigation is directly visible beside the day filter", () => {
+    test("date navigation is a single, directly visible control", () => {
         const html = read("public/viewer.html");
         const container = html.slice(html.indexOf('id="date-filter-container"'), html.indexOf('id="sender-filter-container"'));
         assert.match(container, /id="date-jump-btn"[^>]*aria-label="Go to date"/);
-        assert.match(container, /id="date-filter-btn"[^>]*aria-label="Filter messages by day"/);
+        assert.doesNotMatch(container, /date-filter-btn|date-filter-clear/);
+        assert.doesNotMatch(html, /id="date-filter-action"/);
         assert.match(read("js/script.js"), /\$\("date-jump-btn"\).*handleDateJumpAction/);
     });
 

@@ -1141,11 +1141,10 @@ body.light-theme .chat-bg {
     align-items: center;
 }
 
-/* ── Sender filter control ── */
+/* ── Date jump control ── */
 .date-filter-container {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
     min-height: var(--control-height);
     padding: 0 5px 0 9px;
     border: 1px solid var(--border);
@@ -1153,27 +1152,23 @@ body.light-theme .chat-bg {
     background: var(--bg-input);
 }
 .date-filter-container[hidden] { display: none !important; }
-.date-jump-btn, .date-filter-btn, .date-filter-clear {
+.date-jump-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
     min-height: 30px;
-    padding: 0 3px;
+    padding: 0 5px;
     border: 0;
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     font: inherit;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
 }
-.date-jump-btn { padding: 0 5px; border-right: 1px solid var(--border); color: var(--text-primary); }
 .date-jump-btn:hover { color: var(--primary); }
-.date-filter-btn.active { color: var(--primary); }
-.date-filter-clear { width: 24px; font-size: 13px; }
-.date-filter-clear[hidden] { display: none; }
-.date-jump-btn:focus-visible, .date-filter-btn:focus-visible, .date-filter-clear:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.date-jump-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .sender-filter-container {
     position: relative;
@@ -1585,6 +1580,7 @@ body.light-theme .sender-filter-count {
     margin: 8px 0;
     font-weight: 500;
     text-align: center;
+    scroll-margin-top: 46px;
     box-shadow: var(--shadow-sm);
     border: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -1645,6 +1641,8 @@ body.light-theme .sticky-date {
     margin-bottom: 2px;
     position: relative;
     max-width: min(75%, 690px);
+    /* Land below the floating date capsule when jumping to a day or a search hit. */
+    scroll-margin-top: 46px;
 }
 
 .msg-row.received { align-self: flex-start; align-items: flex-start; }
@@ -4923,14 +4921,12 @@ body.light-theme .hero-demo {
     .chat-header { gap: var(--space-1); }
     .header-profile { flex: 1 1 0; }
     .header-info { flex: 1 1 0; }
-    /* Two text labels no longer fit beside the avatar, participant filter and
-       menu. Keep the calendar jump as an icon-only control (its aria-label and
-       title still describe it) so "Go to date", the day filter and the ⋮ menu
+    /* Keep the calendar jump compact on phones (its aria-label and title still
+       describe it) so it, the participant filter, search and the ⋮ menu all
        stay on screen instead of being pushed past the right edge. */
-    .date-filter-container { flex: 0 0 auto; gap: 2px; padding: 0 3px; }
+    .date-filter-container { flex: 0 0 auto; padding: 0 3px; }
     .date-jump-btn { padding: 0 4px; }
     .date-jump-btn span { display: none; }
-    .date-filter-btn { padding: 0 4px; }
     .sender-filter-wrapper { flex: 0 0 var(--control-height); width: var(--control-height); min-width: var(--control-height); max-width: var(--control-height); padding: 0; }
     .sender-filter-btn { position: relative; justify-content: center; flex: 0 0 100%; width: 100%; min-width: 100%; padding: 0; }
     .sender-filter-prefix,

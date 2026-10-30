@@ -21,14 +21,14 @@ import {
     parseHeaderLine,
     parseTimestamp,
     stripInvisible
-} from "../whatsapp-parser.js?v=1.8.21";
-import { countEmojis } from "../shared/emoji.js?v=1.8.21";
-import { tailRange } from "../shared/virtual-list.js?v=1.8.21";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.21";
-import { reinferDateOrder } from "./format.js?v=1.8.21";
-import { createMissingMediaItem, resolveAttachment } from "./media.js?v=1.8.21";
-import { generateStats } from "./stats.js?v=1.8.21";
-import { updateLoadingCopy } from "./ui.js?v=1.8.21";
+} from "../whatsapp-parser.js?v=1.8.22";
+import { countEmojis } from "../shared/emoji.js?v=1.8.22";
+import { tailRange } from "../shared/virtual-list.js?v=1.8.22";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.22";
+import { reinferDateOrder } from "./format.js?v=1.8.22";
+import { createMissingMediaItem, resolveAttachment } from "./media.js?v=1.8.22";
+import { generateStats } from "./stats.js?v=1.8.22";
+import { updateLoadingCopy } from "./ui.js?v=1.8.22";
 
 /** Lines between progress updates / main-thread yields. */
 const PROGRESS_EVERY_LINES = 2000;

@@ -36,12 +36,12 @@ describe("whatsapp/filter filterMessagesBySender - multi-participant support", (
         assert.deepEqual(filterMessagesByDate(sampleMessages, "2024-02-01"), []);
     });
 
-    test("applying a day filter starts at the first message of that day, not the end", () => {
+    test("choosing a date jumps to the first message of that day without filtering", () => {
         const dateJump = readFileSync(new URL("../js/whatsapp/date-jump.js", import.meta.url), "utf8");
-        const renderer = readFileSync(new URL("../js/whatsapp/render.js", import.meta.url), "utf8");
-        assert.match(dateJump, /onRender:\s*selectedDate\s*\?\s*resetRenderToTop\s*:\s*resetRenderToBottom/);
-        assert.match(renderer, /export function resetRenderToTop\(\)[\s\S]*?start:\s*0/);
-        assert.match(dateJump, /if \(state\.selectedDay\)\s*\{\s*applyDayFilter\(""/);
+        assert.doesNotMatch(dateJump, /applyDayFilter/);
+        assert.doesNotMatch(dateJump, /state\.selectedDay/);
+        assert.match(dateJump, /export function applyDateSheetSelection\(\)[\s\S]*?handleDateSelection\(selectedDate\)/);
+        assert.match(dateJump, /state\.renderRange\.start = Math\.max\(0, bestIndex\)/);
     });
 
     test("zero selected → returns all messages unchanged (array, set, empty string, null, undefined)", () => {

@@ -2,20 +2,17 @@
  * ============================================================================
  * Go to Date
  * ============================================================================
- * The date sheet in the header menu: pick a day and the list jumps to its
- * marker, or to the closest earlier one when that day has no messages.
+ * The date sheet: pick a day and the list scrolls to the first message of that
+ * day, or to the closest earlier one when that day has no messages. It never
+ * filters the conversation down to a single day.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.21";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.21";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.21";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.21";
-import { renderChatList, resetRenderToBottom, resetRenderToTop } from "./render.js?v=1.8.21";
-import { applyDayFilter } from "./filter.js?v=1.8.21";
-import { handleSearch } from "./search.js?v=1.8.21";
-import { closeMenu, showToast } from "./ui.js?v=1.8.21";
-
-let dateSheetMode = "jump";
+import { $ } from "../shared/dom.js?v=1.8.22";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.22";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.22";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.22";
+import { renderChatList } from "./render.js?v=1.8.22";
+import { closeMenu, showToast } from "./ui.js?v=1.8.22";
 
 export function handleDateJumpAction(event) {
     event.preventDefault();
@@ -26,31 +23,18 @@ export function handleDateJumpAction(event) {
         return;
     }
 
-    openDateSheet("jump");
+    openDateSheet();
 }
 
-export function handleDateFilterAction(event) {
-    event.preventDefault();
-    closeMenu();
-    if (!state.messages.length) {
-        showToast("Load a chat first", "warn");
-        return;
-    }
-    openDateSheet("filter");
-}
-
-export function openDateSheet(mode = "jump") {
+export function openDateSheet() {
     const sheet = $("date-sheet");
     const input = $("date-sheet-input");
     if (!sheet || !input) return;
 
-    dateSheetMode = mode;
-    input.value = mode === "filter" ? state.selectedDay : "";
-    $("date-sheet-title").textContent = mode === "filter" ? "Filtrar por día" : "Ir a una fecha";
-    $("date-sheet-description").textContent = mode === "filter"
-        ? "Elige un día para mostrar solo sus mensajes."
-        : "Elige una fecha para saltar a esa parte del chat.";
-    $("date-sheet-apply").textContent = mode === "filter" ? "Filtrar" : "Ir";
+    input.value = "";
+    $("date-sheet-title").textContent = "Ir a una fecha";
+    $("date-sheet-description").textContent = "Elige una fecha para ir al inicio de ese día.";
+    $("date-sheet-apply").textContent = "Ir";
     sheet.hidden = false;
     requestAnimationFrame(() => {
         sheet.classList.add("open");
@@ -86,15 +70,8 @@ export function applyDateSheetSelection() {
 
     closeDateSheet();
     popOverlayState();
-    if (dateSheetMode === "filter") {
-        applyDayFilter(selectedDate, {
-            onRender: selectedDate ? resetRenderToTop : resetRenderToBottom,
-            onSearch: (query) => query.trim() ? handleSearch(query) : (selectedDate ? resetRenderToTop() : resetRenderToBottom()),
-            onToast: showToast
-        });
-    } else {
-        handleDateSelection(selectedDate);
-    }
+    // Just navigate — the list is never reduced to the chosen day.
+    handleDateSelection(selectedDate);
 }
 
 /**
@@ -103,14 +80,6 @@ export function applyDateSheetSelection() {
  */
 export function handleDateSelection(dateValue) {
     if (!dateValue || !state.messages.length) return;
-
-    // A day filter intentionally removes messages from other dates. Go to Date
-    // is a navigation command, so restore the full selected-participant stream
-    // before creating a virtual window around the target; older/newer pages can
-    // then load naturally as the user scrolls in either direction.
-    if (state.selectedDay) {
-        applyDayFilter("", { onRender: () => {}, onSearch: () => {}, onToast: () => {} });
-    }
 
     const targetDate = new Date(`${dateValue}T00:00:00`);
     if (Number.isNaN(targetDate.getTime())) {
