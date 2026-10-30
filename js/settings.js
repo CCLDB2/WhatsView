@@ -24,7 +24,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
     showSenderNames: true,
     showReadTicks: true,
     richText: true,
-    persistentStorage: false
+    // The local ChatLume setup keeps the current chat available after reload.
+    persistentStorage: true
 });
 
 export const SETTING_OPTIONS = Object.freeze({
@@ -50,7 +51,9 @@ export function sanitizeSettings(value) {
     });
 
     BOOLEAN_SETTINGS.forEach((key) => {
-        settings[key] = Boolean(settings[key]);
+        settings[key] = value?.[key] === undefined
+            ? DEFAULT_SETTINGS[key]
+            : Boolean(settings[key]);
     });
 
     return settings;

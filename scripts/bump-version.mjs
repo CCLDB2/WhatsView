@@ -72,6 +72,7 @@ export const VERSIONED_FILES = [
     "js/whatsapp/date-jump.js",
     "js/whatsapp/file-picker.js",
     "js/whatsapp/filter.js",
+    "js/whatsapp/favorites.js",
     "js/whatsapp/format.js",
     "js/whatsapp/media.js",
     "js/whatsapp/parser.js",

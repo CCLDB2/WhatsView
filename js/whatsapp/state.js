@@ -7,7 +7,7 @@
  * session.js returns the per-chat fields to their defaults before each load.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS } from "../settings.js?v=1.8.6";
+import { DEFAULT_SETTINGS } from "../settings.js?v=1.8.11";
 
 /** Rows added to the virtual window per scroll step. */
 export const BATCH_SIZE = 60;
@@ -20,6 +20,7 @@ export const STORAGE_KEYS = {
     theme: "chatlume-theme",
     settings: "chatlume-settings",
     lastImport: "chatlume-last-import",
+    lastPosition: "chatlume-last-position",
     // Set the first time a chat is kept, so users who never turned the feature
     // on don't pay for a storage lookup at boot.
     persistUsed: "chatlume-persist-used"
@@ -60,6 +61,8 @@ export const state = {
     searchPointer: -1,
     searchTimer: null,
     isSearchOpen: false,
+    favoriteIds: new Set(),
+    favoriteStoreKey: "",
 
     // ── Session ──────────────────────────────────────────────────────────
     selectedFile: null,
@@ -74,5 +77,6 @@ export const state = {
     storedImports: [],
     storedImportsLoaded: false,
     activeImportId: "",
+    activeScrollPosition: null,
     persistJob: null
 };

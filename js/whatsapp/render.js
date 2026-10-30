@@ -7,21 +7,24 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.6";
-import { colorForName } from "../shared/colors.js?v=1.8.6";
-import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.6";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.6";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.6";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.11";
+import { colorForName } from "../shared/colors.js?v=1.8.11";
+import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.11";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.11";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.11";
 import {
     clampRenderRange,
+    isAtConversationEnd,
+    isSavedPositionAtConversationEnd,
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.6";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.6";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.6";
-import { lazyMedia } from "./media.js?v=1.8.6";
-import { closeMenu } from "./ui.js?v=1.8.6";
+} from "../shared/virtual-list.js?v=1.8.11";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.11";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.11";
+import { lazyMedia } from "./media.js?v=1.8.11";
+import { closeMenu } from "./ui.js?v=1.8.11";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.11";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -67,6 +70,7 @@ export function renderChatList() {
 
     list.innerHTML = html;
     syncFocusedSearchResult();
+    updateFavoriteControls();
     lazyMedia.hydrate();
     syncScrollLatest();
 }
@@ -94,6 +98,7 @@ function renderMessageRow(item, isFirst) {
                 ${senderHtml}
                 ${textHtml}
                 ${mediaHtml}
+                <button class="message-favorite" type="button" data-favorite-toggle="${escapeAttribute(item.id)}" aria-label="Marcar como favorito" aria-pressed="false" title="Marcar como favorito"><i class="ph ph-star" aria-hidden="true"></i></button>
                 <div class="meta">
                     <span>${escapeHtml(formatMessageTime(item.rawTime || item.time))}</span>
                     ${readTick}
@@ -275,6 +280,60 @@ export function handleViewportScroll(event) {
         maxRendered: MAX_RENDERED_ITEMS,
         render: renderChatList
     });
+}
+
+/** Save an element anchor as well as scrollTop so the same message stays put after reflow. */
+export function captureScrollPosition(viewport = $("viewport")) {
+    if (!viewport) return null;
+    const bounds = viewport.getBoundingClientRect();
+    const visible = [...viewport.querySelectorAll("#message-list > [id]")].find((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.bottom > bounds.top && rect.top < bounds.bottom;
+    });
+    const atBottom = isAtConversationEnd(viewport, state);
+    return {
+        messageId: visible?.id || "",
+        offset: visible ? visible.getBoundingClientRect().top - bounds.top : 0,
+        scrollTop: viewport.scrollTop,
+        atBottom
+    };
+}
+
+/** Restores the anchored message, including the virtual window around it. */
+export function restoreScrollPosition(position) {
+    const viewport = $("viewport");
+    if (!viewport || !position) return false;
+    if (isSavedPositionAtConversationEnd(position, state.filteredMessages, MAX_RENDERED_ITEMS)) {
+        resetRenderToBottom();
+        requestAnimationFrame(scrollToBottom);
+        return true;
+    }
+
+    const index = position.messageId
+        ? state.filteredMessages.findIndex((item) => item.id === position.messageId)
+        : -1;
+    if (index >= 0) {
+        const start = Math.max(0, index - Math.floor(MAX_RENDERED_ITEMS / 3));
+        state.renderRange = {
+            start,
+            end: Math.min(state.filteredMessages.length, start + MAX_RENDERED_ITEMS)
+        };
+        renderChatList();
+        requestAnimationFrame(() => {
+            const anchor = document.getElementById(position.messageId);
+            if (!anchor) return;
+            const currentOffset = anchor.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
+            viewport.scrollTop += currentOffset - (Number(position.offset) || 0);
+            syncScrollLatest(viewport);
+        });
+        return true;
+    }
+
+    if (Number.isFinite(position.scrollTop)) {
+        requestAnimationFrame(() => { viewport.scrollTop = Math.max(0, position.scrollTop); });
+        return true;
+    }
+    return false;
 }
 
 export function scrollToBottom() {

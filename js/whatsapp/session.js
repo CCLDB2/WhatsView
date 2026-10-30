@@ -9,24 +9,26 @@
  * ============================================================================
  */
 import { BlobReader, ZipReader } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { exportChatAsHTML } from "../export.js?v=1.8.6";
-import { showSponsorPrompt } from "../support.js?v=1.8.6";
-import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.6";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.6";
-import { baseName } from "../shared/media-types.js?v=1.8.6";
-import { ISSUES_URL, state } from "./state.js?v=1.8.6";
-import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.6";
-import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.6";
-import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.6";
+import { exportChatAsHTML } from "../export.js?v=1.8.11";
+import { showSponsorPrompt } from "../support.js?v=1.8.11";
+import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.11";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.11";
+import { baseName } from "../shared/media-types.js?v=1.8.11";
+import { ISSUES_URL, state } from "./state.js?v=1.8.11";
+import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.11";
+import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.11";
+import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.11";
 import {
     isPersistentStorageEnabled,
     markStoredImportOpened,
     persistCurrentImport,
-    renderStoredImports
-} from "./persistence.js?v=1.8.6";
-import { collectExportMessages, renderChatList, scrollToBottom } from "./render.js?v=1.8.6";
-import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.6";
-import { generateStats } from "./stats.js?v=1.8.6";
+    renderStoredImports,
+    saveActiveScrollPosition
+} from "./persistence.js?v=1.8.11";
+import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.11";
+import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.11";
+import { generateStats } from "./stats.js?v=1.8.11";
+import { loadFavorites } from "./favorites.js?v=1.8.11";
 import {
     closeMenu,
     isMobileLayout,
@@ -38,7 +40,7 @@ import {
     showEmptyState,
     showToast,
     updateLoadingCopy
-} from "./ui.js?v=1.8.6";
+} from "./ui.js?v=1.8.11";
 
 const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> How to export WhatsApp chats</a>`;
 
@@ -78,11 +80,12 @@ export async function initViewer() {
  * @param {boolean} [options.persist]   Copy the export to persistent storage after it opens.
  * @param {string} [options.importId]   Stored import being reopened, if any.
  */
-export async function loadChatFile(file, { displayName, fileLabel = file.name, persist = false, importId = "" } = {}) {
+export async function loadChatFile(file, { displayName, fileLabel = file.name, persist = false, importId = "", scrollPosition = null } = {}) {
     if (state.isLoading) return;
 
     state.myName = displayName;
     state.activeImportId = "";
+    state.activeScrollPosition = scrollPosition;
 
     const isZip = file.name.toLowerCase().endsWith(".zip");
     const initText = isZip ? "Opening ZIP and scanning entries..." : "Reading text file...";
@@ -134,15 +137,20 @@ export async function loadChatFile(file, { displayName, fileLabel = file.name, p
             return;
         }
 
+        loadFavorites({ importId, fileLabel });
         updateUIState(fileLabel);
         renderChatList();
-        requestAnimationFrame(scrollToBottom);
+        if (importId) markStoredImportOpened(importId);
+        if (!scrollPosition || !restoreScrollPosition(scrollPosition)) {
+            requestAnimationFrame(() => {
+                scrollToBottom();
+                if (importId) saveActiveScrollPosition(captureScrollPosition());
+            });
+        }
         showToast(`Loaded ${state.messageOnlyCount.toLocaleString()} messages`);
         showSponsorPrompt();
 
-        if (importId) {
-            markStoredImportOpened(importId);
-        } else if (persist) {
+        if (!importId && persist) {
             persistCurrentImport(file, gen);
         }
     } catch (error) {
@@ -247,6 +255,8 @@ export function resetChatState() {
     state.searchPointer = -1;
     window.clearTimeout(state.searchTimer);
     state.searchTimer = null;
+    state.favoriteIds = new Set();
+    state.favoriteStoreKey = "";
     state.inferredDateOrder = "DMY";
     state.parseDiagnostics = { unrecognizedHeaders: 0, unrecognizedSample: "" };
     state.activeMediaId = "";
@@ -342,6 +352,7 @@ export function closeActiveChat() {
     resetChatState();
     resetSenderFilterUI();
     state.activeImportId = "";
+    state.activeScrollPosition = null;
     state.chatTitle = "Chat History";
     restoreEmptyState();
     $("empty-state")?.classList.remove("hidden");

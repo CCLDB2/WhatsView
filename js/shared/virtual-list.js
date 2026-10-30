@@ -8,11 +8,25 @@
  * restores the scroll position against an anchor element so nothing jumps.
  * ============================================================================
  */
-import { $ } from "./dom.js?v=1.8.6";
+import { $ } from "./dom.js?v=1.8.11";
 
 /** The window that shows the newest messages. */
 export function tailRange(total, maxRendered) {
     return { start: Math.max(0, total - maxRendered), end: total };
+}
+
+/** A virtual window's lower edge is not the end of a conversation. */
+export function isAtConversationEnd(viewport, state, tolerance = 4) {
+    if (!viewport || state.renderRange.end < state.filteredMessages.length) return false;
+    return viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < tolerance;
+}
+
+/** Rejects stale saved "bottom" flags that came from an older virtual window. */
+export function isSavedPositionAtConversationEnd(position, messages, maxRendered) {
+    if (!position?.atBottom) return false;
+    if (!position.messageId) return true;
+    const anchorIndex = messages.findIndex((item) => item.id === position.messageId);
+    return anchorIndex < 0 || anchorIndex >= Math.max(0, messages.length - maxRendered);
 }
 
 /** Keeps the range inside the list and no wider than `maxRendered`. */

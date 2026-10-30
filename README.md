@@ -9,7 +9,15 @@
 ![Stars](https://img.shields.io/github/stars/ParasSharma2306/chatlume?style=flat-square)
 ![Forks](https://img.shields.io/github/forks/ParasSharma2306/chatlume?style=flat-square)
 ![License](https://img.shields.io/github/license/ParasSharma2306/chatlume?style=flat-square)
-![Version](https://img.shields.io/badge/version-v1.8.6-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-v1.8.11-blue?style=flat-square)
+
+---
+
+## Self-host with Docker / Dockploy
+
+This repository includes a small Nginx container for serving the static app. In Dockploy, create a Compose deployment from this repository (or its Dockerfile), use the repository root as the build context, and route the domain to the `chatlume` service on **port 80**. For local testing, run `docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build`; it will be available at `http://localhost:8081`.
+
+The app does not need a backend or a Docker volume for chat imports: ZIPs are read in the browser and saved in that browser's origin storage. They are not copied into the container or sent to the server. Use HTTPS on the deployed domain so browser storage and service-worker features work correctly. Browser storage belongs to that domain/browser profile; changing the domain or clearing site data will not carry it over.
 
 ---
 
@@ -69,7 +77,7 @@ It turned out better than I expected, so I cleaned it up and put it online. It n
 | Feature | Details |
 |---------|---------|
 | HTML export | Save a standalone `.html` without attachments, or a `.zip` with `index.html` and referenced attachments for offline viewing |
-| Persistent Storage | Optional and **off by default** in both viewers: keep imported exports on your device so you don't have to pick the file again after closing ChatLume. Copies the original export into the browser's private storage, chunked and off the main thread, with progress, cancel and quota checks. Each viewer manages only its own saved imports. |
+| Persistent Storage | WhatsApp imports are kept in this local setup so the last chat, display name and reading position return after reload. The ZIP is copied to browser-private storage; Instagram storage remains opt-in. Disable it or delete stored imports in Settings. |
 | Drag & drop | Drop a file anywhere on the page, or use the file picker |
 | Installable PWA | Add to your home screen or dock; opens on the ChatLume homepage and works fully offline thanks to a service-worker cache |
 
@@ -89,7 +97,7 @@ It turned out better than I expected, so I cleaned it up and put it online. It n
 - Your chat files never leave your device
 - No server receives any chat content
 - No analytics on chat data, no logging
-- Nothing is stored between visits unless you turn on **Persistent Storage** in Settings, which keeps a copy of the export in the browser's private storage on your own device (deletable any time from Settings)
+- WhatsApp export ZIPs are copied to this browser's private storage by default in this local setup; the app keeps the display name and last message position so it can reopen where you left off. Turn off **Persistent Storage** or delete the saved chat in Settings at any time.
 - Even self-hosted: no backend, no database. It's all static files
 
 Full details: [Privacy Policy](https://chatlume.app/privacy.html)
@@ -98,9 +106,9 @@ Full details: [Privacy Policy](https://chatlume.app/privacy.html)
 
 ## Persistent Storage
 
-Turn it on under either viewer's **Settings → Persistent Storage**. From then on each export you open is copied into the browser's Origin Private File System (the original export, byte for byte — media is never extracted), with a small metadata record in IndexedDB. On your next visit the last opened chat for that viewer is restored automatically. WhatsApp and Instagram imports are stored and managed separately.
+For WhatsApp, **Persistent Storage is on by default in this local setup**. Each ZIP is copied unchanged into the browser's Origin Private File System (media is not extracted), with metadata in IndexedDB, including its filename, your display name and the last visible message anchor. The last chat reopens after reload at that position. The browser does not reveal the original filesystem path, so ChatLume keeps a private browser copy instead. Instagram storage remains opt-in. Turn off the setting or delete a saved import in Settings to remove it.
 
-- Off by default; turning it off never deletes stored chats — deletion is always explicit and confirmed
+- Turning storage off never deletes stored chats — deletion is always explicit and confirmed
 - Large copies run in a Web Worker in 16 MB chunks with a progress card and a Cancel button
 - Space is checked before copying; interrupted copies are cleaned up on the next launch
 - Needs a current browser and HTTPS (Chrome/Edge 102+, Firefox 111+, Safari 15.2+); on other browsers the toggle is disabled and importing works as usual

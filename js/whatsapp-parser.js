@@ -484,14 +484,14 @@ export function inferDateOrder(dateLabels, { calendar = "auto", tieBreak = "DMY"
 // ─── Attachments ─────────────────────────────────────────────────────────────
 
 /**
- * Attachment references in message text: iOS `<attached: name>` tokens and
- * Android `name (file attached)` lines.
+ * Attachment references in message text: iOS/Spanish `<attached: name>` and
+ * `<adjunto: name>` tokens, plus Android `name (file attached)` lines.
  */
 export function extractAttachmentTokens(text) {
     const matches = [];
     const patterns = [
-        /<attached:\s*([^>]+)>/gi,
-        /\u200e?([^()\n]+?\.[a-z0-9]{2,5})\s+\((?:file attached|datei angehängt)\)/gi
+        /<(?:attached|adjunto):\s*([^>]+)>/gi,
+        /\u200e?([^()\n]+?\.[a-z0-9]{2,5})\s+\((?:file attached|datei angehängt|archivo adjunto)\)/gi
     ];
 
     patterns.forEach((pattern) => {
@@ -517,9 +517,9 @@ export function extractAttachmentTokens(text) {
 export function attachmentLookupKey(value) {
     return stripInvisible(String(value || "").normalize("NFC"))
         .trim()
-        .replace(/^<attached:\s*/i, "")
+        .replace(/^<(?:attached|adjunto):\s*/i, "")
         .replace(/>$/g, "")
-        .replace(/\(file attached\)$/i, "")
+        .replace(/\((?:file attached|archivo adjunto)\)$/i, "")
         .replace(/\\/g, "/")
         .split("/")
         .pop()

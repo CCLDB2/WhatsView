@@ -23,16 +23,17 @@
  * ============================================================================
  */
 import { configure } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { $, isVisible } from "./shared/dom.js?v=1.8.6";
-import { showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.6";
-import { popOverlayState } from "./shared/history.js?v=1.8.6";
-import { runSplashLoader } from "./shared/splash.js?v=1.8.6";
-import { createThemeController } from "./shared/theme.js?v=1.8.6";
-import { state } from "./whatsapp/state.js?v=1.8.6";
-import { cleanupMediaStore, closeMediaModal, handleMessageListClick } from "./whatsapp/media.js?v=1.8.6";
-import { handleViewportScroll, jumpToBottom, resetRenderToBottom } from "./whatsapp/render.js?v=1.8.6";
-import { handleSearch, handleSearchInput, handleSearchShortcut, navSearch, toggleSearch } from "./whatsapp/search.js?v=1.8.6";
-import { filterSidebarChats } from "./whatsapp/sidebar-search.js?v=1.8.6";
+import { $, isVisible } from "./shared/dom.js?v=1.8.11";
+import { showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.11";
+import { popOverlayState } from "./shared/history.js?v=1.8.11";
+import { runSplashLoader } from "./shared/splash.js?v=1.8.11";
+import { createThemeController } from "./shared/theme.js?v=1.8.11";
+import { state } from "./whatsapp/state.js?v=1.8.11";
+import { cleanupMediaStore, closeMediaModal, handleMessageListClick } from "./whatsapp/media.js?v=1.8.11";
+import { captureScrollPosition, handleViewportScroll, jumpToBottom, resetRenderToBottom } from "./whatsapp/render.js?v=1.8.11";
+import { handleSearch, handleSearchInput, handleSearchShortcut, navSearch, toggleSearch } from "./whatsapp/search.js?v=1.8.11";
+import { filterSidebarChats } from "./whatsapp/sidebar-search.js?v=1.8.11";
+import { handleFavoriteListClick, toggleFavorite, toggleFavoritesPanel } from "./whatsapp/favorites.js?v=1.8.11";
 import {
     applySenderFilter,
     clearSenderFilter,
@@ -41,24 +42,25 @@ import {
     isSenderFilterDropdownOpen,
     toggleSender,
     toggleSenderFilterDropdown
-} from "./whatsapp/filter.js?v=1.8.6";
+} from "./whatsapp/filter.js?v=1.8.11";
 import {
     applyDateSheetSelection,
     cancelDateSheet,
     closeDateSheet,
     handleDateJumpAction
-} from "./whatsapp/date-jump.js?v=1.8.6";
-import { setupFileIntake } from "./whatsapp/file-picker.js?v=1.8.6";
-import { loadSavedSettings, syncSettingsControls } from "./whatsapp/settings-store.js?v=1.8.6";
-import { handleSettingChange, resetSettings } from "./whatsapp/settings-ui.js?v=1.8.6";
-import { closeActiveChat, initViewer, loadChatFile } from "./whatsapp/session.js?v=1.8.6";
+} from "./whatsapp/date-jump.js?v=1.8.11";
+import { setupFileIntake } from "./whatsapp/file-picker.js?v=1.8.11";
+import { loadSavedSettings, syncSettingsControls } from "./whatsapp/settings-store.js?v=1.8.11";
+import { handleSettingChange, resetSettings } from "./whatsapp/settings-ui.js?v=1.8.11";
+import { closeActiveChat, initViewer, loadChatFile } from "./whatsapp/session.js?v=1.8.11";
 import {
     cancelPersistCopy,
     deleteAllStoredImports,
     handleStoredListClick,
-    initPersistentStorage
-} from "./whatsapp/persistence.js?v=1.8.6";
-import { closeWrapped, closeWrappedFromHistory, downloadWrappedGraphic, openWrapped } from "./whatsapp/wrapped.js?v=1.8.6";
+    initPersistentStorage,
+    saveActiveScrollPosition
+} from "./whatsapp/persistence.js?v=1.8.11";
+import { closeWrapped, closeWrappedFromHistory, downloadWrappedGraphic, openWrapped } from "./whatsapp/wrapped.js?v=1.8.11";
 import {
     closeAllDrawers,
     closeDrawer,
@@ -74,11 +76,11 @@ import {
     showToast,
     toggleMenu,
     toggleSidebar
-} from "./whatsapp/ui.js?v=1.8.6";
+} from "./whatsapp/ui.js?v=1.8.11";
 
 configure({ useDecompressionStream: typeof DecompressionStream !== "undefined" });
 
-const APP_VERSION = "1.8.6";
+const APP_VERSION = "1.8.11";
 
 const theme = createThemeController({ iconSelector: "#theme-toggle i" });
 
@@ -174,6 +176,9 @@ function bindUI() {
     $("search-up")?.addEventListener("click", () => navSearch("up"));
     $("search-down")?.addEventListener("click", () => navSearch("down"));
     $("live-search")?.addEventListener("input", handleSearchInput);
+    $("favorites-toggle")?.addEventListener("click", toggleFavoritesPanel);
+    $("favorites-close")?.addEventListener("click", toggleFavoritesPanel);
+    $("favorites-list")?.addEventListener("click", handleFavoriteListClick);
 
     // Sender filter
     const filterOptions = {
@@ -291,8 +296,15 @@ function bindUI() {
     $("reset-settings")?.addEventListener("click", resetSettings);
 
     // Message list
-    $("viewport")?.addEventListener("scroll", handleViewportScroll);
+    $("viewport")?.addEventListener("scroll", (event) => {
+        handleViewportScroll(event);
+        saveActiveScrollPosition(captureScrollPosition(event.currentTarget));
+    });
     $("message-list")?.addEventListener("click", handleMessageListClick);
+    $("message-list")?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-favorite-toggle]");
+        if (button) toggleFavorite(button.dataset.favoriteToggle);
+    });
     document.addEventListener("click", (event) => {
         handleDocumentClick(event);
         if (isSenderFilterDropdownOpen()) {

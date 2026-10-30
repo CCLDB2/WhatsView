@@ -437,9 +437,11 @@ describe("attachment filenames", () => {
 
     test("ASCII, spaces and case", () => {
         assert.equal(chatName("<attached: 00000033-AUDIO-2026-08-25-10-08-24.opus>"), zipName("00000033-AUDIO-2026-08-25-10-08-24.opus"));
+        assert.equal(chatName("<adjunto: 00011452-STICKER-2026-10-07-00-13-36.webp>"), zipName("00011452-STICKER-2026-10-07-00-13-36.webp"));
         assert.equal(chatName("<attached: My Holiday Photo.JPG>"), zipName("My Holiday Photo.JPG"));
         assert.equal(zipName("My Holiday Photo.JPG"), "my holiday photo.jpg");
         assert.equal(chatName("IMG-20240101-WA0001.jpg (file attached)"), zipName("IMG-20240101-WA0001.jpg"));
+        assert.equal(chatName("IMG-20240101-WA0002.jpg (archivo adjunto)"), zipName("IMG-20240101-WA0002.jpg"));
     });
     test("ZIP paths reduce to the base name", () => {
         assert.equal(zipName("WhatsApp Chat - Alex/00000001-PHOTO.jpg"), "00000001-photo.jpg");

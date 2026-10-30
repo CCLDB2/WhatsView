@@ -6,7 +6,7 @@
   <title>Privacy Policy — ChatLume</title>
   <meta name="description" content="ChatLume privacy policy. Your files never leave your device. We collect no data.">
   <link rel="icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/style.css?v=1.8.6">
+  <link rel="stylesheet" href="css/style.css?v=1.8.11">
   <style>
     * {
       margin: 0;
@@ -335,7 +335,7 @@
 
     <section>
       <h2>How ChatLume works</h2>
-      <p>ChatLume is a fully static website. When you open a chat export file, it is read and processed entirely within your browser using JavaScript. The file is never sent to any server. By default nothing is kept beyond your current browser session; the optional <strong>Persistent Storage</strong> setting described below keeps a copy on your own device only.</p>
+      <p>ChatLume is a fully static website. When you open a chat export file, it is read and processed entirely within your browser using JavaScript. The file is never sent to any server. In this local setup, WhatsApp exports are copied into this browser's private storage so the last chat can be restored after reload; you can disable this or delete saved imports in Settings.</p>
     </section>
 
     <section>
@@ -345,7 +345,7 @@
 
     <section>
       <h2>Cookies and local storage</h2>
-      <p>ChatLume uses your browser's <code>localStorage</code> to remember small preferences: your theme, display settings, whether you've dismissed the install or sponsor prompts, and — if you use Persistent Storage — which stored chat you opened last. None of this contains chat content. We set no persistent cookies and use no tracking technologies.</p>
+      <p>ChatLume uses your browser's <code>localStorage</code> for small preferences and the last reading-position pointer. The ZIP copy and its filename, display name and message anchor are kept in browser-private OPFS storage and IndexedDB. Your operating-system file path is not exposed to the browser. We set no tracking cookies or analytics.</p>
     </section>
 
     <section>
@@ -355,12 +355,12 @@
 
     <section>
       <h2>Your chat data</h2>
-      <p>Your chat files are processed locally in your browser's memory. They are not indexed or transmitted anywhere. Unless you turn on Persistent Storage, they are not written to disk either: when you close the page or reload it, the data is gone.</p>
+      <p>Your chat files are processed locally in your browser and are never transmitted. WhatsApp ZIPs are written to this browser's private storage in this local setup so they can be reopened after a reload. You can remove them from Settings.</p>
     </section>
 
     <section>
       <h2>Persistent Storage</h2>
-      <p>Persistent Storage is <strong>off by default</strong>. If you turn it on in the viewer's Settings, each export you open afterwards is copied, unchanged, into your browser's private storage for chatlume.app (the Origin Private File System), together with a small record of its name, size and message count. This lets ChatLume reopen the chat without you picking the file again.</p>
+      <p>Persistent Storage is <strong>on by default for WhatsApp in this local setup</strong>. Each export is copied unchanged into the browser's private Origin Private File System with a small IndexedDB record containing its filename, display name and last visible message anchor. This lets ChatLume reopen the chat at the same point without asking you to pick the ZIP again. The original filesystem path is deliberately unavailable to browser applications. You can turn storage off or delete saved copies from Settings.</p>
       <p>Stored chats live only in that browser on that device. They are not uploaded, synced, or visible to any server. Anyone who can use that browser profile can open them, so treat the setting like leaving a document on the device. You can delete individual stored chats or all of them at any time from Settings, and clearing the site's data in your browser removes them too. Turning the setting off stops new copies but keeps existing ones until you delete them.</p>
       <p>Stored chats are ordinary browser site data. Depending on your device and browser settings, that data may be included in your own device or browser backups, and it may be removed by the browser's storage-management features (for example when disk space runs low). ChatLume has no control over either.</p>
     </section>
@@ -412,6 +412,6 @@
         document.querySelectorAll('.dynamic-year').forEach(el => el.textContent = new Date().getFullYear());
     </script>
 </footer>
-    <script src="js/site.js?v=1.8.6" defer></script>
+    <script src="js/site.js?v=1.8.11" defer></script>
 </body>
 </html>

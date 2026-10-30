@@ -7,7 +7,7 @@ const { applyTextFormatting, buildRichText, highlightOutsideTags } = await versi
 const { baseName, detectMediaType, formatBytes, inferMimeType, labelForMediaKind } = await versioned("../js/shared/media-types.js");
 const { SENDER_COLORS, colorForName } = await versioned("../js/shared/colors.js");
 const { countEmojis } = await versioned("../js/shared/emoji.js");
-const { clampRenderRange, syncScrollLatestButton, tailRange } = await versioned("../js/shared/virtual-list.js");
+const { clampRenderRange, isAtConversationEnd, isSavedPositionAtConversationEnd, syncScrollLatestButton, tailRange } = await versioned("../js/shared/virtual-list.js");
 
 /**
  * The utilities both viewers share. These used to be duplicated (with small
@@ -139,6 +139,21 @@ describe("shared/virtual-list", () => {
         state.renderRange = { start: 90, end: 20 };
         clampRenderRange(state, 30);
         assert.deepEqual(state.renderRange, { start: 90, end: 90 });
+    });
+
+    test("does not treat the bottom of a virtual window as the end of the full chat", () => {
+        const viewport = { scrollHeight: 800, scrollTop: 480, clientHeight: 320 };
+        const partial = { filteredMessages: new Array(1000), renderRange: { start: 200, end: 380 } };
+        const complete = { ...partial, renderRange: { start: 820, end: 1000 } };
+        assert.equal(isAtConversationEnd(viewport, partial), false);
+        assert.equal(isAtConversationEnd(viewport, complete), true);
+    });
+
+    test("rejects stale bottom flags anchored in the middle of a chat", () => {
+        const messages = Array.from({ length: 1000 }, (_, index) => ({ id: `msg-${index}` }));
+        assert.equal(isSavedPositionAtConversationEnd({ atBottom: true, messageId: "msg-300" }, messages, 180), false);
+        assert.equal(isSavedPositionAtConversationEnd({ atBottom: true, messageId: "msg-900" }, messages, 180), true);
+        assert.equal(isSavedPositionAtConversationEnd({ atBottom: false, messageId: "msg-900" }, messages, 180), false);
     });
 
     test("does not show jump-to-latest from a stale animation frame", () => {

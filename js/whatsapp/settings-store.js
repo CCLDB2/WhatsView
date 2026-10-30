@@ -7,14 +7,24 @@
  * js/settings.js; this module has no opinion on what the values mean.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.6";
-import { readStored, writeStored } from "../shared/safe-storage.js?v=1.8.6";
-import { STORAGE_KEYS, state } from "./state.js?v=1.8.6";
+import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.11";
+import { readStored, writeStored } from "../shared/safe-storage.js?v=1.8.11";
+import { STORAGE_KEYS, state } from "./state.js?v=1.8.11";
+
+const AUTO_CACHE_MIGRATION_KEY = "chatlume-auto-cache-enabled-v1";
 
 export function loadSavedSettings() {
     try {
         const saved = JSON.parse(readStored(STORAGE_KEYS.settings) || "{}");
         state.settings = sanitizeSettings(saved);
+        // Existing local installs may have a saved `false` from the old opt-in
+        // default. Honor this feature request once, then let the Settings toggle
+        // be the user's durable choice from that point on.
+        if (readStored(AUTO_CACHE_MIGRATION_KEY) !== "1") {
+            state.settings.persistentStorage = true;
+            saveSettings();
+            writeStored(AUTO_CACHE_MIGRATION_KEY, "1");
+        }
     } catch (error) {
         console.warn("Unable to load settings:", error);
         state.settings = { ...DEFAULT_SETTINGS };

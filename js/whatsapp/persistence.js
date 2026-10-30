@@ -13,14 +13,15 @@
  * the dependency pointing one way (session → persistence).
  * ============================================================================
  */
-import * as storage from "../storage.js?v=1.8.6";
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.6";
-import { formatBytes } from "../shared/media-types.js?v=1.8.6";
-import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.6";
-import { STORAGE_KEYS, state } from "./state.js?v=1.8.6";
-import { askConfirm, isMobileLayout, setSidebarState, showToast } from "./ui.js?v=1.8.6";
-import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.6";
-import { filterSidebarChats } from "./sidebar-search.js?v=1.8.6";
+import * as storage from "../storage.js?v=1.8.11";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.11";
+import { formatBytes } from "../shared/media-types.js?v=1.8.11";
+import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.11";
+import { STORAGE_KEYS, state } from "./state.js?v=1.8.11";
+import { askConfirm, isMobileLayout, setSidebarState, showToast } from "./ui.js?v=1.8.11";
+import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.11";
+import { filterSidebarChats } from "./sidebar-search.js?v=1.8.11";
+import { captureScrollPosition } from "./render.js?v=1.8.11";
 
 /**
  * Callbacks supplied by session.js:
@@ -28,6 +29,41 @@ import { filterSidebarChats } from "./sidebar-search.js?v=1.8.6";
  *   closeChat()                                           closes the open chat
  */
 const hooks = { openFile: null, closeChat: null };
+let positionSaveTimer = 0;
+
+function matchingLastPosition(id) {
+    try {
+        const saved = JSON.parse(readStored(STORAGE_KEYS.lastPosition) || "null");
+        return saved?.id === id ? saved.position : null;
+    } catch {
+        return null;
+    }
+}
+
+function flushActiveScrollPosition() {
+    positionSaveTimer = 0;
+    const id = state.activeImportId;
+    const position = state.activeScrollPosition;
+    if (!id || !position) return;
+    writeStored(STORAGE_KEYS.lastPosition, JSON.stringify({ id, position }));
+    const record = state.storedImports.find((item) => item.id === id);
+    if (record) {
+        record.scrollPosition = position;
+        storage.putImport(record).catch(() => {});
+    }
+}
+
+/** Saves a small message anchor, never the parsed conversation contents. */
+export function saveActiveScrollPosition(position) {
+    if (!state.activeImportId || !position) return;
+    state.activeScrollPosition = position;
+    if (positionSaveTimer) clearTimeout(positionSaveTimer);
+    positionSaveTimer = setTimeout(flushActiveScrollPosition, 250);
+}
+
+if (typeof window !== "undefined") {
+    window.addEventListener("pagehide", flushActiveScrollPosition);
+}
 
 export function isPersistentStorageEnabled() {
     return state.storageSupported && Boolean(state.settings.persistentStorage);
@@ -54,7 +90,7 @@ export async function initPersistentStorage({ openFile, closeChat }) {
     const record = lastId ? state.storedImports.find((item) => item.id === lastId) : null;
     if (!record) return;
 
-    await openStoredImport(record);
+    await openStoredImport(record, matchingLastPosition(record.id) || record.scrollPosition || null);
     // A stored chat that can't produce messages shouldn't greet the user with
     // the same error on every launch. The import itself stays until they
     // delete it — only the automatic reopen is dropped.
@@ -212,7 +248,7 @@ export function handleStoredListClick(event) {
 
 // ── Opening ─────────────────────────────────────────────────────────────────
 
-async function openStoredImport(record) {
+async function openStoredImport(record, savedPosition = null) {
     if (state.isLoading) return;
     if (record.id && record.id === state.activeImportId) {
         if (isMobileLayout()) setSidebarState(false);
@@ -244,7 +280,8 @@ async function openStoredImport(record) {
     await hooks.openFile(file, {
         displayName: record.displayName || "",
         fileLabel: record.fileName,
-        importId: record.id
+        importId: record.id,
+        scrollPosition: savedPosition || matchingLastPosition(record.id) || record.scrollPosition || null
     });
 }
 
@@ -260,7 +297,9 @@ export function markStoredImportOpened(id) {
         record.messageCount = state.messageOnlyCount;
         record.mediaCount = state.mediaCount;
         record.displayName = state.myName;
+        record.scrollPosition = state.activeScrollPosition || record.scrollPosition || captureScrollPosition() || { atBottom: true, scrollTop: 0 };
         storage.putImport(record).catch(() => {});
+        writeStored(STORAGE_KEYS.lastPosition, JSON.stringify({ id, position: record.scrollPosition }));
         state.storedImports = storage.sortByRecency(state.storedImports);
     }
     renderStoredImports();
@@ -270,8 +309,12 @@ export function markStoredImportOpened(id) {
 /** Forgets a record in memory and in localStorage pointers (not on disk). */
 function dropStoredImport(id) {
     state.storedImports = state.storedImports.filter((item) => item.id !== id);
-    if (state.activeImportId === id) state.activeImportId = "";
+    if (state.activeImportId === id) {
+        state.activeImportId = "";
+        state.activeScrollPosition = null;
+    }
     if (readStored(STORAGE_KEYS.lastImport) === id) removeStored(STORAGE_KEYS.lastImport);
+    if (matchingLastPosition(id)) removeStored(STORAGE_KEYS.lastPosition);
     if (!state.storedImports.length) removeStored(STORAGE_KEYS.persistUsed);
     renderStoredImports();
     refreshStorageSettingsUI();
@@ -512,7 +555,9 @@ export async function deleteAllStoredImports() {
     const wasOpen = Boolean(state.activeImportId);
     state.storedImports = [];
     state.activeImportId = "";
+    state.activeScrollPosition = null;
     removeStored(STORAGE_KEYS.lastImport);
+    removeStored(STORAGE_KEYS.lastPosition);
     removeStored(STORAGE_KEYS.persistUsed);
     renderStoredImports();
     refreshStorageSettingsUI();

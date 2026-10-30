@@ -28,6 +28,7 @@ describe("settings schema", () => {
         assert.equal(DEFAULT_SETTINGS.calendar, "auto");
         assert.equal(DEFAULT_SETTINGS.timeFormat, "auto");
         assert.equal(DEFAULT_SETTINGS.dateFormat, "original");
+        assert.equal(DEFAULT_SETTINGS.persistentStorage, true);
     });
 
     test("no saved settings → defaults", () => {
@@ -65,7 +66,8 @@ describe("settings schema", () => {
         const loaded = sanitizeSettings({ showSeconds: "yes", richText: 0, persistentStorage: undefined });
         assert.equal(loaded.showSeconds, true);
         assert.equal(loaded.richText, false);
-        assert.equal(loaded.persistentStorage, false);
+        assert.equal(loaded.persistentStorage, true);
+        assert.equal(sanitizeSettings({ persistentStorage: false }).persistentStorage, false);
     });
 
     test("unknown keys are carried but never override known ones", () => {

@@ -1,0 +1,13 @@
+.git
+.github
+.gitignore
+node_modules
+tests
+coverage
+.DS_Store
+Thumbs.db
+*.log
+*.zip
+*.txt
+*_chat.txt
+WhatsApp Chat with *.txt\n
