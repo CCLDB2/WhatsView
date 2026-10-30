@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, test, beforeEach } from "node:test";
 import { versioned } from "./versioned.mjs";
 
@@ -33,6 +34,13 @@ describe("whatsapp/filter filterMessagesBySender - multi-participant support", (
         const filtered = filterMessagesByDate(sampleMessages, "2024-01-02");
         assert.deepEqual(filtered.map((entry) => entry.id), ["date-4", "msg-5", "msg-6"]);
         assert.deepEqual(filterMessagesByDate(sampleMessages, "2024-02-01"), []);
+    });
+
+    test("applying a day filter starts at the first message of that day, not the end", () => {
+        const dateJump = readFileSync(new URL("../js/whatsapp/date-jump.js", import.meta.url), "utf8");
+        const renderer = readFileSync(new URL("../js/whatsapp/render.js", import.meta.url), "utf8");
+        assert.match(dateJump, /onRender:\s*selectedDate\s*\?\s*resetRenderToTop\s*:\s*resetRenderToBottom/);
+        assert.match(renderer, /export function resetRenderToTop\(\)[\s\S]*?start:\s*0/);
     });
 
     test("zero selected → returns all messages unchanged (array, set, empty string, null, undefined)", () => {

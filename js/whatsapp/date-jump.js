@@ -6,14 +6,14 @@
  * marker, or to the closest earlier one when that day has no messages.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.16";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.16";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.16";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.16";
-import { renderChatList, resetRenderToBottom } from "./render.js?v=1.8.16";
-import { applyDayFilter } from "./filter.js?v=1.8.16";
-import { handleSearch } from "./search.js?v=1.8.16";
-import { closeMenu, showToast } from "./ui.js?v=1.8.16";
+import { $ } from "../shared/dom.js?v=1.8.17";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.17";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.17";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.17";
+import { renderChatList, resetRenderToBottom, resetRenderToTop } from "./render.js?v=1.8.17";
+import { applyDayFilter } from "./filter.js?v=1.8.17";
+import { handleSearch } from "./search.js?v=1.8.17";
+import { closeMenu, showToast } from "./ui.js?v=1.8.17";
 
 let dateSheetMode = "jump";
 
@@ -88,8 +88,8 @@ export function applyDateSheetSelection() {
     popOverlayState();
     if (dateSheetMode === "filter") {
         applyDayFilter(selectedDate, {
-            onRender: resetRenderToBottom,
-            onSearch: handleSearch,
+            onRender: selectedDate ? resetRenderToTop : resetRenderToBottom,
+            onSearch: (query) => query.trim() ? handleSearch(query) : (selectedDate ? resetRenderToTop() : resetRenderToBottom()),
             onToast: showToast
         });
     } else {
