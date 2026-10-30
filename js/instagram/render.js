@@ -8,20 +8,20 @@
  * message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.20";
-import { colorForName } from "../shared/colors.js?v=1.8.20";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.20";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.20";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.21";
+import { colorForName } from "../shared/colors.js?v=1.8.21";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.21";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.21";
 import {
     clampRenderRange,
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.20";
-import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.20";
-import { lazyMedia } from "./media.js?v=1.8.20";
-import { closeMenu } from "./ui.js?v=1.8.20";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.20";
+} from "../shared/virtual-list.js?v=1.8.21";
+import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.21";
+import { lazyMedia } from "./media.js?v=1.8.21";
+import { closeMenu } from "./ui.js?v=1.8.21";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.21";
 
 export const getColor = (name) => colorForName(name, igState.colorMap);
 

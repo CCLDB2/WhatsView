@@ -1,13 +1,13 @@
 /** Coordinates Instagram's date picker with the virtual message list. */
-import { $ } from "../shared/dom.js?v=1.8.20";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.20";
-import { findMessageForDate } from "./date-jump-model.js?v=1.8.20";
-import { localDateBounds } from "./format.js?v=1.8.20";
-import { igState } from "./state.js?v=1.8.20";
-import { jumpToMessage } from "./search.js?v=1.8.20";
-import { showToast } from "./ui.js?v=1.8.20";
+import { $ } from "../shared/dom.js?v=1.8.21";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.21";
+import { findMessageForDate } from "./date-jump-model.js?v=1.8.21";
+import { localDateBounds } from "./format.js?v=1.8.21";
+import { igState } from "./state.js?v=1.8.21";
+import { jumpToMessage } from "./search.js?v=1.8.21";
+import { showToast } from "./ui.js?v=1.8.21";
 
-export { findMessageForDate, findMessageIdForDate } from "./date-jump-model.js?v=1.8.20";
+export { findMessageForDate, findMessageIdForDate } from "./date-jump-model.js?v=1.8.21";
 
 export function openDateSheet() {
     if (!igState.messageOnlyCount) { showToast("Load a conversation first", "warn"); return; }

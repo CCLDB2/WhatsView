@@ -8,11 +8,11 @@
  * these read `state` only for counts and flags.
  * ============================================================================
  */
-import { $, q, escapeHtml, replayClass } from "../shared/dom.js?v=1.8.20";
-import { pushOverlayState } from "../shared/history.js?v=1.8.20";
-import { createToast } from "../shared/toast.js?v=1.8.20";
-import { animateStatsIn } from "../shared/stats-panel.js?v=1.8.20";
-import { state } from "./state.js?v=1.8.20";
+import { $, q, escapeHtml, replayClass } from "../shared/dom.js?v=1.8.21";
+import { pushOverlayState } from "../shared/history.js?v=1.8.21";
+import { createToast } from "../shared/toast.js?v=1.8.21";
+import { animateStatsIn } from "../shared/stats-panel.js?v=1.8.21";
+import { state } from "./state.js?v=1.8.21";
 
 export const showToast = createToast("toast");
 
