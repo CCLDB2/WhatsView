@@ -92,6 +92,12 @@ describe(`release token v${VERSION}`, () => {
         assert.match(sw.slice(sw.indexOf("addEventListener('message'")), /SKIP_WAITING[\s\S]*?self\.skipWaiting\(\)/);
     });
 
+    test("server APIs bypass CacheStorage, including large archive downloads", () => {
+        assert.match(sw, /function isApiRequest\(request\)/);
+        const fetchHandler = sw.slice(sw.indexOf("addEventListener('fetch'"), sw.indexOf("function isApiRequest"));
+        assert.match(fetchHandler, /if \(isApiRequest\(request\)\)\s*\{\s*event\.respondWith\(fetch\(request\)\);\s*return;/);
+    });
+
     test("bump script targets every file that carries the version", () => {
         const script = read("scripts/bump-version.mjs");
         for (const page of [...HTML_PAGES, "js/script.js", "js/instagram.js", "js/storage.js", "sw.js", "package.json"]) {

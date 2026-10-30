@@ -9,27 +9,27 @@
  * ============================================================================
  */
 import { BlobReader, ZipReader } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { exportChatAsHTML } from "../export.js?v=1.8.17";
-import { showSponsorPrompt } from "../support.js?v=1.8.17";
-import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.17";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.17";
-import { baseName } from "../shared/media-types.js?v=1.8.17";
-import { ISSUES_URL, state } from "./state.js?v=1.8.17";
-import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.17";
-import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.17";
-import { populateSenderFilter, resetSenderFilterUI, syncDayFilterUI } from "./filter.js?v=1.8.17";
+import { exportChatAsHTML } from "../export.js?v=1.8.18";
+import { showSponsorPrompt } from "../support.js?v=1.8.18";
+import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.18";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.18";
+import { baseName } from "../shared/media-types.js?v=1.8.18";
+import { ISSUES_URL, state } from "./state.js?v=1.8.18";
+import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.18";
+import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.18";
+import { populateSenderFilter, resetSenderFilterUI, syncDayFilterUI } from "./filter.js?v=1.8.18";
 import {
     isPersistentStorageEnabled,
     markStoredImportOpened,
     persistCurrentImport,
     renderStoredImports,
     saveActiveScrollPosition
-} from "./persistence.js?v=1.8.17";
-import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.17";
-import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.17";
-import { generateStats } from "./stats.js?v=1.8.17";
-import { loadFavorites } from "./favorites.js?v=1.8.17";
-import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.17";
+} from "./persistence.js?v=1.8.18";
+import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.18";
+import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.18";
+import { generateStats } from "./stats.js?v=1.8.18";
+import { loadFavorites } from "./favorites.js?v=1.8.18";
+import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.18";
 import {
     closeMenu,
     isMobileLayout,
@@ -41,7 +41,7 @@ import {
     showEmptyState,
     showToast,
     updateLoadingCopy
-} from "./ui.js?v=1.8.17";
+} from "./ui.js?v=1.8.18";
 
 const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> How to export WhatsApp chats</a>`;
 

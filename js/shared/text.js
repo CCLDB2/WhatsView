@@ -8,7 +8,7 @@
  * tests/shared.test.mjs. Callers must escape first (see dom.js).
  * ============================================================================
  */
-import { escapeRegExp } from "./dom.js?v=1.8.17";
+import { escapeRegExp } from "./dom.js?v=1.8.18";
 
 export const URL_PATTERN = /(https?:\/\/[^\s<]+)/gi;
 

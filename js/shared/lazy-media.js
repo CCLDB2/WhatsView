@@ -12,7 +12,7 @@
  *   lazyMedia.disconnect();  // before re-rendering or resetting
  * ============================================================================
  */
-import { $ } from "./dom.js?v=1.8.17";
+import { $ } from "./dom.js?v=1.8.18";
 
 /**
  * @param {Object}   options

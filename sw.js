@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chatlume-v1.8.17';
+const CACHE_NAME = 'chatlume-v1.8.18';
 const OFFLINE_FALLBACK = 'index.html';
 // Scripts, modules and styles are addressed with a release token (`?v=`).
 // A page from one release therefore only ever asks for that release's files,
@@ -151,6 +151,14 @@ self.addEventListener('fetch', (event) => {
     // Only GET is cacheable; anything else goes straight to the network.
     if (request.method !== 'GET') return;
 
+    // API responses are private, mutable server data. In particular, never
+    // put a multi-GB chat archive in CacheStorage: it belongs on the server's
+    // persistent volume and should be fetched only when the user opens it.
+    if (isApiRequest(request)) {
+        event.respondWith(fetch(request));
+        return;
+    }
+
     if (isNavigation(request)) {
         event.respondWith(handleNavigation(request));
         return;
@@ -163,6 +171,11 @@ self.addEventListener('fetch', (event) => {
 
     event.respondWith(handleAsset(request));
 });
+
+function isApiRequest(request) {
+    const url = new URL(request.url);
+    return url.origin === self.location.origin && url.pathname.startsWith('/api/');
+}
 
 /** Same-origin script/style URLs carrying the release token. */
 function isVersionedAsset(request) {

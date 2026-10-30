@@ -6,14 +6,14 @@
  * marker, or to the closest earlier one when that day has no messages.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.17";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.17";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.17";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.17";
-import { renderChatList, resetRenderToBottom, resetRenderToTop } from "./render.js?v=1.8.17";
-import { applyDayFilter } from "./filter.js?v=1.8.17";
-import { handleSearch } from "./search.js?v=1.8.17";
-import { closeMenu, showToast } from "./ui.js?v=1.8.17";
+import { $ } from "../shared/dom.js?v=1.8.18";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.18";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.18";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.18";
+import { renderChatList, resetRenderToBottom, resetRenderToTop } from "./render.js?v=1.8.18";
+import { applyDayFilter } from "./filter.js?v=1.8.18";
+import { handleSearch } from "./search.js?v=1.8.18";
+import { closeMenu, showToast } from "./ui.js?v=1.8.18";
 
 let dateSheetMode = "jump";
 

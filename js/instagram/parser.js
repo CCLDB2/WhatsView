@@ -8,12 +8,12 @@
  * and message helpers are covered by tests/instagram.test.mjs.
  * ============================================================================
  */
-import { countEmojis } from "../shared/emoji.js?v=1.8.17";
-import { baseName, detectMediaType } from "../shared/media-types.js?v=1.8.17";
-import { tailRange } from "../shared/virtual-list.js?v=1.8.17";
-import { fixMojibake } from "./mojibake.js?v=1.8.17";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.17";
-import { IG_MAX_RENDERED, igState } from "./state.js?v=1.8.17";
+import { countEmojis } from "../shared/emoji.js?v=1.8.18";
+import { baseName, detectMediaType } from "../shared/media-types.js?v=1.8.18";
+import { tailRange } from "../shared/virtual-list.js?v=1.8.18";
+import { fixMojibake } from "./mojibake.js?v=1.8.18";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.18";
+import { IG_MAX_RENDERED, igState } from "./state.js?v=1.8.18";
 
 // ── Thread discovery ────────────────────────────────────────────────────────
 
