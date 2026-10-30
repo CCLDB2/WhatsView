@@ -7,11 +7,11 @@
  * the user taps.
  * ============================================================================
  */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.12";
-import { folderLabel } from "./parser.js?v=1.8.12";
-import { igState } from "./state.js?v=1.8.12";
-import { isMobileLayout, setSidebarState } from "./ui.js?v=1.8.12";
-import { filterThreadOptions, makeThreadOptions } from "./threads-model.js?v=1.8.12";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.13";
+import { folderLabel } from "./parser.js?v=1.8.13";
+import { igState } from "./state.js?v=1.8.13";
+import { isMobileLayout, setSidebarState } from "./ui.js?v=1.8.13";
+import { filterThreadOptions, makeThreadOptions } from "./threads-model.js?v=1.8.13";
 
 /**
  * @param {Array}    threads   From parser.findThreads().

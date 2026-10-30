@@ -1,11 +1,11 @@
 /** Optional self-hosted archive storage with resumable, proxy-safe uploads. */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.12";
-import { formatBytes } from "../shared/media-types.js?v=1.8.12";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.13";
+import { formatBytes } from "../shared/media-types.js?v=1.8.13";
 
 const LAST_CLOUD_CHAT_KEY = "chatlume-last-server-chat";
 const LAST_POSITION_KEY = "chatlume-last-position";
 const CHUNK_SIZE = 8 * 1024 * 1024;
-const state = { enabled: false, records: [], hooks: {}, storage: null };
+const state = { enabled: false, records: [], hooks: {}, storage: null, refreshPromise: null, refreshTimer: 0 };
 
 export function isServerStorageEnabled() {
     return state.enabled;
@@ -39,6 +39,7 @@ export async function initServerStorage({ openChat, closeChat }) {
         sections.forEach((section) => { section.hidden = !state.enabled; });
         if (!state.enabled) return;
         await refreshServerChats();
+        startAutoRefresh();
 
         let lastId = "";
         try { lastId = localStorage.getItem(LAST_CLOUD_CHAT_KEY) || ""; } catch { /* optional */ }
@@ -53,6 +54,16 @@ export async function initServerStorage({ openChat, closeChat }) {
 
 export async function refreshServerChats() {
     if (!state.enabled) return;
+    if (state.refreshPromise) return state.refreshPromise;
+    state.refreshPromise = refreshServerChatsFromApi();
+    try {
+        await state.refreshPromise;
+    } finally {
+        state.refreshPromise = null;
+    }
+}
+
+async function refreshServerChatsFromApi() {
     try {
         const response = await fetch("/api/chats", { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -63,6 +74,17 @@ export async function refreshServerChats() {
     } catch (error) {
         setServerStatus(`No se pudo consultar el disco del servidor: ${error.message}`, "error");
     }
+}
+
+function startAutoRefresh() {
+    if (state.refreshTimer) clearInterval(state.refreshTimer);
+    state.refreshTimer = window.setInterval(() => {
+        if (document.visibilityState === "visible") refreshServerChats();
+    }, 15_000);
+    window.addEventListener("focus", refreshServerChats);
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") refreshServerChats();
+    });
 }
 
 function renderServerChats() {
@@ -77,7 +99,8 @@ function renderServerChats() {
     document.querySelectorAll("[data-server-usage]").forEach((element) => {
         const used = formatBytes(state.storage?.usedBytes || 0);
         const free = state.storage?.freeBytes == null ? "" : ` · ${formatBytes(state.storage.freeBytes)} libres`;
-        element.textContent = `${state.records.length} archivo${state.records.length === 1 ? "" : "s"} · ${used} usados${free}`;
+        const syncTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        element.textContent = `${state.records.length} archivo${state.records.length === 1 ? "" : "s"} · ${used} usados${free} · actualizado ${syncTime}`;
     });
 }
 
@@ -154,9 +177,30 @@ async function openServerChat(record) {
     if (!state.hooks.openChat) return;
     setServerStatus(`Descargando ${record.fileName} desde el servidor…`);
     try {
+        setTransferProgress(`Descargando ${record.fileName}`, 0, true);
         const response = await fetch(`/api/chats/${encodeURIComponent(record.id)}/download`, { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const blob = await response.blob();
+        const total = Number(response.headers.get("Content-Length")) || record.size || 0;
+        const chunks = [];
+        let received = 0;
+        if (response.body?.getReader) {
+            const reader = response.body.getReader();
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                received += value.byteLength;
+                const percent = total ? Math.min(100, Math.floor(received / total * 100)) : null;
+                setTransferProgress(`Descargando ${record.fileName} · ${formatBytes(received)} de ${formatBytes(total)}`, percent, percent == null);
+            }
+        } else {
+            const blob = await response.blob();
+            chunks.push(blob);
+            received = blob.size;
+            setTransferProgress(`Descarga completada · ${formatBytes(received)}`, 100, false);
+        }
+        const blob = new Blob(chunks, { type: response.headers.get("Content-Type") || "application/octet-stream" });
+        setTransferProgress(`Preparando ${record.fileName}`, 100, false);
         const file = new File([blob], record.fileName, { type: blob.type || "application/octet-stream" });
         await state.hooks.openChat(file, {
             displayName: record.displayName || "",
@@ -165,10 +209,37 @@ async function openServerChat(record) {
             scrollPosition: savedPosition(record.id),
             persist: false
         });
+        clearTransferProgress();
         setServerStatus(`Abierto desde el disco de Dockploy · ${formatBytes(record.size)}`);
     } catch (error) {
+        clearTransferProgress();
         setServerStatus(`No se pudo abrir el archivo: ${error.message}`, "error");
     }
+}
+
+function setTransferProgress(label, percent, indeterminate) {
+    document.querySelectorAll("[data-server-transfer]").forEach((element) => {
+        element.hidden = false;
+        const labelElement = element.querySelector("[data-server-transfer-label]");
+        const percentElement = element.querySelector("[data-server-transfer-percent]");
+        const progress = element.querySelector("[data-server-transfer-progress]");
+        labelElement.textContent = label;
+        if (indeterminate || percent == null) {
+            progress.removeAttribute("value");
+            percentElement.textContent = "";
+        } else {
+            progress.value = percent;
+            percentElement.textContent = `${percent}%`;
+        }
+    });
+}
+
+function clearTransferProgress() {
+    document.querySelectorAll("[data-server-transfer]").forEach((element) => {
+        element.hidden = true;
+        const progress = element.querySelector("[data-server-transfer-progress]");
+        progress.value = 0;
+    });
 }
 
 async function deleteServerChat(record) {
