@@ -1,11 +1,11 @@
 /** Opt-in local ZIP storage, isolated from WhatsApp records and preferences. */
-import * as storage from "../storage.js?v=1.8.13";
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.13";
-import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.13";
-import { igState } from "./state.js?v=1.8.13";
-import { writeInstagramSettings } from "./settings.js?v=1.8.13";
-import { importsOfKind } from "../shared/import-records.js?v=1.8.13";
-import { showToast } from "./ui.js?v=1.8.13";
+import * as storage from "../storage.js?v=1.8.14";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.14";
+import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.14";
+import { igState } from "./state.js?v=1.8.14";
+import { writeInstagramSettings } from "./settings.js?v=1.8.14";
+import { importsOfKind } from "../shared/import-records.js?v=1.8.14";
+import { showToast } from "./ui.js?v=1.8.14";
 
 const USED_KEY = "chatlume-instagram-persist-used";
 const LAST_KEY = "chatlume-instagram-last-import";

@@ -7,7 +7,7 @@
  * session.js returns the per-chat fields to their defaults before each load.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS } from "../settings.js?v=1.8.13";
+import { DEFAULT_SETTINGS } from "../settings.js?v=1.8.14";
 
 /** Rows added to the virtual window per scroll step. */
 export const BATCH_SIZE = 60;
@@ -63,6 +63,7 @@ export const state = {
     isSearchOpen: false,
     favoriteIds: new Set(),
     favoriteStoreKey: "",
+    favoriteServerId: "",
 
     // ── Session ──────────────────────────────────────────────────────────
     selectedFile: null,

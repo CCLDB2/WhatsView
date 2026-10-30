@@ -9,7 +9,7 @@
 ![Stars](https://img.shields.io/github/stars/ParasSharma2306/chatlume?style=flat-square)
 ![Forks](https://img.shields.io/github/forks/ParasSharma2306/chatlume?style=flat-square)
 ![License](https://img.shields.io/github/license/ParasSharma2306/chatlume?style=flat-square)
-![Version](https://img.shields.io/badge/version-v1.8.13-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-v1.8.14-blue?style=flat-square)
 
 ---
 
@@ -108,7 +108,7 @@ Full details: [Privacy Policy](https://chatlume.app/privacy.html)
 
 For WhatsApp, browser-only mode uses the browser's private storage. Docker self-hosting additionally offers server storage: upload chunks are written to the persistent `/data` volume, with metadata and files surviving container replacement. Set a persistent volume mount to `/data` in Dokploy (named volume or a host path). The server does not provide a separate login; put the app behind Pangolin/access control and do not expose its origin publicly. Instagram remains browser-only.
 
-In Docker mode, the saved-chat list and disk usage refresh automatically every 15 seconds and whenever the tab becomes active. Opening a saved chat shows a spinner and download progress percentage when the server reports the file size.
+In Docker mode, the saved-chat list and disk usage refresh automatically every 15 seconds and whenever the tab becomes active. Opening a saved chat shows a spinner and download progress percentage when the server reports the file size. Message favorites are saved in each chat's server record and synchronize across browser profiles; a local browser copy remains as a fallback if the server is temporarily unreachable.
 
 - Deleting a server-stored chat is explicit and confirmed in the server chat list
 - Server uploads use resumable 8 MiB chunks (so Cloudflare's per-request limit does not apply to the full archive); the default maximum archive size is 10 GiB

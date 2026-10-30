@@ -65,6 +65,16 @@ describe("server-side persistent chat storage", () => {
         assert.equal(record.displayName, "Ana");
         assert.equal(record.size, contents.length);
 
+        const favorites = ["message-1", "message-5"];
+        const savedState = await fetch(`${base}/api/chats/${record.id}/state`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favorites })
+        });
+        assert.equal(savedState.status, 200);
+        assert.deepEqual((await savedState.json()).favorites, favorites);
+        assert.equal(Object.hasOwn(record, "favorites"), false);
+
         const downloaded = await fetch(`${base}/api/chats/${record.id}/download`);
         assert.deepEqual(Buffer.from(await downloaded.arrayBuffer()), contents);
 
@@ -74,6 +84,8 @@ describe("server-side persistent chat storage", () => {
         const restartedBase = await startApp(dataDir);
         const afterRestart = await fetch(`${restartedBase}/api/chats`);
         assert.equal((await afterRestart.json()).length, 1);
+        const restoredState = await fetch(`${restartedBase}/api/chats/${record.id}/state`);
+        assert.deepEqual((await restoredState.json()).favorites, favorites);
 
         const deleted = await fetch(`${restartedBase}/api/chats/${record.id}`, { method: "DELETE" });
         assert.equal(deleted.status, 204);

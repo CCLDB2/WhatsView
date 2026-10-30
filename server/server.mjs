@@ -111,8 +111,34 @@ export async function createWhatsViewApp({ dataDir = process.env.DATA_DIR || "/d
     });
 
     app.get("/api/chats", (_request, response) => {
-        const entries = Object.values(catalog).sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+        const entries = Object.values(catalog)
+            .map(({ favorites: _favorites, ...record }) => record)
+            .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
         response.set("Cache-Control", "no-store").json(entries);
+    });
+
+    app.get("/api/chats/:id/state", (request, response) => {
+        const { id } = request.params;
+        const record = catalog[id];
+        if (!validId(id) || !record) return response.sendStatus(404);
+        response.set("Cache-Control", "no-store").json({ favorites: record.favorites || [] });
+    });
+
+    app.put("/api/chats/:id/state", express.json({ limit: "5mb" }), async (request, response, next) => {
+        const { id } = request.params;
+        const record = catalog[id];
+        if (!validId(id) || !record) return response.sendStatus(404);
+        const favorites = request.body?.favorites;
+        if (!Array.isArray(favorites) || favorites.length > 50_000 || favorites.some((value) => typeof value !== "string" || value.length > 256)) {
+            return response.status(400).json({ error: "Invalid favorites list." });
+        }
+        try {
+            const uniqueFavorites = [...new Set(favorites)];
+            await updateCatalog((next) => { next[id] = { ...next[id], favorites: uniqueFavorites }; });
+            response.set("Cache-Control", "no-store").json({ favorites: uniqueFavorites });
+        } catch (error) {
+            next(error);
+        }
     });
 
     app.get("/api/chats/:id/download", async (request, response, next) => {

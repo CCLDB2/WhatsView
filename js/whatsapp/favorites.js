@@ -1,11 +1,14 @@
-/** Local, per-chat bookmarks for quickly returning to important messages. */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.13";
-import { state } from "./state.js?v=1.8.13";
-import { jumpToMessage } from "./search.js?v=1.8.13";
+/** Per-chat message bookmarks; browser-local with optional server synchronization. */
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.14";
+import { state } from "./state.js?v=1.8.14";
+import { jumpToMessage } from "./search.js?v=1.8.14";
 
 const PREFIX = "chatlume-favorites:";
+let remoteSaveTimer = 0;
 
-export function loadFavorites({ importId = "", fileLabel = "" } = {}) {
+export async function loadFavorites({ importId = "", fileLabel = "", serverChatId = "" } = {}) {
+    if (remoteSaveTimer) clearTimeout(remoteSaveTimer);
+    remoteSaveTimer = 0;
     const first = state.messages.find((item) => item.type === "msg")?.id || "";
     const last = [...state.messages].reverse().find((item) => item.type === "msg")?.id || "";
     // Use the same content-derived key on first import and later reopen. The
@@ -18,6 +21,25 @@ export function loadFavorites({ importId = "", fileLabel = "" } = {}) {
     } catch {
         state.favoriteIds = new Set();
     }
+    state.favoriteServerId = /^[a-f0-9]{32}$/.test(serverChatId) ? serverChatId : "";
+    if (state.favoriteServerId) {
+        const serverId = state.favoriteServerId;
+        try {
+            const response = await fetch(`/api/chats/${encodeURIComponent(serverId)}/state`, { cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const remote = await response.json();
+            if (state.favoriteServerId !== serverId) return;
+            if (Array.isArray(remote.favorites) && remote.favorites.length) {
+                state.favoriteIds = new Set(remote.favorites.filter((id) => typeof id === "string"));
+                storeFavoritesLocally();
+            } else if (state.favoriteIds.size) {
+                // Migrate bookmarks that were saved locally before server sync existed.
+                await saveFavoritesToServer();
+            }
+        } catch (error) {
+            console.warn("Server favorites could not be loaded; using this browser's copy:", error);
+        }
+    }
     updateFavoriteControls();
 }
 
@@ -26,12 +48,42 @@ export function toggleFavorite(messageId) {
     if (!message) return;
     if (state.favoriteIds.has(messageId)) state.favoriteIds.delete(messageId);
     else state.favoriteIds.add(messageId);
+    storeFavoritesLocally();
+    scheduleServerSave();
+    updateFavoriteControls();
+}
+
+function storeFavoritesLocally() {
     try {
         if (state.favoriteStoreKey) localStorage.setItem(state.favoriteStoreKey, JSON.stringify([...state.favoriteIds]));
     } catch (error) {
         console.warn("Message favorite could not be saved locally:", error);
     }
-    updateFavoriteControls();
+}
+
+function scheduleServerSave() {
+    if (!state.favoriteServerId) return;
+    if (remoteSaveTimer) clearTimeout(remoteSaveTimer);
+    remoteSaveTimer = window.setTimeout(() => {
+        remoteSaveTimer = 0;
+        saveFavoritesToServer();
+    }, 250);
+}
+
+async function saveFavoritesToServer() {
+    const serverId = state.favoriteServerId;
+    if (!serverId) return;
+    const favorites = [...state.favoriteIds];
+    try {
+        const response = await fetch(`/api/chats/${encodeURIComponent(serverId)}/state`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ favorites })
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    } catch (error) {
+        console.warn("Message favorites are saved in this browser but server sync failed:", error);
+    }
 }
 
 export function toggleFavoritesPanel() {
