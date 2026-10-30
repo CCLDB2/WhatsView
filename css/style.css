@@ -1141,142 +1141,15 @@ body.light-theme .chat-bg {
     align-items: center;
 }
 
-/* ── Date jump control ── */
-.date-filter-container {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--control-height);
-    padding: 0 5px 0 9px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-input);
-}
-.date-filter-container[hidden] { display: none !important; }
-.date-jump-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 30px;
-    padding: 0 5px;
-    border: 0;
-    background: transparent;
-    color: var(--text-primary);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-}
-.date-jump-btn:hover { color: var(--primary); }
-.date-jump-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
+/* ── Participant filter popover ── */
 .sender-filter-container {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
+    position: static;
 }
 
-.sender-filter-container[hidden] {
-    display: none !important;
-}
-
-.sender-filter-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    min-height: var(--control-height);
-    padding: 0 5px 0 8px;
-    border-radius: 8px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
-}
-
-.sender-filter-wrapper:focus-within {
-    border-color: var(--primary);
-}
-
-.sender-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 13px;
-    font-family: inherit;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0;
-    outline: none;
-    min-height: var(--control-height);
-}
-
-.sender-filter-btn:focus-visible,
-.sender-filter-reset-btn:focus-visible,
-.sender-filter-checkbox:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-    border-radius: 4px;
-}
-
-.sender-filter-btn i.ph-funnel {
-    font-size: 15px;
-    color: var(--text-secondary);
-    flex-shrink: 0;
-}
-
-.sender-filter-prefix {
-    color: var(--text-secondary);
-    font-size: 13px;
-    white-space: nowrap;
-    user-select: none;
-    display: none;
-}
-
-.sender-filter-text {
-    font-weight: 600;
-    white-space: nowrap;
-    max-width: 112px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: left;
-    color: var(--text-primary);
-}
-
-.sender-filter-caret {
-    font-size: 12px;
-    color: var(--text-secondary);
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-}
-
-.sender-filter-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 17px;
-    height: 17px;
-    padding: 0 4px;
-    border-radius: 9px;
-    color: #fff;
-    background: var(--primary);
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
-}
-.sender-filter-badge[hidden] { display: none !important; }
-
-.sender-filter-btn[aria-expanded="true"] .sender-filter-caret {
-    transform: rotate(180deg);
-}
-
-/* ── Sender filter dropdown popover ── */
 .sender-filter-dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
+    position: fixed;
+    top: 66px;
+    right: 16px;
     width: min(300px, calc(100vw - 24px));
     min-width: min(230px, calc(100vw - 24px));
     max-width: calc(100vw - 24px);
@@ -1290,6 +1163,13 @@ body.light-theme .chat-bg {
     flex-direction: column;
     transform-origin: top right;
     animation: scaleIn 0.12s ease-out;
+}
+
+.sender-filter-reset-btn:focus-visible,
+.sender-filter-checkbox:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
 .sender-filter-dropdown[hidden] {
@@ -1691,26 +1571,11 @@ body.light-theme .sticky-date {
 .message-favorite.is-favorite i { font-family: "Phosphor-Fill"; }
 @media (hover: none) { .message-favorite { opacity: 1; } }
 
-.favorites-toggle {
-    position: absolute;
-    z-index: 24;
-    top: 72px;
-    left: 18px;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 7px 10px;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    color: var(--text-primary);
-    background: var(--bg-panel);
-    cursor: pointer;
-}
 .favorites-count { min-width: 18px; padding: 1px 5px; border-radius: 10px; background: var(--bg-soft); text-align: center; font-size: 11px; }
 .favorites-panel {
     position: absolute;
     z-index: 30;
-    top: 112px;
+    top: 72px;
     left: 16px;
     width: min(360px, calc(100vw - 32px));
     max-height: min(65vh, 520px);
@@ -4140,12 +4005,21 @@ body.light-theme .scroll-latest { box-shadow: 0 6px 20px rgba(17, 27, 33, 0.12);
 .menu-item:focus-visible { background: var(--bg-input); color: var(--text-primary); }
 .menu-item:focus-visible { outline-offset: -2px; box-shadow: none; }
 
-.sender-filter-wrapper { min-height: var(--control-height); border-radius: var(--control-radius); }
-.sender-filter-btn { min-height: var(--control-height); }
-.sender-filter-container.has-filter .sender-filter-wrapper {
-    border-color: color-mix(in srgb, var(--primary) 56%, var(--border));
-    background: color-mix(in srgb, var(--primary) 8%, var(--bg-input));
+/* Trailing value inside a menu row (participant summary, favorite count). */
+.menu-item-value {
+    margin-left: auto;
+    max-width: 45%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-weight: 500;
 }
+.menu-item[hidden] { display: none !important; }
+.menu-item.has-filter { color: var(--text-primary); }
+.menu-item.has-filter .menu-item-value,
+.menu-item.has-filter i { color: var(--primary); }
 
 .sender-filter-dropdown {
     width: min(320px, calc(100vw - 16px));
@@ -4334,7 +4208,6 @@ body.light-theme .scroll-latest { box-shadow: 0 6px 20px rgba(17, 27, 33, 0.12);
     .chat-header .menu-container > button,
     .menu-item,
     .sender-filter-item,
-    .sender-filter-btn .sender-filter-caret,
     .search-toolbar,
     .chat-header .header-tools > button,
     .chat-header .menu-container > button { animation: none; transition: none; }
@@ -4723,55 +4596,6 @@ body.light-theme .persist-card { box-shadow: 0 18px 40px rgba(17, 27, 33, 0.12);
     .scroll-latest { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 }
 
-/* Header participant control yields space to the chat identity. */
-.sender-filter-wrapper {
-    gap: 2px;
-    width: fit-content;
-    max-width: 100%;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-}
-.sender-filter-wrapper:focus-within { border-color: transparent; box-shadow: none; }
-.sender-filter-btn {
-    flex: 0 1 auto;
-    min-width: 0;
-    max-width: 100%;
-    gap: 7px;
-    padding: 0 9px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    color: var(--text-primary);
-    background: rgba(134, 150, 160, 0.075);
-    transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease;
-}
-.sender-filter-btn:hover,
-.sender-filter-btn[aria-expanded="true"] {
-    border-color: transparent;
-    background: transparent;
-    color: var(--text-primary);
-}
-.sender-filter-btn:active { background: var(--bg-soft); }
-.sender-filter-btn i.ph-funnel { color: var(--text-secondary); font-size: 14px; }
-.sender-filter-btn[aria-expanded="true"] i.ph-funnel { color: var(--primary); }
-.sender-filter-text {
-    flex: 0 1 auto;
-    min-width: 0;
-    max-width: min(156px, 18vw);
-    font-size: 12.5px;
-    font-weight: 550;
-}
-.sender-filter-caret { font-size: 11px; }
-.sender-filter-container.has-filter .sender-filter-wrapper { background: transparent; }
-.sender-filter-container.has-filter .sender-filter-btn {
-    border-color: rgba(0, 168, 132, 0.4);
-    color: var(--text-primary);
-    background: rgba(0, 168, 132, 0.1);
-}
-.sender-filter-container.has-filter .sender-filter-btn i.ph-funnel,
-.sender-filter-container.has-filter .sender-filter-caret { color: var(--primary); }
-
 /* ── Sitewide touch and control feedback ── */
 :root {
     --motion-fast: 140ms;
@@ -4875,9 +4699,6 @@ a[href]:active,
     .media-doc-link:active { transform: none; filter: none; }
 }
 
-.sender-filter-wrapper { border: 0; background: transparent; box-shadow: none; }
-.sender-filter-btn { flex: 0 1 auto; }
-
 /* Preserve the full frame: the supplied demo has useful UI near all four edges. */
 .hero-demo {
     width: min(960px, 100%);
@@ -4907,8 +4728,6 @@ body.light-theme .hero-demo {
 }
 
 @media (min-width: 521px) and (max-width: 800px) {
-    .sender-filter-wrapper { max-width: 220px; }
-    .sender-filter-text { max-width: 116px; font-size: 12px; }
     .hero-demo { margin-top: 22px; border-radius: 10px; }
 }
 
@@ -4916,21 +4735,9 @@ body.light-theme .hero-demo {
     .hero-demo.cl-enter { animation: none; }
 }
 
-/* On narrow phones, the filter takes one fixed icon slot; the title keeps the remaining flex space. */
+/* On narrow phones the title keeps the remaining flex space. */
 @media (max-width: 520px) {
     .chat-header { gap: var(--space-1); }
     .header-profile { flex: 1 1 0; }
     .header-info { flex: 1 1 0; }
-    /* Keep the calendar jump compact on phones (its aria-label and title still
-       describe it) so it, the participant filter, search and the ⋮ menu all
-       stay on screen instead of being pushed past the right edge. */
-    .date-filter-container { flex: 0 0 auto; padding: 0 3px; }
-    .date-jump-btn { padding: 0 4px; }
-    .date-jump-btn span { display: none; }
-    .sender-filter-wrapper { flex: 0 0 var(--control-height); width: var(--control-height); min-width: var(--control-height); max-width: var(--control-height); padding: 0; }
-    .sender-filter-btn { position: relative; justify-content: center; flex: 0 0 100%; width: 100%; min-width: 100%; padding: 0; }
-    .sender-filter-prefix,
-    .sender-filter-text,
-    .sender-filter-caret { display: none; }
-    .sender-filter-badge { position: absolute; top: -3px; right: -3px; border: 2px solid var(--bg-header); }
 }

@@ -6,7 +6,7 @@
  * fades out, then removes itself from layout. Identical on both viewers.
  * ============================================================================
  */
-import { $, q } from "./dom.js?v=1.8.22";
+import { $, q } from "./dom.js?v=1.8.23";
 
 export function runSplashLoader() {
     const loader = $("loader");

@@ -6,12 +6,12 @@
  *
  * Preserves date markers for dates on which any of the selected senders have
  * messages so day dividers and "Go to Date" continue to work. Works together
- * with in-chat search and date filters.
+ * with in-chat search.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.22";
-import { state } from "./state.js?v=1.8.22";
-import { parseExportDateLabel } from "./format.js?v=1.8.22";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
+import { state } from "./state.js?v=1.8.23";
+import { parseExportDateLabel } from "./format.js?v=1.8.23";
 
 /** Keeps messages and their day divider only for the selected ISO calendar day. */
 export function filterMessagesByDate(messages, dateValue) {
@@ -31,34 +31,6 @@ export function filterMessagesByDate(messages, dateValue) {
         }
     }
     return filtered;
-}
-
-/** Shows the single date-jump control once the chat has messages. */
-export function syncDayFilterUI() {
-    const container = $("date-filter-container");
-    if (container) container.hidden = state.messageOnlyCount === 0;
-}
-
-export function applyDayFilter(dateValue, { onRender, onSearch, onToast } = {}) {
-    const nextDay = dateValue || "";
-    const filtered = filterMessagesByDate(
-        filterMessagesBySender(state.messages, state.selectedSenders),
-        nextDay
-    );
-    if (nextDay && !filtered.some((item) => item.type === "msg")) {
-        onToast?.("No hay mensajes para ese día con los participantes seleccionados");
-        return false;
-    }
-    state.selectedDay = nextDay;
-    state.filteredMessages = filtered;
-    updateFilterHeaderMeta();
-    syncDayFilterUI();
-    const liveSearch = $("live-search");
-    if (state.isSearchOpen && liveSearch) onSearch?.(liveSearch.value);
-    else onRender?.();
-    if (state.selectedDay) onToast?.(`Mostrando mensajes del ${new Date(`${state.selectedDay}T00:00:00`).toLocaleDateString()}`);
-    else onToast?.("Filtro por día eliminado");
-    return true;
 }
 
 /**
@@ -164,13 +136,13 @@ export function getChatSenders(senderStats = state.senderStats) {
 export function getSenderFilterSummary(selectedSenders = state.selectedSenders) {
     const list = Array.isArray(selectedSenders) ? selectedSenders : Array.from(selectedSenders || []);
     if (!list.length) {
-        return "All participants";
+        return "Todos";
     }
     if (list.length === 1) {
         const sender = list[0];
-        return isMeSender(sender) && sender !== "You" ? `${sender} (You)` : sender;
+        return isMeSender(sender) && sender !== "You" ? `${sender} (Tú)` : sender;
     }
-    return `${list.length} participants`;
+    return `${list.length} participantes`;
 }
 
 /**
@@ -178,14 +150,14 @@ export function getSenderFilterSummary(selectedSenders = state.selectedSenders) 
  */
 export function populateSenderFilter() {
     const listEl = $("sender-filter-list");
-    const container = $("sender-filter-container");
+    const action = $("sender-filter-action");
     const summaryEl = $("sender-filter-summary");
     const searchEl = $("sender-filter-search");
-    if (!listEl || !container) return;
+    if (!listEl) return;
 
     const senders = getChatSenders(state.senderStats);
     if (!senders.length) {
-        container.hidden = true;
+        if (action) action.hidden = true;
         listEl.innerHTML = "";
         if (searchEl) searchEl.value = "";
         return;
@@ -199,13 +171,13 @@ export function populateSenderFilter() {
     let html = `
         <label class="sender-filter-item">
             <input type="checkbox" class="sender-filter-checkbox" value="" ${isAll ? "checked" : ""}>
-            <span class="sender-filter-name">All participants</span>
+            <span class="sender-filter-name">Todos los participantes</span>
         </label>
     `;
 
     for (const sender of senders) {
         const isMe = isMeSender(sender);
-        const label = isMe && sender !== "You" ? `${sender} (You)` : sender;
+        const label = isMe && sender !== "You" ? `${sender} (Tú)` : sender;
         const count = state.senderStats[sender] || 0;
         const checked = currentSelected.has(sender) ? "checked" : "";
 
@@ -224,7 +196,7 @@ export function populateSenderFilter() {
         setSenderFilterSummary(summaryEl, getSenderFilterSummary(state.selectedSenders));
     }
     syncSenderFilterBadge();
-    container.hidden = false;
+    if (action) action.hidden = false;
 }
 
 /** Narrows the visible participant rows without changing the active filter. */
@@ -266,7 +238,7 @@ export function updateFilterHeaderMeta() {
     if (!headerMeta) return;
 
     const withMedia = state.mediaCount ? ` • ${state.mediaCount.toLocaleString()} media` : "";
-    const hasSelection = Boolean((state.selectedSenders && state.selectedSenders.length > 0) || state.selectedDay);
+    const hasSelection = Boolean(state.selectedSenders && state.selectedSenders.length > 0);
 
     if (!hasSelection) {
         headerMeta.innerText = `${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
@@ -274,8 +246,7 @@ export function updateFilterHeaderMeta() {
     }
 
     const filteredCount = state.filteredMessages.filter((item) => item.type === "msg").length;
-    const dayLabel = state.selectedDay ? ` · ${new Date(`${state.selectedDay}T00:00:00`).toLocaleDateString()}` : "";
-    headerMeta.innerText = `${filteredCount.toLocaleString()} of ${state.messageOnlyCount.toLocaleString()} messages${dayLabel}${withMedia}`;
+    headerMeta.innerText = `${filteredCount.toLocaleString()} of ${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
 }
 
 /**
@@ -328,10 +299,7 @@ export function applySenderFilter(senders, { onRender, onSearch, onToast, silent
         });
     }
 
-    state.filteredMessages = filterMessagesByDate(
-        filterMessagesBySender(state.messages, state.selectedSenders),
-        state.selectedDay
-    );
+    state.filteredMessages = filterMessagesBySender(state.messages, state.selectedSenders);
     updateFilterHeaderMeta();
 
     const liveSearch = $("live-search");
@@ -344,14 +312,12 @@ export function applySenderFilter(senders, { onRender, onSearch, onToast, silent
     }
 
     if (!silent && typeof onToast === "function") {
-        if (state.selectedDay && !state.filteredMessages.some((item) => item.type === "msg")) {
-            onToast("No messages from those participants on the selected day");
-        } else if (list.length === 0) {
-            onToast("Showing all participants");
+        if (list.length === 0) {
+            onToast("Mostrando todos los participantes");
         } else if (list.length === 1) {
-            onToast(`Showing messages from ${list[0]}`);
+            onToast(`Mostrando mensajes de ${list[0]}`);
         } else {
-            onToast(`Showing messages from ${list.length} participants`);
+            onToast(`Mostrando mensajes de ${list.length} participantes`);
         }
     }
 }
@@ -396,7 +362,7 @@ export function clearSenderFilter(options = {}) {
  */
 export function toggleSenderFilterDropdown(forceOpen) {
     const dropdown = $("sender-filter-dropdown");
-    const btn = $("sender-filter-btn");
+    const btn = $("sender-filter-action");
     if (!dropdown || !btn) return;
 
     const willOpen = typeof forceOpen === "boolean" ? forceOpen : dropdown.hidden;
@@ -424,27 +390,26 @@ export function resetSenderFilterUI() {
     closeSenderFilterDropdown();
 
     const listEl = $("sender-filter-list");
-    const container = $("sender-filter-container");
+    const action = $("sender-filter-action");
     const summaryEl = $("sender-filter-summary");
     const searchEl = $("sender-filter-search");
 
     if (listEl) listEl.innerHTML = "";
     if (searchEl) searchEl.value = "";
     if ($("sender-filter-no-results")) $("sender-filter-no-results").hidden = true;
-    if (summaryEl) setSenderFilterSummary(summaryEl, "All participants");
+    if (summaryEl) setSenderFilterSummary(summaryEl, "Todos");
     syncSenderFilterBadge();
-    if (container) container.hidden = true;
+    if (action) action.hidden = true;
 }
 
 /** Keeps the visible short label and the accessible button name in sync. */
 function setSenderFilterSummary(summaryEl, summary) {
     summaryEl.textContent = summary;
-    const container = $("sender-filter-container");
-    container?.classList.toggle("has-filter", Boolean(state.selectedSenders?.length));
-    const button = $("sender-filter-btn");
-    if (button) {
-        const label = `Filter by sender, ${summary}`;
-        button.setAttribute("aria-label", label);
-        button.title = label;
+    const action = $("sender-filter-action");
+    action?.classList.toggle("has-filter", Boolean(state.selectedSenders?.length));
+    if (action) {
+        const label = `Participantes, ${summary}`;
+        action.setAttribute("aria-label", label);
+        action.title = label;
     }
 }

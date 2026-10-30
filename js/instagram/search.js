@@ -6,10 +6,10 @@
  * captions — the same surface the WhatsApp viewer searches.
  * ============================================================================
  */
-import { $, isTypingTarget } from "../shared/dom.js?v=1.8.22";
-import { IG_MAX_RENDERED, IG_SEARCH_DEBOUNCE_MS, igState } from "./state.js?v=1.8.22";
-import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.22";
-import { findMessageSearchResults, nextSearchIndex } from "./search-model.js?v=1.8.22";
+import { $, isTypingTarget } from "../shared/dom.js?v=1.8.23";
+import { IG_MAX_RENDERED, IG_SEARCH_DEBOUNCE_MS, igState } from "./state.js?v=1.8.23";
+import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.23";
+import { findMessageSearchResults, nextSearchIndex } from "./search-model.js?v=1.8.23";
 
 export const isSearchOpen = () => Boolean($("ig-search-toolbar")?.classList.contains("active"));
 

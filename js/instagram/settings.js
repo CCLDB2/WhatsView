@@ -1,5 +1,5 @@
 /** Reads, validates, and writes Instagram viewer preferences in isolation. */
-import { DEFAULT_IG_SETTINGS } from "./format.js?v=1.8.22";
+import { DEFAULT_IG_SETTINGS } from "./format.js?v=1.8.23";
 
 export const IG_SETTINGS_KEY = "chatlume-instagram-settings";
 

@@ -9,27 +9,27 @@
  * ============================================================================
  */
 import { BlobReader, ZipReader } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { exportChatAsHTML } from "../export.js?v=1.8.22";
-import { showSponsorPrompt } from "../support.js?v=1.8.22";
-import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.22";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.22";
-import { baseName } from "../shared/media-types.js?v=1.8.22";
-import { ISSUES_URL, state } from "./state.js?v=1.8.22";
-import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.22";
-import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.22";
-import { populateSenderFilter, resetSenderFilterUI, syncDayFilterUI } from "./filter.js?v=1.8.22";
+import { exportChatAsHTML } from "../export.js?v=1.8.23";
+import { showSponsorPrompt } from "../support.js?v=1.8.23";
+import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.23";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.23";
+import { baseName } from "../shared/media-types.js?v=1.8.23";
+import { ISSUES_URL, state } from "./state.js?v=1.8.23";
+import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.23";
+import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.23";
+import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.23";
 import {
     isPersistentStorageEnabled,
     markStoredImportOpened,
     persistCurrentImport,
     renderStoredImports,
     saveActiveScrollPosition
-} from "./persistence.js?v=1.8.22";
-import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.22";
-import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.22";
-import { generateStats } from "./stats.js?v=1.8.22";
-import { loadFavorites } from "./favorites.js?v=1.8.22";
-import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.22";
+} from "./persistence.js?v=1.8.23";
+import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.23";
+import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.23";
+import { generateStats } from "./stats.js?v=1.8.23";
+import { loadFavorites } from "./favorites.js?v=1.8.23";
+import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.23";
 import {
     closeMenu,
     isMobileLayout,
@@ -41,7 +41,7 @@ import {
     showEmptyState,
     showToast,
     updateLoadingCopy
-} from "./ui.js?v=1.8.22";
+} from "./ui.js?v=1.8.23";
 
 const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> How to export WhatsApp chats</a>`;
 
@@ -312,7 +312,6 @@ export function resetChatState() {
     state.filteredMessages = [];
     state.messageOnlyCount = 0;
     state.selectedSenders = [];
-    state.selectedDay = "";
     state.colorMap = {};
     state.senderStats = Object.create(null);
     state.emojiStats = {};
@@ -326,7 +325,6 @@ export function resetChatState() {
     state.favoriteIds = new Set();
     state.favoriteStoreKey = "";
     state.favoriteServerId = "";
-    syncDayFilterUI();
     state.inferredDateOrder = "DMY";
     state.parseDiagnostics = { unrecognizedHeaders: 0, unrecognizedSample: "" };
     state.activeMediaId = "";

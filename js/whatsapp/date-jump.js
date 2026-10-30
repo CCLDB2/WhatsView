@@ -7,12 +7,12 @@
  * filters the conversation down to a single day.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.22";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.22";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.22";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.22";
-import { renderChatList } from "./render.js?v=1.8.22";
-import { closeMenu, showToast } from "./ui.js?v=1.8.22";
+import { $ } from "../shared/dom.js?v=1.8.23";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.23";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.23";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.23";
+import { renderChatList } from "./render.js?v=1.8.23";
+import { closeMenu, showToast } from "./ui.js?v=1.8.23";
 
 export function handleDateJumpAction(event) {
     event.preventDefault();

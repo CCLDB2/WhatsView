@@ -7,20 +7,20 @@
  * second pick mid-way can't interleave with the first.
  * ============================================================================
  */
-import { exportChatAsHTML } from "../export.js?v=1.8.22";
-import { showSponsorPrompt } from "../support.js?v=1.8.22";
-import { $, q, replayClass, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.22";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.22";
-import { clearMediaStore } from "../shared/media-urls.js?v=1.8.22";
-import { fixMojibake } from "./mojibake.js?v=1.8.22";
-import { igState } from "./state.js?v=1.8.22";
-import { cleanupZip, lazyMedia } from "./media.js?v=1.8.22";
-import { buildMediaStore, findThreads, folderLabel, initialsFor, parseMessageFile, parseMessages, sortMessageFiles, sortMessagesChronologically } from "./parser.js?v=1.8.22";
-import { collectExportMessages, renderChatList, scrollToBottom } from "./render.js?v=1.8.22";
-import { showThreadSelector } from "./threads.js?v=1.8.22";
-import { persistInstagramImport, markInstagramImportOpened } from "./persistence.js?v=1.8.22";
-import { getInstagramSenders } from "./filter.js?v=1.8.22";
-import { initialThreadSelection } from "./threads-model.js?v=1.8.22";
+import { exportChatAsHTML } from "../export.js?v=1.8.23";
+import { showSponsorPrompt } from "../support.js?v=1.8.23";
+import { $, q, replayClass, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.23";
+import { clearMediaStore } from "../shared/media-urls.js?v=1.8.23";
+import { fixMojibake } from "./mojibake.js?v=1.8.23";
+import { igState } from "./state.js?v=1.8.23";
+import { cleanupZip, lazyMedia } from "./media.js?v=1.8.23";
+import { buildMediaStore, findThreads, folderLabel, initialsFor, parseMessageFile, parseMessages, sortMessageFiles, sortMessagesChronologically } from "./parser.js?v=1.8.23";
+import { collectExportMessages, renderChatList, scrollToBottom } from "./render.js?v=1.8.23";
+import { showThreadSelector } from "./threads.js?v=1.8.23";
+import { persistInstagramImport, markInstagramImportOpened } from "./persistence.js?v=1.8.23";
+import { getInstagramSenders } from "./filter.js?v=1.8.23";
+import { initialThreadSelection } from "./threads-model.js?v=1.8.23";
 import {
     closeMenu,
     generateStats,
@@ -31,7 +31,7 @@ import {
     showErrorState,
     showToast,
     yieldToPaint
-} from "./ui.js?v=1.8.22";
+} from "./ui.js?v=1.8.23";
 
 const ZIP_JS_URL = "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
 let zipApiPromise = null;

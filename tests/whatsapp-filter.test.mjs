@@ -364,29 +364,29 @@ describe("whatsapp/filter getSenderFilterSummary", () => {
         state.myName = "Paras";
     });
 
-    test("0 selected → 'All participants'", () => {
-        assert.equal(getSenderFilterSummary([]), "All participants");
-        assert.equal(getSenderFilterSummary(new Set()), "All participants");
-        assert.equal(getSenderFilterSummary(null), "All participants");
-        assert.equal(getSenderFilterSummary(undefined), "All participants");
+    test("0 selected → 'Todos'", () => {
+        assert.equal(getSenderFilterSummary([]), "Todos");
+        assert.equal(getSenderFilterSummary(new Set()), "Todos");
+        assert.equal(getSenderFilterSummary(null), "Todos");
+        assert.equal(getSenderFilterSummary(undefined), "Todos");
     });
 
-    test("1 selected → participant name or name with (You)", () => {
+    test("1 selected → participant name or name with (Tú)", () => {
         assert.equal(getSenderFilterSummary(["Ravi"]), "Ravi");
-        assert.equal(getSenderFilterSummary(["Paras"]), "Paras (You)");
-        assert.equal(getSenderFilterSummary(["paras"]), "paras (You)");
+        assert.equal(getSenderFilterSummary(["Paras"]), "Paras (Tú)");
+        assert.equal(getSenderFilterSummary(["paras"]), "paras (Tú)");
         assert.equal(getSenderFilterSummary(["You"]), "You");
         assert.equal(getSenderFilterSummary(new Set(["Alice"])), "Alice");
     });
 
-    test("2 selected → '2 participants'", () => {
-        assert.equal(getSenderFilterSummary(["Ravi", "Suresh"]), "2 participants");
-        assert.equal(getSenderFilterSummary(new Set(["Ravi", "Paras"])), "2 participants");
+    test("2 selected → '2 participantes'", () => {
+        assert.equal(getSenderFilterSummary(["Ravi", "Suresh"]), "2 participantes");
+        assert.equal(getSenderFilterSummary(new Set(["Ravi", "Paras"])), "2 participantes");
     });
 
-    test("3 or more selected → 'N participants'", () => {
-        assert.equal(getSenderFilterSummary(["Alice", "Bob", "Charlie"]), "3 participants");
-        assert.equal(getSenderFilterSummary(["A", "B", "C", "D"]), "4 participants");
+    test("3 or more selected → 'N participantes'", () => {
+        assert.equal(getSenderFilterSummary(["Alice", "Bob", "Charlie"]), "3 participantes");
+        assert.equal(getSenderFilterSummary(["A", "B", "C", "D"]), "4 participantes");
     });
 });
 

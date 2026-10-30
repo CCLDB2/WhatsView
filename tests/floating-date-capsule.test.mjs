@@ -5,18 +5,30 @@ import { describe, test } from "node:test";
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("WhatsApp floating current-date capsule", () => {
-    test("date navigation is a single, directly visible control", () => {
+    test("date navigation lives only in the header options menu", () => {
         const html = read("public/viewer.html");
-        const container = html.slice(html.indexOf('id="date-filter-container"'), html.indexOf('id="sender-filter-container"'));
-        assert.match(container, /id="date-jump-btn"[^>]*aria-label="Go to date"/);
-        assert.doesNotMatch(container, /date-filter-btn|date-filter-clear/);
+        const menuStart = html.indexOf('id="header-menu"');
+        const menu = html.slice(menuStart, html.indexOf("</header>", menuStart));
+        assert.match(menu, /id="date-jump-action"[^>]*>[^<]*/);
+        assert.match(menu, /Ir a una fecha/);
+        assert.doesNotMatch(html, /id="date-jump-btn"/);
+        assert.doesNotMatch(html, /id="date-filter-container"/);
         assert.doesNotMatch(html, /id="date-filter-action"/);
-        assert.match(read("js/script.js"), /\$\("date-jump-btn"\).*handleDateJumpAction/);
+        assert.match(read("js/script.js"), /\$\("date-jump-action"\)[^\n]*handleDateJumpAction/);
     });
 
-    test("favorites capsule and panel are anchored on the left", () => {
+    test("participants and favorites are options inside the ⋮ menu", () => {
+        const html = read("public/viewer.html");
+        const menuStart = html.indexOf('id="header-menu"');
+        const menu = html.slice(menuStart, html.indexOf("</header>", menuStart));
+        assert.match(menu, /id="sender-filter-action"/);
+        assert.match(menu, /id="favorites-toggle"/);
+        assert.doesNotMatch(html, /class="favorites-toggle"/);
+        assert.match(read("js/script.js"), /\$\("favorites-toggle"\)\?\.addEventListener\("click",\s*\(\)\s*=>\s*\{\s*closeMenu\(\)/);
+    });
+
+    test("favorites panel is anchored on the left", () => {
         const css = read("css/style.css");
-        assert.match(css, /\.favorites-toggle\s*\{[^}]*left:\s*18px;/s);
         assert.match(css, /\.favorites-panel\s*\{[^}]*left:\s*16px;/s);
     });
 

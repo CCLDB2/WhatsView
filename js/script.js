@@ -23,45 +23,44 @@
  * ============================================================================
  */
 import { configure } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { $, isVisible } from "./shared/dom.js?v=1.8.22";
-import { showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.22";
-import { popOverlayState } from "./shared/history.js?v=1.8.22";
-import { runSplashLoader } from "./shared/splash.js?v=1.8.22";
-import { createThemeController } from "./shared/theme.js?v=1.8.22";
-import { state } from "./whatsapp/state.js?v=1.8.22";
-import { cleanupMediaStore, closeMediaModal, handleMessageListClick } from "./whatsapp/media.js?v=1.8.22";
-import { captureScrollPosition, handleViewportScroll, jumpToBottom, resetRenderToBottom } from "./whatsapp/render.js?v=1.8.22";
-import { handleSearch, handleSearchInput, handleSearchShortcut, navSearch, toggleSearch } from "./whatsapp/search.js?v=1.8.22";
-import { filterSidebarChats } from "./whatsapp/sidebar-search.js?v=1.8.22";
-import { handleFavoriteListClick, toggleFavorite, toggleFavoritesPanel } from "./whatsapp/favorites.js?v=1.8.22";
-import { handleServerStorageClick, initServerStorage } from "./whatsapp/server-storage.js?v=1.8.22";
+import { $, isVisible } from "./shared/dom.js?v=1.8.23";
+import { showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.23";
+import { popOverlayState } from "./shared/history.js?v=1.8.23";
+import { runSplashLoader } from "./shared/splash.js?v=1.8.23";
+import { createThemeController } from "./shared/theme.js?v=1.8.23";
+import { state } from "./whatsapp/state.js?v=1.8.23";
+import { cleanupMediaStore, closeMediaModal, handleMessageListClick } from "./whatsapp/media.js?v=1.8.23";
+import { captureScrollPosition, handleViewportScroll, jumpToBottom, resetRenderToBottom } from "./whatsapp/render.js?v=1.8.23";
+import { handleSearch, handleSearchInput, handleSearchShortcut, navSearch, toggleSearch } from "./whatsapp/search.js?v=1.8.23";
+import { filterSidebarChats } from "./whatsapp/sidebar-search.js?v=1.8.23";
+import { handleFavoriteListClick, toggleFavorite, toggleFavoritesPanel } from "./whatsapp/favorites.js?v=1.8.23";
+import { handleServerStorageClick, initServerStorage } from "./whatsapp/server-storage.js?v=1.8.23";
 import {
-    applySenderFilter,
     clearSenderFilter,
     filterSenderList,
     closeSenderFilterDropdown,
     isSenderFilterDropdownOpen,
     toggleSender,
     toggleSenderFilterDropdown
-} from "./whatsapp/filter.js?v=1.8.22";
+} from "./whatsapp/filter.js?v=1.8.23";
 import {
     applyDateSheetSelection,
     cancelDateSheet,
     closeDateSheet,
     handleDateJumpAction
-} from "./whatsapp/date-jump.js?v=1.8.22";
-import { setupFileIntake } from "./whatsapp/file-picker.js?v=1.8.22";
-import { loadSavedSettings, syncSettingsControls } from "./whatsapp/settings-store.js?v=1.8.22";
-import { handleSettingChange, resetSettings } from "./whatsapp/settings-ui.js?v=1.8.22";
-import { closeActiveChat, initViewer, loadChatFile } from "./whatsapp/session.js?v=1.8.22";
+} from "./whatsapp/date-jump.js?v=1.8.23";
+import { setupFileIntake } from "./whatsapp/file-picker.js?v=1.8.23";
+import { loadSavedSettings, syncSettingsControls } from "./whatsapp/settings-store.js?v=1.8.23";
+import { handleSettingChange, resetSettings } from "./whatsapp/settings-ui.js?v=1.8.23";
+import { closeActiveChat, initViewer, loadChatFile } from "./whatsapp/session.js?v=1.8.23";
 import {
     cancelPersistCopy,
     deleteAllStoredImports,
     handleStoredListClick,
     initPersistentStorage,
     saveActiveScrollPosition
-} from "./whatsapp/persistence.js?v=1.8.22";
-import { closeWrapped, closeWrappedFromHistory, downloadWrappedGraphic, openWrapped } from "./whatsapp/wrapped.js?v=1.8.22";
+} from "./whatsapp/persistence.js?v=1.8.23";
+import { closeWrapped, closeWrappedFromHistory, downloadWrappedGraphic, openWrapped } from "./whatsapp/wrapped.js?v=1.8.23";
 import {
     closeAllDrawers,
     closeDrawer,
@@ -77,11 +76,11 @@ import {
     showToast,
     toggleMenu,
     toggleSidebar
-} from "./whatsapp/ui.js?v=1.8.22";
+} from "./whatsapp/ui.js?v=1.8.23";
 
 configure({ useDecompressionStream: typeof DecompressionStream !== "undefined" });
 
-const APP_VERSION = "1.8.22";
+const APP_VERSION = "1.8.23";
 
 const theme = createThemeController({ iconSelector: "#theme-toggle i" });
 
@@ -178,7 +177,10 @@ function bindUI() {
     $("search-up")?.addEventListener("click", () => navSearch("up"));
     $("search-down")?.addEventListener("click", () => navSearch("down"));
     $("live-search")?.addEventListener("input", handleSearchInput);
-    $("favorites-toggle")?.addEventListener("click", toggleFavoritesPanel);
+    $("favorites-toggle")?.addEventListener("click", () => {
+        closeMenu();
+        toggleFavoritesPanel();
+    });
     $("favorites-close")?.addEventListener("click", toggleFavoritesPanel);
     $("favorites-list")?.addEventListener("click", handleFavoriteListClick);
     document.addEventListener("click", (event) => {
@@ -191,19 +193,20 @@ function bindUI() {
         onSearch: handleSearch,
         onToast: showToast
     };
-    $("date-jump-btn")?.addEventListener("click", handleDateJumpAction);
-    $("sender-filter-btn")?.addEventListener("click", (event) => {
+    $("sender-filter-action")?.addEventListener("click", (event) => {
         event.stopPropagation();
-        toggleSenderFilterDropdown();
+        closeMenu();
+        toggleSenderFilterDropdown(true);
     });
-    $("sender-filter-btn")?.addEventListener("keydown", (event) => {
+    $("sender-filter-action")?.addEventListener("keydown", (event) => {
         if (event.key !== "ArrowDown" || isSenderFilterDropdownOpen()) return;
         event.preventDefault();
+        closeMenu();
         toggleSenderFilterDropdown(true);
     });
     $("sender-filter-close")?.addEventListener("click", () => {
         closeSenderFilterDropdown();
-        $("sender-filter-btn")?.focus({ preventScroll: true });
+        $("menu-toggle")?.focus({ preventScroll: true });
     });
     $("sender-filter-reset-btn")?.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -315,14 +318,16 @@ function bindUI() {
         handleDocumentClick(event);
         if (isSenderFilterDropdownOpen()) {
             const container = $("sender-filter-container");
-            if (container && !container.contains(event.target)) {
+            const action = $("sender-filter-action");
+            if (container && !container.contains(event.target) && !action?.contains(event.target)) {
                 closeSenderFilterDropdown();
             }
         }
     });
     document.addEventListener("focusin", (event) => {
         const container = $("sender-filter-container");
-        if (isSenderFilterDropdownOpen() && container && !container.contains(event.target)) {
+        const action = $("sender-filter-action");
+        if (isSenderFilterDropdownOpen() && container && !container.contains(event.target) && !action?.contains(event.target)) {
             closeSenderFilterDropdown();
         }
     });
@@ -347,7 +352,7 @@ function handleGlobalKeydown(event) {
 function handleEscape() {
     if (isSenderFilterDropdownOpen()) {
         closeSenderFilterDropdown();
-        $("sender-filter-btn")?.focus();
+        $("menu-toggle")?.focus();
         return;
     }
     if (state.activeMediaId) {
