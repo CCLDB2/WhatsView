@@ -1,6 +1,6 @@
 /** Optional self-hosted archive storage with resumable, proxy-safe uploads. */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.18";
-import { formatBytes } from "../shared/media-types.js?v=1.8.18";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.19";
+import { formatBytes } from "../shared/media-types.js?v=1.8.19";
 
 const LAST_CLOUD_CHAT_KEY = "chatlume-last-server-chat";
 const LAST_POSITION_KEY = "chatlume-last-position";
@@ -175,42 +175,28 @@ export async function handleServerStorageClick(event) {
 
 async function openServerChat(record) {
     if (!state.hooks.openChat) return;
-    setServerStatus(`Descargando ${record.fileName} desde el servidor…`);
+    setServerStatus(`Preparando ${record.fileName} desde el servidor…`);
     try {
-        setTransferProgress(`Descargando ${record.fileName}`, 0, true);
-        const response = await fetch(`/api/chats/${encodeURIComponent(record.id)}/download`, { cache: "no-store" });
+        setTransferProgress(`Preparando el archivo en Dockploy`, 0, true);
+        const response = await fetch(`/api/chats/${encodeURIComponent(record.id)}/manifest`, { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const total = Number(response.headers.get("Content-Length")) || record.size || 0;
-        const chunks = [];
-        let received = 0;
-        if (response.body?.getReader) {
-            const reader = response.body.getReader();
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                chunks.push(value);
-                received += value.byteLength;
-                const percent = total ? Math.min(100, Math.floor(received / total * 100)) : null;
-                setTransferProgress(`Descargando ${record.fileName} · ${formatBytes(received)} de ${formatBytes(total)}`, percent, percent == null);
-            }
-        } else {
-            const blob = await response.blob();
-            chunks.push(blob);
-            received = blob.size;
-            setTransferProgress(`Descarga completada · ${formatBytes(received)}`, 100, false);
-        }
-        const blob = new Blob(chunks, { type: response.headers.get("Content-Type") || "application/octet-stream" });
-        setTransferProgress(`Preparando ${record.fileName}`, 100, false);
-        const file = new File([blob], record.fileName, { type: blob.type || "application/octet-stream" });
-        await state.hooks.openChat(file, {
+        const manifest = await response.json();
+        setTransferProgress(`Leyendo mensajes (sin bajar el ZIP completo)`, 0, true);
+        await state.hooks.openChat(null, {
             displayName: record.displayName || "",
             fileLabel: record.fileName,
             remoteImportId: record.id,
+            remoteManifest: manifest,
+            onRemoteProgress(received, total) {
+                const percentage = total ? Math.min(100, Math.floor(received / total * 100)) : null;
+                const totalCopy = total ? formatBytes(total) : "tamaño desconocido";
+                setTransferProgress(`Leyendo mensajes · ${formatBytes(received)} de ${totalCopy}`, percentage, percentage == null);
+            },
             scrollPosition: savedPosition(record.id),
             persist: false
         });
         clearTransferProgress();
-        setServerStatus(`Abierto desde el disco de Dockploy · ${formatBytes(record.size)}`);
+        setServerStatus(`Leído desde Dockploy · ZIP original ${formatBytes(record.size)}; medios se cargan al verlos.`);
     } catch (error) {
         clearTransferProgress();
         setServerStatus(`No se pudo abrir el archivo: ${error.message}`, "error");

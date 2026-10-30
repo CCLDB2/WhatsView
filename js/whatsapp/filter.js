@@ -9,9 +9,9 @@
  * with in-chat search and date filters.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.18";
-import { state } from "./state.js?v=1.8.18";
-import { parseExportDateLabel } from "./format.js?v=1.8.18";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.19";
+import { state } from "./state.js?v=1.8.19";
+import { parseExportDateLabel } from "./format.js?v=1.8.19";
 
 /** Keeps messages and their day divider only for the selected ISO calendar day. */
 export function filterMessagesByDate(messages, dateValue) {

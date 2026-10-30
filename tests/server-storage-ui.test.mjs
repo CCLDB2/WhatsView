@@ -14,7 +14,11 @@ describe("server storage transfer feedback and automatic sync", () => {
 
     test("opening a saved chat streams bytes and updates progress while list refreshes automatically", () => {
         const module = read("js/whatsapp/server-storage.js");
-        assert.match(module, /reader\.read\(\)/);
+        const session = read("js/whatsapp/session.js");
+        assert.match(module, /\/manifest`/);
+        assert.doesNotMatch(module, /\/download`/);
+        assert.match(session, /reader\.read\(\)/);
+        assert.match(session, /onRemoteProgress\?\.\(loaded, total\)/);
         assert.match(module, /received \/ total \* 100/);
         assert.match(module, /setInterval\(\(\) =>/);
         assert.match(module, /visibilitychange/);

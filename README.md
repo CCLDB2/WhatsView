@@ -9,15 +9,15 @@
 ![Stars](https://img.shields.io/github/stars/ParasSharma2306/chatlume?style=flat-square)
 ![Forks](https://img.shields.io/github/forks/ParasSharma2306/chatlume?style=flat-square)
 ![License](https://img.shields.io/github/license/ParasSharma2306/chatlume?style=flat-square)
-![Version](https://img.shields.io/badge/version-v1.8.18-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-v1.8.19-blue?style=flat-square)
 
 ---
 
 ## Self-host with Docker / Dockploy
 
-This repository includes a small Nginx container for serving the static app. In Dockploy, create a Compose deployment from this repository (or its Dockerfile), use the repository root as the build context, and route the domain to the `chatlume` service on **port 80**. For local testing, run `docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build`; it will be available at `http://localhost:8081`.
+This repository includes a Node server for the app and optional persistent WhatsApp storage. In Dokploy, build from the repository root with the Dockerfile and route the domain to the `chatlume` service on **port 80**. For local testing, run `docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build`; it will be available at `http://localhost:8081`.
 
-The app does not need a backend or a Docker volume for chat imports: ZIPs are read in the browser and saved in that browser's origin storage. They are not copied into the container or sent to the server. Use HTTPS on the deployed domain so browser storage and service-worker features work correctly. Browser storage belongs to that domain/browser profile; changing the domain or clearing site data will not carry it over.
+Static hosting remains browser-only. In Docker mode, a persistent volume at `/data` stores WhatsApp archives on the server. When reopening one, the server reads the ZIP from disk and sends only the chat text; media is streamed individually when it is viewed. The browser no longer downloads the full archive just to reopen a saved chat. Use HTTPS on the deployed domain.
 
 ---
 
@@ -43,6 +43,7 @@ It turned out better than I expected, so I cleaned it up and put it online. It n
 | WhatsApp viewer | Renders `_chat.txt` or `.zip` exports as a real WhatsApp-style chat UI, with sent/received bubbles, grouped messages, sticky date headers and system messages |
 | Instagram viewer | Reads Instagram "Download Your Data" JSON archives; pick or switch conversations, filter threads by name or messages by sender, and see reactions, shares, unsent markers and media |
 | Media from ZIP | Images, stickers, videos, voice notes (with waveform and duration), documents, contacts and archives are read straight out of the ZIP — nothing is extracted to disk |
+| Dockploy archive reading | For a chat saved on the server, the server reads its ZIP on the persistent disk and streams only the chat text plus requested media; reopening does not transfer the full ZIP to the browser |
 | Lazy media | Attachments are decoded only when they scroll into view and released again off-screen, so multi-GB exports stay light on memory |
 | Media viewer | Tap any attachment for a full-screen viewer with download |
 | Missing attachment cards | Attachments referenced in the chat but absent from the export are shown as clear placeholders instead of broken images |
@@ -93,7 +94,7 @@ It turned out better than I expected, so I cleaned it up and put it online. It n
 
 ## Privacy
 
-- All parsing happens in the browser via JavaScript
+- Message parsing happens in the browser via JavaScript
 - In browser-only mode, chat files never leave your device
 - Optional self-hosted Docker storage sends WhatsApp archives only to your own server
 - No analytics on chat data, no logging
@@ -106,9 +107,9 @@ Full details: [Privacy Policy](https://chatlume.app/privacy.html)
 
 ## Persistent Storage
 
-For WhatsApp, browser-only mode uses the browser's private storage. Docker self-hosting additionally offers server storage: upload chunks are written to the persistent `/data` volume, with metadata and files surviving container replacement. Set a persistent volume mount to `/data` in Dokploy (named volume or a host path). The server does not provide a separate login; put the app behind Pangolin/access control and do not expose its origin publicly. Instagram remains browser-only.
+For WhatsApp, browser-only mode uses the browser's private storage. Docker self-hosting additionally offers server storage: upload chunks are written to the persistent `/data` volume, with metadata and files surviving container replacement. Set a persistent volume mount to `/data` in Dokploy (named volume or a host path). On reopen, the server reads the archive and sends the text needed to render; attachments are served on demand, not as part of a full ZIP download. The server does not provide a separate login; put the app behind Pangolin/access control and do not expose its origin publicly. Instagram remains browser-only.
 
-In Docker mode, the saved-chat list and disk usage refresh automatically every 15 seconds and whenever the tab becomes active. Opening a saved chat shows a spinner and download progress percentage when the server reports the file size. Message favorites are saved in each chat's server record and synchronize across browser profiles; a local browser copy remains as a fallback if the server is temporarily unreachable.
+In Docker mode, the saved-chat list and disk usage refresh automatically every 15 seconds and whenever the tab becomes active. Opening a saved chat shows progress while its text is streamed from the server; media is fetched only when viewed. Message favorites are saved in each chat's server record and synchronize across browser profiles; a local browser copy remains as a fallback if the server is temporarily unreachable.
 
 - Deleting a server-stored chat is explicit and confirmed in the server chat list
 - Server uploads use resumable 8 MiB chunks (so Cloudflare's per-request limit does not apply to the full archive); the default maximum archive size is 10 GiB

@@ -1,10 +1,13 @@
-import { createReadStream } from "node:fs";
-import { mkdir, readFile, rename, stat, statfs, writeFile } from "node:fs/promises";
+import { createReadStream, createWriteStream, openAsBlob } from "node:fs";
+import { mkdir, mkdtemp, readFile, rename, rm, stat, statfs, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
+import { Writable } from "node:stream";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { FileStore } from "@tus/file-store";
 import { Server as TusServer } from "@tus/server";
+import { BlobReader, ZipReader } from "@zip.js/zip.js";
 
 const APP_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DEFAULT_MAX_UPLOAD_BYTES = 10 * 1024 ** 3;
@@ -42,6 +45,115 @@ export async function createWhatsViewApp({ dataDir = process.env.DATA_DIR || "/d
     }
 
     let catalogQueue = Promise.resolve();
+    const archiveManifestCache = new Map();
+
+    async function getArchiveManifest(id) {
+        if (archiveManifestCache.has(id)) return archiveManifestCache.get(id);
+        const record = catalog[id];
+        if (!record) return null;
+        if (!/\.zip$/i.test(record.fileName)) {
+            const manifest = { archiveType: "txt", chatFileName: record.fileName, chatSize: record.size, attachments: [] };
+            archiveManifestCache.set(id, manifest);
+            return manifest;
+        }
+
+        const blob = await openAsBlob(path.join(uploadDir, id));
+        const zip = new ZipReader(new BlobReader(blob));
+        try {
+            const entries = (await zip.getEntries()).filter((entry) => !entry.directory && !entry.filename.startsWith("__MACOSX/"));
+            const chatEntry = entries
+                .filter((entry) => entry.filename.toLowerCase().endsWith(".txt"))
+                .sort((a, b) => (b.uncompressedSize || 0) - (a.uncompressedSize || 0))[0];
+            if (!chatEntry) throw new Error("No .txt chat file found in ZIP archive.");
+            const manifest = {
+                archiveType: "zip",
+                chatFileName: chatEntry.filename,
+                chatSize: chatEntry.uncompressedSize || 0,
+                attachments: entries.filter((entry) => entry !== chatEntry).map((entry) => ({
+                    name: path.posix.basename(entry.filename),
+                    path: entry.filename,
+                    size: entry.uncompressedSize || 0
+                }))
+            };
+            archiveManifestCache.set(id, manifest);
+            return manifest;
+        } finally {
+            await zip.close();
+        }
+    }
+
+    async function streamZipEntry(id, entryPath, response, contentType) {
+        const blob = await openAsBlob(path.join(uploadDir, id));
+        const zip = new ZipReader(new BlobReader(blob));
+        try {
+            const entry = (await zip.getEntries()).find((item) => !item.directory && item.filename === entryPath);
+            if (!entry) return false;
+            response.set({
+                "Content-Type": contentType,
+                "Content-Length": String(entry.uncompressedSize || 0),
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+                "Content-Disposition": "inline"
+            });
+            await entry.getData(Writable.toWeb(response));
+            return true;
+        } finally {
+            await zip.close();
+        }
+    }
+
+    async function streamRangedZipEntry(id, entryPath, rangeHeader, response, contentType) {
+        const blob = await openAsBlob(path.join(uploadDir, id));
+        const zip = new ZipReader(new BlobReader(blob));
+        const temporaryDir = await mkdtemp(path.join(os.tmpdir(), "whatsview-range-"));
+        const temporaryFile = path.join(temporaryDir, "media.bin");
+        try {
+            const entry = (await zip.getEntries()).find((item) => !item.directory && item.filename === entryPath);
+            if (!entry) {
+                await rm(temporaryDir, { recursive: true, force: true });
+                return response.sendStatus(404);
+            }
+            await entry.getData(Writable.toWeb(createWriteStream(temporaryFile)));
+        } catch (error) {
+            await rm(temporaryDir, { recursive: true, force: true });
+            throw error;
+        } finally {
+            await zip.close();
+        }
+
+        const { size } = await stat(temporaryFile);
+        const match = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader);
+        let start = match && match[1] ? Number(match[1]) : null;
+        let end = match && match[2] ? Number(match[2]) : null;
+        if (start == null && end != null) {
+            start = Math.max(0, size - end);
+            end = size - 1;
+        } else {
+            start ??= 0;
+            end ??= size - 1;
+        }
+        if (!match || !Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start >= size || end < start) {
+            await rm(temporaryDir, { recursive: true, force: true });
+            return response.status(416).set("Content-Range", `bytes */${size}`).end();
+        }
+        end = Math.min(end, size - 1);
+        response.status(206).set({
+            "Content-Type": contentType,
+            "Content-Length": String(end - start + 1),
+            "Content-Range": `bytes ${start}-${end}/${size}`,
+            "Accept-Ranges": "bytes",
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Disposition": "inline"
+        });
+        const cleanup = () => rm(temporaryDir, { recursive: true, force: true }).catch(() => {});
+        response.once("close", cleanup);
+        createReadStream(temporaryFile, { start, end }).on("error", (error) => {
+            cleanup();
+            if (!response.headersSent) response.status(500).end();
+            else response.destroy(error);
+        }).pipe(response);
+    }
     function updateCatalog(mutator) {
         catalogQueue = catalogQueue.then(async () => {
             const next = { ...catalog };
@@ -117,6 +229,75 @@ export async function createWhatsViewApp({ dataDir = process.env.DATA_DIR || "/d
         response.set("Cache-Control", "no-store").json(entries);
     });
 
+    app.get("/api/chats/:id/manifest", async (request, response, next) => {
+        const { id } = request.params;
+        if (!validId(id) || !catalog[id]) return response.sendStatus(404);
+        try {
+            const manifest = await getArchiveManifest(id);
+            response.set("Cache-Control", "no-store").json({
+                ...manifest,
+                id,
+                originalFileName: catalog[id].fileName
+            });
+        } catch (error) {
+            next(error);
+        }
+    });
+
+    app.get("/api/chats/:id/chat", async (request, response, next) => {
+        const { id } = request.params;
+        const record = catalog[id];
+        if (!validId(id) || !record) return response.sendStatus(404);
+        try {
+            const manifest = await getArchiveManifest(id);
+            if (manifest.archiveType === "txt") {
+                const filePath = path.join(uploadDir, id);
+                const fileStat = await stat(filePath);
+                response.set({
+                    "Content-Type": "text/plain; charset=utf-8",
+                    "Content-Length": String(fileStat.size),
+                    "Cache-Control": "no-store",
+                    "X-Content-Type-Options": "nosniff",
+                    "Content-Disposition": "inline"
+                });
+                createReadStream(filePath).on("error", next).pipe(response);
+                return;
+            }
+            const found = await streamZipEntry(id, manifest.chatFileName, response, "text/plain; charset=utf-8");
+            if (!found) response.sendStatus(404);
+        } catch (error) {
+            next(error);
+        }
+    });
+
+    app.get("/api/chats/:id/media", async (request, response, next) => {
+        const { id } = request.params;
+        const record = catalog[id];
+        const requestedPath = request.query.path;
+        if (!validId(id) || !record || typeof requestedPath !== "string") return response.sendStatus(404);
+        try {
+            const manifest = await getArchiveManifest(id);
+            const attachment = manifest.attachments.find((item) => item.path === requestedPath);
+            if (!attachment || manifest.archiveType !== "zip") return response.sendStatus(404);
+            const extension = path.posix.extname(attachment.name).slice(1).toLowerCase();
+            const contentType = ({
+                jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp",
+                heic: "image/heic", heif: "image/heif", mp4: "video/mp4", mov: "video/quicktime", avi: "video/x-msvideo",
+                m4v: "video/x-m4v", webm: "video/webm", mp3: "audio/mpeg", m4a: "audio/mp4", opus: "audio/ogg",
+                ogg: "audio/ogg", oga: "audio/ogg", wav: "audio/wav", aac: "audio/aac", pdf: "application/pdf",
+                txt: "text/plain; charset=utf-8", vcf: "text/vcard"
+            })[extension] || "application/octet-stream";
+            if (request.headers.range) {
+                await streamRangedZipEntry(id, requestedPath, request.headers.range, response, contentType);
+                return;
+            }
+            const found = await streamZipEntry(id, requestedPath, response, contentType);
+            if (!found) response.sendStatus(404);
+        } catch (error) {
+            next(error);
+        }
+    });
+
     app.get("/api/chats/:id/state", (request, response) => {
         const { id } = request.params;
         const record = catalog[id];
@@ -168,6 +349,7 @@ export async function createWhatsViewApp({ dataDir = process.env.DATA_DIR || "/d
         try {
             await tusServer.datastore.remove(id);
             await updateCatalog((nextCatalog) => { delete nextCatalog[id]; });
+            archiveManifestCache.delete(id);
             response.sendStatus(204);
         } catch (error) {
             next(error);

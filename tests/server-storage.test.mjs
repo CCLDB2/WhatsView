@@ -3,6 +3,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { after, describe, test } from "node:test";
+import { BlobWriter, TextReader, ZipWriter } from "@zip.js/zip.js";
 import { createWhatsViewApp } from "../server/server.mjs";
 
 const temporaryRoots = [];
@@ -19,6 +20,15 @@ async function startApp(dataDir) {
     return `http://127.0.0.1:${server.address().port}`;
 }
 
+async function makeArchive() {
+    const writer = new BlobWriter("application/zip");
+    const zip = new ZipWriter(writer);
+    await zip.add("_chat.txt", new TextReader("[1/1/2024, 10:00 AM] Ana: hola\n"));
+    await zip.add("Media/foto.jpg", new TextReader("fixture image bytes"));
+    await zip.close();
+    return Buffer.from(await (await writer.getData()).arrayBuffer());
+}
+
 function closeServer(server) {
     return new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
 }
@@ -33,7 +43,7 @@ describe("server-side persistent chat storage", () => {
         const dataDir = await mkdtemp(path.join(os.tmpdir(), "whatsview-storage-"));
         temporaryRoots.push(dataDir);
         const base = await startApp(dataDir);
-        const contents = Buffer.from("fixture archive bytes", "utf8");
+        const contents = await makeArchive();
         const metadata = [
             `filename ${Buffer.from("prueba-chat.zip").toString("base64")}`,
             `displayName ${Buffer.from("Ana").toString("base64")}`
@@ -64,6 +74,26 @@ describe("server-side persistent chat storage", () => {
         assert.equal(record.fileName, "prueba-chat.zip");
         assert.equal(record.displayName, "Ana");
         assert.equal(record.size, contents.length);
+
+        const manifestResponse = await fetch(`${base}/api/chats/${record.id}/manifest`);
+        assert.equal(manifestResponse.status, 200);
+        const manifest = await manifestResponse.json();
+        assert.equal(manifest.id, record.id);
+        assert.equal(manifest.archiveType, "zip");
+        assert.equal(manifest.chatFileName, "_chat.txt");
+        assert.equal(manifest.attachments.length, 1);
+        assert.equal(manifest.attachments[0].path, "Media/foto.jpg");
+
+        const chatText = await fetch(`${base}/api/chats/${record.id}/chat`);
+        assert.equal(await chatText.text(), "[1/1/2024, 10:00 AM] Ana: hola\n");
+        const media = await fetch(`${base}/api/chats/${record.id}/media?path=${encodeURIComponent("Media/foto.jpg")}`);
+        assert.equal(await media.text(), "fixture image bytes");
+        const rangedMedia = await fetch(`${base}/api/chats/${record.id}/media?path=${encodeURIComponent("Media/foto.jpg")}`, {
+            headers: { Range: "bytes=2-5" }
+        });
+        assert.equal(rangedMedia.status, 206);
+        assert.equal(rangedMedia.headers.get("content-range"), "bytes 2-5/19");
+        assert.equal(await rangedMedia.text(), "xtur");
 
         const favorites = ["message-1", "message-5"];
         const savedState = await fetch(`${base}/api/chats/${record.id}/state`, {

@@ -41,6 +41,10 @@ export async function ensureMediaUrl(state, media) {
     if (media.url) {
         return media.url;
     }
+    if (media.remoteUrl) {
+        media.url = media.remoteUrl;
+        return media.remoteUrl;
+    }
     if (media.loadingPromise) {
         return media.loadingPromise;
     }
@@ -66,9 +70,9 @@ export async function ensureMediaUrl(state, media) {
 
 export function releaseMediaUrl(state, media) {
     if (!media?.url) return;
-    URL.revokeObjectURL(media.url);
+    if (media.url.startsWith("blob:")) URL.revokeObjectURL(media.url);
     state.mediaUrls.delete(media.url);
-    media.url = "";
+    media.url = media.remoteUrl || "";
     media.hasLoaded = false;
 }
 

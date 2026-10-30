@@ -41,6 +41,7 @@ describe("whatsapp/filter filterMessagesBySender - multi-participant support", (
         const renderer = readFileSync(new URL("../js/whatsapp/render.js", import.meta.url), "utf8");
         assert.match(dateJump, /onRender:\s*selectedDate\s*\?\s*resetRenderToTop\s*:\s*resetRenderToBottom/);
         assert.match(renderer, /export function resetRenderToTop\(\)[\s\S]*?start:\s*0/);
+        assert.match(dateJump, /if \(state\.selectedDay\)\s*\{\s*applyDayFilter\(""/);
     });
 
     test("zero selected → returns all messages unchanged (array, set, empty string, null, undefined)", () => {

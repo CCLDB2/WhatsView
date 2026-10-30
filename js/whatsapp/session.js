@@ -9,27 +9,27 @@
  * ============================================================================
  */
 import { BlobReader, ZipReader } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { exportChatAsHTML } from "../export.js?v=1.8.18";
-import { showSponsorPrompt } from "../support.js?v=1.8.18";
-import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.18";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.18";
-import { baseName } from "../shared/media-types.js?v=1.8.18";
-import { ISSUES_URL, state } from "./state.js?v=1.8.18";
-import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.18";
-import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.18";
-import { populateSenderFilter, resetSenderFilterUI, syncDayFilterUI } from "./filter.js?v=1.8.18";
+import { exportChatAsHTML } from "../export.js?v=1.8.19";
+import { showSponsorPrompt } from "../support.js?v=1.8.19";
+import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.19";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.19";
+import { baseName } from "../shared/media-types.js?v=1.8.19";
+import { ISSUES_URL, state } from "./state.js?v=1.8.19";
+import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.19";
+import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.19";
+import { populateSenderFilter, resetSenderFilterUI, syncDayFilterUI } from "./filter.js?v=1.8.19";
 import {
     isPersistentStorageEnabled,
     markStoredImportOpened,
     persistCurrentImport,
     renderStoredImports,
     saveActiveScrollPosition
-} from "./persistence.js?v=1.8.18";
-import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.18";
-import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.18";
-import { generateStats } from "./stats.js?v=1.8.18";
-import { loadFavorites } from "./favorites.js?v=1.8.18";
-import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.18";
+} from "./persistence.js?v=1.8.19";
+import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.19";
+import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.19";
+import { generateStats } from "./stats.js?v=1.8.19";
+import { loadFavorites } from "./favorites.js?v=1.8.19";
+import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.19";
 import {
     closeMenu,
     isMobileLayout,
@@ -41,7 +41,7 @@ import {
     showEmptyState,
     showToast,
     updateLoadingCopy
-} from "./ui.js?v=1.8.18";
+} from "./ui.js?v=1.8.19";
 
 const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> How to export WhatsApp chats</a>`;
 
@@ -82,14 +82,17 @@ export async function initViewer() {
  * @param {boolean} [options.persist]   Copy the export to persistent storage after it opens.
  * @param {string} [options.importId]   Stored import being reopened, if any.
  */
-export async function loadChatFile(file, { displayName, fileLabel = file.name, persist = false, importId = "", remoteImportId = "", uploadToServer = false, scrollPosition = null } = {}) {
+export async function loadChatFile(file, { displayName, fileLabel = "", persist = false, importId = "", remoteImportId = "", uploadToServer = false, scrollPosition = null, remoteManifest = null, onRemoteProgress = null } = {}) {
     if (state.isLoading) return;
+
+    const remoteChatId = remoteManifest?.id || "";
+    fileLabel ||= remoteManifest?.originalFileName || file?.name || "WhatsApp chat";
 
     state.myName = displayName;
     state.activeImportId = "";
     state.activeScrollPosition = scrollPosition;
 
-    const isZip = file.name.toLowerCase().endsWith(".zip");
+    const isZip = remoteChatId ? remoteManifest.archiveType === "zip" : Boolean(file?.name.toLowerCase().endsWith(".zip"));
     const initText = isZip ? "Opening ZIP and scanning entries..." : "Reading text file...";
 
     setLoadingState(true, `Loading ${fileLabel}`, initText);
@@ -109,14 +112,18 @@ export async function loadChatFile(file, { displayName, fileLabel = file.name, p
 
     const gen = ++state.loadGeneration;
 
-    if (exceedsCompatLimit(file)) {
+    if (file && exceedsCompatLimit(file)) {
         setLoadingState(false);
         showToast(fileTooLargeMessage(file), "error");
         return;
     }
 
     try {
-        let { rawText, chatEntry, attachments } = await loadChatExport(file);
+        let { rawText, chatEntry, attachments } = await loadChatExport(file, {
+            remoteChatId,
+            remoteManifest,
+            onRemoteProgress
+        });
 
         updateLoadingCopy(
             attachments.length
@@ -141,7 +148,7 @@ export async function loadChatFile(file, { displayName, fileLabel = file.name, p
 
         let completedRemoteId = remoteImportId;
         let remoteSaveError = null;
-        if (uploadToServer) {
+        if (uploadToServer && file) {
             updateLoadingCopy("Saving a private copy to the Dockploy server…");
             try {
                 completedRemoteId = await uploadChatToServer(file, displayName, (percentage) => {
@@ -170,7 +177,7 @@ export async function loadChatFile(file, { displayName, fileLabel = file.name, p
             : `Loaded ${state.messageOnlyCount.toLocaleString()} messages`);
         showSponsorPrompt();
 
-        if (!importId && persist) {
+        if (!importId && persist && file) {
             persistCurrentImport(file, gen);
         }
     } catch (error) {
@@ -220,7 +227,47 @@ function showNothingParsedState() {
  * Opens the export. For a ZIP, picks the largest .txt as the chat and lists
  * every other entry as an attachment (nothing is decompressed yet).
  */
-async function loadChatExport(file) {
+async function loadChatExport(file, { remoteChatId = "", remoteManifest = null, onRemoteProgress = null } = {}) {
+    if (remoteChatId && remoteManifest) {
+        const attachments = (remoteManifest.attachments || []).map((attachment) => ({
+            ...attachment,
+            remoteUrl: `/api/chats/${encodeURIComponent(remoteChatId)}/media?path=${encodeURIComponent(attachment.path)}`
+        }));
+        const chatEntry = {
+            uncompressedSize: remoteManifest.chatSize || 1,
+            async getData(writableStream) {
+                const response = await fetch(`/api/chats/${encodeURIComponent(remoteChatId)}/chat`, { cache: "no-store" });
+                if (!response.ok) throw new Error(`Unable to read chat from server (HTTP ${response.status})`);
+                const total = Number(response.headers.get("Content-Length")) || remoteManifest.chatSize || 0;
+                const writer = writableStream.getWriter();
+                let loaded = 0;
+                try {
+                    if (response.body?.getReader) {
+                        const reader = response.body.getReader();
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            await writer.write(value);
+                            loaded += value.byteLength;
+                            onRemoteProgress?.(loaded, total);
+                        }
+                    } else {
+                        const bytes = new TextEncoder().encode(await response.text());
+                        await writer.write(bytes);
+                        loaded = bytes.byteLength;
+                        onRemoteProgress?.(loaded, total);
+                    }
+                    await writer.close();
+                } catch (error) {
+                    await writer.abort(error).catch(() => {});
+                    throw error;
+                }
+            }
+        };
+        return { rawText: null, chatEntry, attachments };
+    }
+
+    if (!file) throw new Error("No local file was provided.");
     if (!file.name.toLowerCase().endsWith(".zip")) {
         return { rawText: await readFileAsText(file), chatEntry: null, attachments: [] };
     }

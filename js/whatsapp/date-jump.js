@@ -6,14 +6,14 @@
  * marker, or to the closest earlier one when that day has no messages.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.18";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.18";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.18";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.18";
-import { renderChatList, resetRenderToBottom, resetRenderToTop } from "./render.js?v=1.8.18";
-import { applyDayFilter } from "./filter.js?v=1.8.18";
-import { handleSearch } from "./search.js?v=1.8.18";
-import { closeMenu, showToast } from "./ui.js?v=1.8.18";
+import { $ } from "../shared/dom.js?v=1.8.19";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.19";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.19";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.19";
+import { renderChatList, resetRenderToBottom, resetRenderToTop } from "./render.js?v=1.8.19";
+import { applyDayFilter } from "./filter.js?v=1.8.19";
+import { handleSearch } from "./search.js?v=1.8.19";
+import { closeMenu, showToast } from "./ui.js?v=1.8.19";
 
 let dateSheetMode = "jump";
 
@@ -103,6 +103,14 @@ export function applyDateSheetSelection() {
  */
 export function handleDateSelection(dateValue) {
     if (!dateValue || !state.messages.length) return;
+
+    // A day filter intentionally removes messages from other dates. Go to Date
+    // is a navigation command, so restore the full selected-participant stream
+    // before creating a virtual window around the target; older/newer pages can
+    // then load naturally as the user scrolls in either direction.
+    if (state.selectedDay) {
+        applyDayFilter("", { onRender: () => {}, onSearch: () => {}, onToast: () => {} });
+    }
 
     const targetDate = new Date(`${dateValue}T00:00:00`);
     if (Number.isNaN(targetDate.getTime())) {
