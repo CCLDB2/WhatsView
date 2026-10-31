@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy — ChatLume</title>
-  <meta name="description" content="ChatLume privacy policy. Browser-only processing, with optional self-hosted Docker storage for WhatsApp exports.">
+  <title>Política de privacidad — ChatLume</title>
+  <meta name="description" content="Política de privacidad de ChatLume. Procesamiento solo en el navegador, con almacenamiento opcional autoalojado en Docker para las exportaciones de WhatsApp.">
   <link rel="icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/style.css?v=1.8.23">
+  <link rel="stylesheet" href="css/style.css?v=1.8.24">
   <style>
     * {
       margin: 0;
@@ -306,17 +306,17 @@
 
 <nav class="nav">
   <a href="index.html" class="nav-logo">Chat<span>Lume</span></a>
-  <button class="nav-toggle" aria-label="Toggle menu" onclick="this.nextElementSibling.classList.toggle('open')">
+  <button class="nav-toggle" aria-label="Mostrar menú" data-i18n-aria-label="Mostrar menú" onclick="this.nextElementSibling.classList.toggle('open')">
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="public/viewer.html">WhatsApp</a></li>
-    <li><a href="public/instagram-viewer.html">Instagram</a></li>
+    <li><a href="public/viewer.html" data-i18n="WhatsApp">WhatsApp</a></li>
+    <li><a href="public/instagram-viewer.html" data-i18n="Instagram">Instagram</a></li>
     <li class="nav-dropdown">
-      <span class="nav-dropdown-toggle">How To ▾</span>
+      <span class="nav-dropdown-toggle" data-i18n="Cómo hacerlo ▾">Cómo hacerlo ▾</span>
       <div class="nav-dropdown-menu">
-        <a href="public/how-to-export.html">Export WhatsApp Chat</a>
-        <a href="public/how-to-export-instagram.html">Export Instagram DMs</a>
+        <a href="public/how-to-export.html" data-i18n="Exportar un chat de WhatsApp">Exportar un chat de WhatsApp</a>
+        <a href="public/how-to-export-instagram.html" data-i18n="Exportar mensajes de Instagram">Exportar mensajes de Instagram</a>
       </div>
     </li>
   </ul>
@@ -324,55 +324,55 @@
 
 <main>
   <div class="page-header">
-    <h1>Privacy Policy</h1>
-    <p>Last updated: January 2025</p>
+    <h1 data-i18n="Política de privacidad">Política de privacidad</h1>
+    <p data-i18n="Última actualización: enero de 2025">Última actualización: enero de 2025</p>
   </div>
 
   <div class="privacy">
     <div class="privacy-highlight">
-      <p>🔒 In browser-only mode, files stay on your device. In the optional self-hosted Docker mode, WhatsApp files are sent to your own server and stored on its mounted disk.</p>
+      <p data-i18n="🔒 En el modo solo navegador, los archivos se quedan en tu dispositivo. En el modo opcional autoalojado en Docker, los archivos de WhatsApp se envían a tu propio servidor y se guardan en su disco montado.">🔒 En el modo solo navegador, los archivos se quedan en tu dispositivo. En el modo opcional autoalojado en Docker, los archivos de WhatsApp se envían a tu propio servidor y se guardan en su disco montado.</p>
     </div>
 
     <section>
-      <h2>How ChatLume works</h2>
-      <p>ChatLume reads and processes chat exports in your browser using JavaScript. A static/browser-only deployment never sends the file to a server. An optional self-hosted Docker deployment can upload WhatsApp exports to the administrator's server disk for persistent storage; use only behind your own access proxy.</p>
+      <h2 data-i18n="Cómo funciona ChatLume">Cómo funciona ChatLume</h2>
+      <p data-i18n="ChatLume lee y procesa las exportaciones de chat en tu navegador con JavaScript. Una instalación estática o solo de navegador nunca envía el archivo a un servidor. Una instalación opcional autoalojada en Docker puede subir las exportaciones de WhatsApp al disco del servidor del administrador para guardarlas de forma persistente; úsala solo detrás de tu propio proxy de acceso.">ChatLume lee y procesa las exportaciones de chat en tu navegador con JavaScript. Una instalación estática o solo de navegador nunca envía el archivo a un servidor. Una instalación opcional autoalojada en Docker puede subir las exportaciones de WhatsApp al disco del servidor del administrador para guardarlas de forma persistente; úsala solo detrás de tu propio proxy de acceso.</p>
     </section>
 
     <section>
-      <h2>What data we collect</h2>
-      <p>None. ChatLume does not have a backend server, database, or analytics that track individual users. We do not collect your name, email, IP address, or any personal information. We do not read, store, or transmit your chat files.</p>
+      <h2 data-i18n="Qué datos recogemos">Qué datos recogemos</h2>
+      <p data-i18n="Ninguno. ChatLume no tiene servidor backend, ni base de datos, ni analíticas que rastreen a usuarios individuales. No recogemos tu nombre, tu correo, tu dirección IP ni ningún dato personal. Tampoco leemos, guardamos ni transmitimos tus archivos de chat.">Ninguno. ChatLume no tiene servidor backend, ni base de datos, ni analíticas que rastreen a usuarios individuales. No recogemos tu nombre, tu correo, tu dirección IP ni ningún dato personal. Tampoco leemos, guardamos ni transmitimos tus archivos de chat.</p>
     </section>
 
     <section>
-      <h2>Cookies and local storage</h2>
-      <p>ChatLume uses your browser's <code>localStorage</code> for small preferences and the last reading-position pointer. The ZIP copy and its filename, display name and message anchor are kept in browser-private OPFS storage and IndexedDB. Your operating-system file path is not exposed to the browser. We set no tracking cookies or analytics.</p>
+      <h2 data-i18n="Cookies y almacenamiento local">Cookies y almacenamiento local</h2>
+      <p data-i18n-html="ChatLume usa el <code>localStorage</code> de tu navegador para pequeñas preferencias y para el puntero de la última posición de lectura. La copia del ZIP, junto con su nombre de archivo, el nombre visible y el ancla del mensaje, se guarda en el almacenamiento privado OPFS del navegador y en IndexedDB. La ruta de tu sistema de archivos no queda expuesta al navegador. No instalamos cookies de seguimiento ni analíticas.">ChatLume usa el <code>localStorage</code> de tu navegador para pequeñas preferencias y para el puntero de la última posición de lectura. La copia del ZIP, junto con su nombre de archivo, el nombre visible y el ancla del mensaje, se guarda en el almacenamiento privado OPFS del navegador y en IndexedDB. La ruta de tu sistema de archivos no queda expuesta al navegador. No instalamos cookies de seguimiento ni analíticas.</p>
     </section>
 
     <section>
-      <h2>Third-party services</h2>
-      <p>ChatLume loads <strong>zip.js</strong> (from jsDelivr) to read ZIP exports in-browser, the <strong>Phosphor</strong> icon font (from unpkg), and a cookieless, self-hosted <strong>Umami</strong> page-view counter. None of these receive your chat data.</p>
+      <h2 data-i18n="Servicios de terceros">Servicios de terceros</h2>
+      <p data-i18n-html="ChatLume carga <strong>zip.js</strong> (desde jsDelivr) para leer las exportaciones ZIP en el navegador, la fuente de iconos <strong>Phosphor</strong> (desde unpkg) y un contador de visitas <strong>Umami</strong> autoalojado y sin cookies. Ninguno de ellos recibe tus datos de chat.">ChatLume carga <strong>zip.js</strong> (desde jsDelivr) para leer las exportaciones ZIP en el navegador, la fuente de iconos <strong>Phosphor</strong> (desde unpkg) y un contador de visitas <strong>Umami</strong> autoalojado y sin cookies. Ninguno de ellos recibe tus datos de chat.</p>
     </section>
 
     <section>
-      <h2>Your chat data</h2>
-      <p>Your chat files are processed locally in your browser. In Docker storage mode, the WhatsApp archive is also transmitted to and kept on your self-hosted server so it can be reopened after reload. You can delete stored server copies from the chat list.</p>
+      <h2 data-i18n="Tus datos de chat">Tus datos de chat</h2>
+      <p data-i18n="Tus archivos de chat se procesan en local, en tu navegador. En el modo de almacenamiento en Docker, el archivo de WhatsApp también se transmite a tu servidor autoalojado y se conserva allí para poder reabrirlo después de recargar. Puedes eliminar las copias guardadas en el servidor desde la lista de chats.">Tus archivos de chat se procesan en local, en tu navegador. En el modo de almacenamiento en Docker, el archivo de WhatsApp también se transmite a tu servidor autoalojado y se conserva allí para poder reabrirlo después de recargar. Puedes eliminar las copias guardadas en el servidor desde la lista de chats.</p>
     </section>
 
     <section>
-      <h2>Persistent Storage</h2>
-      <p>Persistent Storage is <strong>on by default for WhatsApp in this local setup</strong>. Each export is copied unchanged into the browser's private Origin Private File System with a small IndexedDB record containing its filename, display name and last visible message anchor. This lets ChatLume reopen the chat at the same point without asking you to pick the ZIP again. The original filesystem path is deliberately unavailable to browser applications. You can turn storage off or delete saved copies from Settings.</p>
-      <p>Stored chats live only in that browser on that device. They are not uploaded, synced, or visible to any server. Anyone who can use that browser profile can open them, so treat the setting like leaving a document on the device. You can delete individual stored chats or all of them at any time from Settings, and clearing the site's data in your browser removes them too. Turning the setting off stops new copies but keeps existing ones until you delete them.</p>
-      <p>Stored chats are ordinary browser site data. Depending on your device and browser settings, that data may be included in your own device or browser backups, and it may be removed by the browser's storage-management features (for example when disk space runs low). ChatLume has no control over either.</p>
+      <h2 data-i18n="Almacenamiento persistente">Almacenamiento persistente</h2>
+      <p data-i18n-html="El almacenamiento persistente está <strong>activado por defecto para WhatsApp en esta instalación local</strong>. Cada exportación se copia sin cambios al sistema de archivos privado del navegador (Origin Private File System) junto con un pequeño registro en IndexedDB que contiene el nombre del archivo, el nombre visible y el ancla del último mensaje visible. Así ChatLume puede reabrir el chat en el mismo punto sin pedirte el ZIP otra vez. La ruta original del sistema de archivos no está disponible a propósito para las aplicaciones del navegador. Puedes desactivar el almacenamiento o borrar las copias guardadas desde Ajustes.">El almacenamiento persistente está <strong>activado por defecto para WhatsApp en esta instalación local</strong>. Cada exportación se copia sin cambios al sistema de archivos privado del navegador (Origin Private File System) junto con un pequeño registro en IndexedDB que contiene el nombre del archivo, el nombre visible y el ancla del último mensaje visible. Así ChatLume puede reabrir el chat en el mismo punto sin pedirte el ZIP otra vez. La ruta original del sistema de archivos no está disponible a propósito para las aplicaciones del navegador. Puedes desactivar el almacenamiento o borrar las copias guardadas desde Ajustes.</p>
+      <p data-i18n="Los chats guardados viven solo en ese navegador y en ese dispositivo. No se suben, ni se sincronizan, ni son visibles para ningún servidor. Cualquiera que pueda usar ese perfil del navegador puede abrirlos, así que trata este ajuste como dejar un documento en el dispositivo. Puedes eliminar los chats guardados, uno a uno o todos, en cualquier momento desde Ajustes, y borrar los datos del sitio en tu navegador también los elimina. Desactivar el ajuste detiene las copias nuevas, pero mantiene las existentes hasta que las borres.">Los chats guardados viven solo en ese navegador y en ese dispositivo. No se suben, ni se sincronizan, ni son visibles para ningún servidor. Cualquiera que pueda usar ese perfil del navegador puede abrirlos, así que trata este ajuste como dejar un documento en el dispositivo. Puedes eliminar los chats guardados, uno a uno o todos, en cualquier momento desde Ajustes, y borrar los datos del sitio en tu navegador también los elimina. Desactivar el ajuste detiene las copias nuevas, pero mantiene las existentes hasta que las borres.</p>
+      <p data-i18n="Los chats guardados son datos normales del sitio en el navegador. Según tu dispositivo y la configuración del navegador, esos datos pueden acabar en tus propias copias de seguridad del dispositivo o del navegador, y pueden ser eliminados por las funciones de gestión de almacenamiento del navegador (por ejemplo, cuando se queda sin espacio en disco). ChatLume no controla ninguna de las dos cosas.">Los chats guardados son datos normales del sitio en el navegador. Según tu dispositivo y la configuración del navegador, esos datos pueden acabar en tus propias copias de seguridad del dispositivo o del navegador, y pueden ser eliminados por las funciones de gestión de almacenamiento del navegador (por ejemplo, cuando se queda sin espacio en disco). ChatLume no controla ninguna de las dos cosas.</p>
     </section>
 
     <section>
-      <h2>Children's privacy</h2>
-      <p>ChatLume does not knowingly collect any information from anyone, including children under 13.</p>
+      <h2 data-i18n="Privacidad de los menores">Privacidad de los menores</h2>
+      <p data-i18n="ChatLume no recoge conscientemente información de nadie, tampoco de menores de 13 años.">ChatLume no recoge conscientemente información de nadie, tampoco de menores de 13 años.</p>
     </section>
 
     <section>
-      <h2>Contact</h2>
-      <p>If you have questions about this privacy policy, you can reach out to Paras Sharma at <a href="https://parassharma.com" style="color:var(--clr-wa-dark)">parassharma.com</a>.</p>
+      <h2 data-i18n="Contacto">Contacto</h2>
+      <p data-i18n-html="Si tienes dudas sobre esta política de privacidad, puedes escribir a Paras Sharma en <a href=&quot;https://parassharma.com&quot; style=&quot;color:var(--clr-wa-dark)&quot;>parassharma.com</a>.">Si tienes dudas sobre esta política de privacidad, puedes escribir a Paras Sharma en <a href="https://parassharma.com" style="color:var(--clr-wa-dark)">parassharma.com</a>.</p>
     </section>
   </div>
 </main>
@@ -385,33 +385,34 @@
                     <img class="brand-mark" src="assets/logo-64.png" alt="">
                     <span class="brand-name">ChatLume</span>
                 </div>
-                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0;">Privacy-first chat viewer and analytics tool. No uploads, completely local.</p>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0;" data-i18n="Visor de chats y estadísticas centrado en la privacidad. Sin subidas y totalmente local.">Visor de chats y estadísticas centrado en la privacidad. Sin subidas y totalmente local.</p>
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;">Guides</h4>
+                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;" data-i18n="Guías">Guías</h4>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="public/how-to-use.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">How to use ChatLume</a>
-                    <a href="public/how-to-export.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Export WhatsApp chat</a>
-                    <a href="public/how-to-export-instagram.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Export Instagram DMs</a>
+                    <a href="public/how-to-use.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Cómo usar ChatLume">Cómo usar ChatLume</a>
+                    <a href="public/how-to-export.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Exportar un chat de WhatsApp">Exportar un chat de WhatsApp</a>
+                    <a href="public/how-to-export-instagram.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Exportar mensajes de Instagram">Exportar mensajes de Instagram</a>
                 </div>
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;">Legal & Contact</h4>
+                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;" data-i18n="Legal y contacto">Legal y contacto</h4>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="privacy.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Privacy Policy</a>
-                    <a href="mailto:hello@parassharma.com" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Contact Support</a>
-                    <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Developer Portfolio</a>
+                    <a href="privacy.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Política de privacidad">Política de privacidad</a>
+                    <a href="mailto:hello@parassharma.com" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Contactar con soporte">Contactar con soporte</a>
+                    <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Portfolio del desarrollador">Portfolio del desarrollador</a>
                 </div>
             </div>
         </div>
         <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 24px;">
-            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">&copy; <span class="dynamic-year"></span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Paras Sharma</a> (ChatLume). All rights reserved.</p>
+            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">&copy; <span class="dynamic-year"></span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Paras Sharma</a> (ChatLume). <span data-i18n="Todos los derechos reservados.">Todos los derechos reservados.</span></p>
         </div>
     </div>
     <script>
         document.querySelectorAll('.dynamic-year').forEach(el => el.textContent = new Date().getFullYear());
     </script>
 </footer>
-    <script src="js/site.js?v=1.8.23" defer></script>
+    <script src="js/site.js?v=1.8.24" defer></script>
+    <script type="module" src="js/site-i18n.js?v=1.8.24"></script>
 </body>
 </html>

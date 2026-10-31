@@ -21,14 +21,15 @@ import {
     parseHeaderLine,
     parseTimestamp,
     stripInvisible
-} from "../whatsapp-parser.js?v=1.8.23";
-import { countEmojis } from "../shared/emoji.js?v=1.8.23";
-import { tailRange } from "../shared/virtual-list.js?v=1.8.23";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.23";
-import { reinferDateOrder } from "./format.js?v=1.8.23";
-import { createMissingMediaItem, resolveAttachment } from "./media.js?v=1.8.23";
-import { generateStats } from "./stats.js?v=1.8.23";
-import { updateLoadingCopy } from "./ui.js?v=1.8.23";
+} from "../whatsapp-parser.js?v=1.8.24";
+import { countEmojis } from "../shared/emoji.js?v=1.8.24";
+import { t, getLocale } from "../i18n.js?v=1.8.24";
+import { tailRange } from "../shared/virtual-list.js?v=1.8.24";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.24";
+import { reinferDateOrder } from "./format.js?v=1.8.24";
+import { createMissingMediaItem, resolveAttachment } from "./media.js?v=1.8.24";
+import { generateStats } from "./stats.js?v=1.8.24";
+import { updateLoadingCopy } from "./ui.js?v=1.8.24";
 
 /** Lines between progress updates / main-thread yields. */
 const PROGRESS_EVERY_LINES = 2000;
@@ -220,7 +221,10 @@ export async function parseChatData(text) {
 
         if (lineIndex >= nextYieldAt) {
             const pct = text.length ? Math.round((end / text.length) * 100) : 100;
-            updateLoadingCopy(`Parsing messages... ${pct}% (${lineIndex.toLocaleString()} lines)`);
+            updateLoadingCopy(t("Procesando mensajes… {percent}% ({count} líneas)", {
+                percent: pct,
+                count: lineIndex.toLocaleString(getLocale())
+            }));
             nextYieldAt = lineIndex + PROGRESS_EVERY_LINES;
             await new Promise((resolve) => setTimeout(resolve, 5));
         }
@@ -269,7 +273,10 @@ export async function parseChatDataFromEntry(entry, gen) {
                 const lineIndex = getLineIndex();
                 if (lineIndex >= nextYieldAt) {
                     const pct = Math.round((bytesLoaded / totalBytes) * 100);
-                    updateLoadingCopy(`Parsing messages... ${pct}% (${lineIndex.toLocaleString()} lines)`);
+                    updateLoadingCopy(t("Procesando mensajes… {percent}% ({count} líneas)", {
+                        percent: pct,
+                        count: lineIndex.toLocaleString(getLocale())
+                    }));
                     nextYieldAt = lineIndex + PROGRESS_EVERY_LINES;
                     return new Promise((resolve) => setTimeout(resolve, 0));
                 }

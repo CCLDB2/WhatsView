@@ -1,11 +1,12 @@
 /** Opt-in local ZIP storage, isolated from WhatsApp records and preferences. */
-import * as storage from "../storage.js?v=1.8.23";
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
-import { writeInstagramSettings } from "./settings.js?v=1.8.23";
-import { importsOfKind } from "../shared/import-records.js?v=1.8.23";
-import { showToast } from "./ui.js?v=1.8.23";
+import * as storage from "../storage.js?v=1.8.24";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
+import { writeInstagramSettings } from "./settings.js?v=1.8.24";
+import { importsOfKind } from "../shared/import-records.js?v=1.8.24";
+import { showToast } from "./ui.js?v=1.8.24";
+import { t, getLocale } from "../i18n.js?v=1.8.24";
 
 const USED_KEY = "chatlume-instagram-persist-used";
 const LAST_KEY = "chatlume-instagram-last-import";
@@ -29,7 +30,7 @@ export async function initInstagramPersistence({ openImport }) {
         igState.storedImports = importsOfKind(await storage.reconcileImports(), "instagram");
     } catch (error) {
         console.warn("Instagram stored imports could not be read:", error);
-        showToast("Saved Instagram exports couldn't be read right now", "warn");
+        showToast(t("Los chats de Instagram guardados no se pudieron leer ahora mismo"), "warn");
         return;
     }
     renderInstagramStoredImports();
@@ -45,15 +46,18 @@ export function renderInstagramStoredImports() {
     if (!list) return;
     list.innerHTML = igState.storedImports.length
         ? igState.storedImports.map((record) => {
-            const title = record.chatTitle || record.fileName || "Instagram export";
-            const meta = `${(record.messageCount || 0).toLocaleString()} messages · ${formatBytes(record.size)}`;
+            const title = record.chatTitle || record.fileName || t("Exportación de Instagram");
+            const meta = t("{count} mensajes · {size}", {
+                count: (record.messageCount || 0).toLocaleString(getLocale()),
+                size: formatBytes(record.size)
+            });
             return `<div class="storage-item">
                 <div class="storage-item-info"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(meta)}</span></div>
-                <button type="button" class="chat-item" data-ig-stored-open="${escapeAttribute(record.id)}">Open</button>
-                <button type="button" class="stored-delete" data-ig-stored-delete="${escapeAttribute(record.id)}" aria-label="Delete ${escapeAttribute(title)}"><i class="ph ph-trash"></i></button>
+                <button type="button" class="chat-item" data-ig-stored-open="${escapeAttribute(record.id)}">${escapeHtml(t("Abrir"))}</button>
+                <button type="button" class="stored-delete" data-ig-stored-delete="${escapeAttribute(record.id)}" aria-label="${escapeAttribute(t("Eliminar {name}", { name: title }))}"><i class="ph ph-trash"></i></button>
             </div>`;
         }).join("")
-        : `<p class="storage-note">Saved Instagram exports will appear here.</p>`;
+        : `<p class="storage-note">${escapeHtml(t("Las exportaciones de Instagram guardadas aparecerán aquí."))}</p>`;
     const manage = $("ig-storage-manage");
     if (manage) manage.hidden = !igState.storedImports.length;
 }
@@ -73,7 +77,7 @@ export async function persistInstagramImport(file, thread) {
     }
     if (copyJob) {
         if (copyingFile === file) pendingThread = threadDetails;
-        else showToast("Another export is still being saved. Try again after it finishes.", "warn");
+        else showToast(t("Todavía se está guardando otra exportación. Inténtalo de nuevo cuando termine."), "warn");
         return;
     }
 
@@ -81,14 +85,14 @@ export async function persistInstagramImport(file, thread) {
         await storage.requestPersistence();
         const estimate = await storage.estimateStorage();
         if (estimate && estimate.available < storage.requiredSpace(file.size)) {
-            showToast("Not enough device storage to save this export", "warn");
+            showToast(t("No hay espacio suficiente en el dispositivo para guardar esta exportación"), "warn");
             return;
         }
         const id = storage.generateId();
-        setStorageStatus("Saving this export on your device…");
+        setStorageStatus(t("Guardando esta exportación en tu dispositivo…"));
         copyingFile = file;
         copyJob = storage.copyFileToStorage(file, id, {
-            onProgress(copied, total) { setStorageStatus(`Saving… ${Math.floor((copied / Math.max(1, total)) * 100)}%`); }
+            onProgress(copied, total) { setStorageStatus(t("Guardando… {percent}%", { percent: Math.floor((copied / Math.max(1, total)) * 100) })); }
         });
         const storedName = await copyJob.promise;
         const savedDetails = pendingThread || threadDetails;
@@ -99,7 +103,7 @@ export async function persistInstagramImport(file, thread) {
             storedName,
             size: file.size,
             lastModified: file.lastModified,
-            chatTitle: savedDetails.chatTitle || "Instagram export",
+            chatTitle: savedDetails.chatTitle || "",
             messageCount: savedDetails.messageCount,
             ownerName: savedDetails.ownerName,
             threadFolder: savedDetails.thread?.folder || "",
@@ -112,11 +116,11 @@ export async function persistInstagramImport(file, thread) {
         writeStored(USED_KEY, "1");
         writeStored(LAST_KEY, id);
         renderInstagramStoredImports();
-        showToast("Instagram export saved on this device");
+        showToast(t("Exportación de Instagram guardada en este dispositivo"));
     } catch (error) {
         if (error?.name !== "AbortError") {
             console.warn("Instagram export could not be saved:", error);
-            showToast("Couldn't save this Instagram export", "warn");
+            showToast(t("No se pudo guardar esta exportación de Instagram"), "warn");
         }
     } finally {
         copyJob = null;
@@ -150,9 +154,9 @@ async function openInstagramStoredImport(record) {
     } catch (error) {
         if (storage.isUnrecoverable(error)) {
             await deleteInstagramImport(record.id);
-            showToast("That saved export is no longer available", "warn");
+            showToast(t("Esa exportación guardada ya no está disponible"), "warn");
         } else {
-            showToast("Couldn't open this saved Instagram export", "error");
+            showToast(t("No se pudo abrir esta exportación de Instagram guardada"), "error");
         }
     }
 }
@@ -171,7 +175,7 @@ export async function handleInstagramStorageClick(event) {
 export async function deleteInstagramImport(id) {
     const record = igState.storedImports.find((item) => item.id === id);
     if (!record) return;
-    if (!window.confirm(`Delete the saved export “${record.chatTitle || record.fileName}” from this device?`)) return;
+    if (!window.confirm(t("¿Eliminar la exportación guardada “{name}” de este dispositivo?", { name: record.chatTitle || record.fileName }))) return;
     await storage.deleteImport(record);
     igState.storedImports = igState.storedImports.filter((item) => item.id !== id);
     if (readStored(LAST_KEY) === id) removeStored(LAST_KEY);
@@ -182,12 +186,14 @@ export async function deleteInstagramImport(id) {
 
 export async function deleteAllInstagramImports() {
     if (!igState.storedImports.length) return;
-    if (!window.confirm(`Delete all ${igState.storedImports.length} saved Instagram export${igState.storedImports.length === 1 ? "" : "s"} from this device?`)) return;
+    if (!window.confirm(igState.storedImports.length === 1
+        ? t("¿Eliminar la exportación de Instagram guardada de este dispositivo?")
+        : t("¿Eliminar las {count} exportaciones de Instagram guardadas de este dispositivo?", { count: igState.storedImports.length }))) return;
     try {
         await storage.deleteImportsByKind("instagram");
     } catch (error) {
         console.warn("Saved Instagram exports could not be deleted:", error);
-        showToast("Couldn't delete saved Instagram exports", "error");
+        showToast(t("No se pudieron eliminar las exportaciones de Instagram guardadas"), "error");
         return;
     }
     igState.storedImports = [];
@@ -195,17 +201,17 @@ export async function deleteAllInstagramImports() {
     removeStored(LAST_KEY);
     removeStored(USED_KEY);
     renderInstagramStoredImports();
-    showToast("Saved Instagram exports deleted");
+    showToast(t("Exportaciones de Instagram guardadas eliminadas"));
 }
 
 export function handleInstagramStorageSetting(event) {
     igState.settings = writeInstagramSettings({ ...igState.settings, persistentStorage: event.target.checked });
     if (event.target.checked) {
         writeStored(USED_KEY, "1");
-        showToast("New Instagram exports can be saved on this device");
+        showToast(t("Las nuevas exportaciones de Instagram se pueden guardar en este dispositivo"));
     } else {
         cancelInstagramCopy();
-        showToast("Storage is off. Existing saved exports remain until deleted.");
+        showToast(t("El almacenamiento está desactivado. Las exportaciones guardadas siguen hasta que las elimines."));
     }
 }
 

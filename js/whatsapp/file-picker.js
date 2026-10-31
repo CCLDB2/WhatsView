@@ -8,11 +8,12 @@
  * of the drop target.
  * ============================================================================
  */
-import { $, q, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { COMPAT_LIMIT_MESSAGE, exceedsCompatLimit } from "../shared/compat.js?v=1.8.23";
-import { assignFileToInput, setupDropTarget, setupGlobalDropZone } from "../shared/drop-zone.js?v=1.8.23";
-import { state } from "./state.js?v=1.8.23";
-import { isMobileLayout, setSidebarState, setUploadPanelVisible, showToast } from "./ui.js?v=1.8.23";
+import { $, q, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { COMPAT_LIMIT_MESSAGE, exceedsCompatLimit } from "../shared/compat.js?v=1.8.24";
+import { assignFileToInput, setupDropTarget, setupGlobalDropZone } from "../shared/drop-zone.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { state } from "./state.js?v=1.8.24";
+import { isMobileLayout, setSidebarState, setUploadPanelVisible, showToast } from "./ui.js?v=1.8.24";
 
 /** Wires the picker, drop target and window-wide drop overlay. */
 export function setupFileIntake() {
@@ -60,7 +61,7 @@ function handleFileInputChange(event) {
 function handleDroppedFile(file) {
     const name = file.name.toLowerCase();
     if (!name.endsWith(".txt") && !name.endsWith(".zip")) {
-        showToast("Please drop a WhatsApp .txt or .zip export", "error");
+        showToast(t("Suelta una exportación de WhatsApp .txt o .zip"), "error");
         return;
     }
     if (exceedsCompatLimit(file)) {
@@ -77,7 +78,7 @@ function handleDroppedFile(file) {
     if ($("upload-panel")?.classList.contains("hidden")) {
         setUploadPanelVisible(true);
         if (isMobileLayout()) setSidebarState(true);
-        showToast("File ready — tap Load Chat to open it", "info");
+        showToast(t("Archivo listo: toca Cargar chat para abrirlo"), "info");
     }
 }
 
@@ -95,7 +96,7 @@ export function reflectSelectedFile(file) {
         icon.style.color = "#00a884";
     }
     if (label) {
-        label.innerHTML = `<strong>${escapeHtml(file.name)}</strong><br><span style="font-size:12px;opacity:0.7">Ready to load</span>`;
+        label.innerHTML = `<strong>${escapeHtml(file.name)}</strong><br><span style="font-size:12px;opacity:0.7">${escapeHtml(t("Listo para cargar"))}</span>`;
     }
 }
 
@@ -112,6 +113,6 @@ export function resetSelectedFileUI() {
         icon.style.color = "";
     }
     if (label) {
-        label.innerHTML = 'Drop <strong>.txt</strong> or <strong>.zip</strong>';
+        label.innerHTML = t("Suelta un <strong>.txt</strong> o <strong>.zip</strong>");
     }
 }

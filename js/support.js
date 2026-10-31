@@ -15,7 +15,8 @@
  * Nothing here is ever fed user data; the copy is authored below.
  */
 
-import { readStored, writeStored } from "./shared/safe-storage.js?v=1.8.23";
+import { readStored, writeStored } from "./shared/safe-storage.js?v=1.8.24";
+import { t } from "./i18n.js?v=1.8.24";
 
 const SNOOZE_KEY = "chatlume-sponsor-snooze-until";
 const SPONSOR_URL = "https://github.com/sponsors/ParasSharma2306";
@@ -57,17 +58,17 @@ export function showSponsorPrompt({ delay = 2500 } = {}) {
         const card = document.createElement("div");
         card.className = "sponsor-prompt";
         card.setAttribute("role", "complementary");
-        card.setAttribute("aria-label", "Support ChatLume");
+        card.setAttribute("aria-label", t("Apoyar ChatLume"));
         card.innerHTML =
             '<div class="sponsor-prompt-icon" aria-hidden="true"><i class="ph-fill ph-heart"></i></div>' +
             '<div class="sponsor-prompt-text">' +
-                "<strong>ChatLume is free, and stays free</strong>" +
-                "<span>No ads, no accounts, nothing to upgrade to. Sponsors cover the hosting.</span>" +
+                `<strong>${t("ChatLume es gratis, y seguirá siéndolo")}</strong>` +
+                `<span>${t("Sin anuncios, sin cuentas, nada que mejorar. Los patrocinadores cubren el alojamiento.")}</span>` +
             "</div>" +
             '<div class="sponsor-prompt-actions">' +
-                '<button type="button" class="sponsor-prompt-no">Not now</button>' +
+                `<button type="button" class="sponsor-prompt-no">${t("Ahora no")}</button>` +
                 '<a class="sponsor-prompt-yes" href="' + SPONSOR_URL + '" target="_blank" rel="noopener noreferrer">' +
-                    '<i class="ph-fill ph-heart" aria-hidden="true"></i> Sponsor</a>' +
+                    `<i class="ph-fill ph-heart" aria-hidden="true"></i> ${t("Patrocinar")}</a>` +
             "</div>";
 
         document.body.appendChild(card);

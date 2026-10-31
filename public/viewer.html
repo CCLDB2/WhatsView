@@ -1,12 +1,12 @@
 <!DOCTYPE html> 
-<html lang="en"> 
+<html lang="es"> 
 <head>     
     <meta charset="UTF-8">     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">     
     <meta name="theme-color" content="#111b21">     
     <meta name="apple-mobile-web-app-capable" content="yes">     
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">     
-    <title>Chat Viewer — ChatLume</title>
+    <title data-i18n="Visor de chats — ChatLume">Visor de chats — ChatLume</title>
     <meta name="description" content="View WhatsApp and Instagram exports in your browser. Self-hosted copies can be stored on your own server.">
     <meta name="author" content="ChatLume">
     <meta name="application-name" content="ChatLume">
@@ -29,7 +29,7 @@
     <meta name="twitter:image" content="https://chatlume.app/assets/og-image.png">     
     <link rel="icon" href="../assets/favicon.ico" sizes="any">
     <link rel="icon" href="../assets/logo-192.png" type="image/png">
-    <link rel="stylesheet" href="../css/style.css?v=1.8.23">
+    <link rel="stylesheet" href="../css/style.css?v=1.8.24">
     <link rel="manifest" href="../manifest.json">     
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">     
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
@@ -37,7 +37,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" defer></script>
-    <script type="module" src="../js/script.js?v=1.8.23"></script>
+    <script type="module" src="../js/script.js?v=1.8.24"></script>
     <script defer src="https://umami.parassharma.in/script.js" data-website-id="f3047984-3a15-4f29-8410-82a6d68f0746"></script>
     <script>
         // Apply the saved theme before first paint. Without this the viewer
@@ -65,72 +65,72 @@
     </script>
 
     <nav class="app-nav">
-        <a href="../index.html" class="back-home"><i class="ph ph-house"></i> Home</a>
+        <a href="../index.html" class="back-home"><i class="ph ph-house"></i> <span data-i18n="Inicio">Inicio</span></a>
         <div class="nav-links">
             <a href="instagram-viewer.html">Instagram</a>
-            <a href="../sponsors.html">Sponsors</a>
+            <a href="../sponsors.html" data-i18n="Patrocinadores">Patrocinadores</a>
         </div>
     </nav>     
     <div id="loader" aria-hidden="true">         
         <div class="loader-content">             
             <img src="../assets/logo-192.png" alt="" class="loader-logo">
             <div class="progress-bar" aria-hidden="true"><div class="fill"></div></div>             
-            <p><i class="ph-fill ph-shield-check"></i> 100% Local Processing</p>         
+            <p><i class="ph-fill ph-shield-check"></i> <span data-i18n="Procesamiento 100% local">Procesamiento 100% local</span></p>         
         </div>     
     </div>     
     <div class="drag-overlay" id="drag-overlay" aria-hidden="true">
         <div class="drag-overlay-inner">
             <i class="ph ph-file-arrow-up"></i>
-            <p>Drop your chat export here</p>
-            <span>WhatsApp <strong>.txt</strong> or <strong>.zip</strong></span>
+            <p data-i18n="Suelta aquí tu exportación de chat">Suelta aquí tu exportación de chat</p>
+            <span data-i18n-html="WhatsApp <strong>.txt</strong> o <strong>.zip</strong>">WhatsApp <strong>.txt</strong> o <strong>.zip</strong></span>
         </div>
     </div>
     <div class="app-layout">
-        <aside class="sidebar" id="sidebar" aria-label="Sidebar">             
+        <aside class="sidebar" id="sidebar" aria-label="Barra lateral" data-i18n-aria-label="Barra lateral">             
             <header class="sidebar-header">                 
-                <button class="profile-thumb profile-button" id="open-profile" type="button" title="My Profile" aria-label="Open profile">                     
-                    <img src="../assets/avatar-placeholder.svg" id="my-pfp-img" alt="Your profile picture" loading="lazy">                 
+                <button class="profile-thumb profile-button" id="open-profile" type="button" title="Mi perfil" aria-label="Abrir perfil" data-i18n-title="Mi perfil" data-i18n-aria-label="Abrir perfil">                     
+                    <img src="../assets/avatar-placeholder.svg" id="my-pfp-img" alt="Tu foto de perfil" data-i18n-alt="Tu foto de perfil" loading="lazy">                 
                 </button>                 
                 <div class="sidebar-nav">                 
-                    <button id="install-pwa" type="button" title="Install App" aria-label="Install App" hidden><i class="ph ph-download-simple"></i></button>                     
-                    <button id="open-stats" type="button" title="Analytics" aria-label="Open analytics"><i class="ph ph-chart-pie-slice"></i></button>                     
-                    <button id="open-settings" type="button" title="Settings" aria-label="Open settings"><i class="ph ph-gear-six"></i></button>                     
-                    <button id="open-info" type="button" title="App Info" aria-label="Open app info"><i class="ph ph-info"></i></button>                     
-                    <button id="theme-toggle" type="button" title="Toggle Theme" aria-label="Toggle theme"><i class="ph ph-moon-stars"></i></button>                 
+                    <button id="install-pwa" type="button" title="Instalar aplicación" aria-label="Instalar aplicación" data-i18n-title="Instalar aplicación" data-i18n-aria-label="Instalar aplicación" hidden><i class="ph ph-download-simple"></i></button>                     
+                    <button id="open-stats" type="button" title="Estadísticas" aria-label="Abrir estadísticas" data-i18n-title="Estadísticas" data-i18n-aria-label="Abrir estadísticas"><i class="ph ph-chart-pie-slice"></i></button>                     
+                    <button id="open-settings" type="button" title="Ajustes" aria-label="Abrir ajustes" data-i18n-title="Ajustes" data-i18n-aria-label="Abrir ajustes"><i class="ph ph-gear-six"></i></button>                     
+                    <button id="open-info" type="button" title="Información de la app" aria-label="Abrir información de la app" data-i18n-title="Información de la app" data-i18n-aria-label="Abrir información de la app"><i class="ph ph-info"></i></button>                     
+                    <button id="theme-toggle" type="button" title="Cambiar tema" aria-label="Cambiar tema" data-i18n-title="Cambiar tema" data-i18n-aria-label="Cambiar tema"><i class="ph ph-moon-stars"></i></button>                 
                 </div>             
             </header>             
             <div class="sidebar-content">                 
                 <section class="upload-state" id="upload-panel">                     
                     <div class="brand-hero">                         
                         <h1>ChatLume</h1>                         
-                        <span>WhatsApp Chat Viewer</span>                     
+                        <span data-i18n="Visor de chats de WhatsApp">Visor de chats de WhatsApp</span>                     
                     </div>
                     <div class="input-wrapper">                         
-                        <label for="display-name">Display Name</label>                         
-                        <input type="text" id="display-name" placeholder="Exact name in chat (e.g. Paras)" autocomplete="name">                     
-                    </div>
+                        <label for="display-name" data-i18n="Nombre visible">Nombre visible</label>                         
+                        <input type="text" id="display-name" placeholder="Nombre exacto en el chat (ej. Ana)" autocomplete="name" data-i18n-placeholder="Nombre exacto en el chat (ej. Ana)">                     
+                    </div>                     
                     <button class="drop-target" id="drop-target" type="button" aria-describedby="drop-help">                         
                         <i class="ph ph-file-arrow-up" aria-hidden="true"></i>                         
-                        <p>Drop <strong>.txt</strong> or <strong>.zip</strong></p>                         
-                        <span id="drop-help" class="sr-only">Choose a WhatsApp export text file or a ZIP with media.</span>                         
+                        <p data-i18n-html="Suelta <strong>.txt</strong> o <strong>.zip</strong>">Suelta <strong>.txt</strong> o <strong>.zip</strong></p>                         
+                        <span id="drop-help" class="sr-only" data-i18n="Elige un archivo de texto de WhatsApp o un ZIP con archivos multimedia.">Elige un archivo de texto de WhatsApp o un ZIP con archivos multimedia.</span>                         
                         <input type="file" id="file-input" accept=".txt,.zip" hidden>
-                        <span class="btn-secondary">Browse</span>
-                        <span class="mobile-tap-hint">Tap to select a file</span>
-                    </button>
-                    <button class="btn-primary" id="load-chat" type="button">Load Chat</button>
-                    <button class="btn-secondary upload-back" id="upload-back" type="button" hidden><i class="ph ph-arrow-left"></i> Back to open chat</button>
-                    <div class="load-hint" id="load-hint">Large ZIP exports can take a moment to parse.</div>
-                    <section class="server-storage" data-server-storage hidden aria-label="Almacenamiento del servidor">
-                        <div class="server-storage-heading"><strong>Guardado privado en Dockploy</strong><button type="button" data-server-refresh aria-label="Actualizar archivos del servidor" title="Actualizar"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i></button></div>
-                        <p class="server-storage-note">Al cargar un chat, se subirá una copia al disco del servidor. Mantén Pangolin protegiendo este dominio.</p>
+                        <span class="btn-secondary" data-i18n="Elegir archivo">Elegir archivo</span>
+                        <span class="mobile-tap-hint" data-i18n="Toca para elegir un archivo">Toca para elegir un archivo</span>
+                    </button>                     
+                    <button class="btn-primary" id="load-chat" type="button" data-i18n="Cargar chat">Cargar chat</button>                     
+                    <button class="btn-secondary upload-back" id="upload-back" type="button" hidden><i class="ph ph-arrow-left"></i> <span data-i18n="Volver al chat abierto">Volver al chat abierto</span></button>                     
+                    <div class="load-hint" id="load-hint" data-i18n="Las exportaciones ZIP grandes pueden tardar un momento en procesarse.">Las exportaciones ZIP grandes pueden tardar un momento en procesarse.</div>                     
+                    <section class="server-storage" data-server-storage hidden aria-label="Almacenamiento del servidor" data-i18n-aria-label="Almacenamiento del servidor">
+                        <div class="server-storage-heading"><strong data-i18n="Guardado privado en Dockploy">Guardado privado en Dockploy</strong><button type="button" data-server-refresh aria-label="Actualizar archivos del servidor" title="Actualizar" data-i18n-aria-label="Actualizar archivos del servidor" data-i18n-title="Actualizar"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i></button></div>
+                        <p class="server-storage-note" data-i18n="Al cargar un chat, se subirá una copia al disco del servidor. Mantén Pangolin protegiendo este dominio.">Al cargar un chat, se subirá una copia al disco del servidor. Mantén Pangolin protegiendo este dominio.</p>
                         <p class="server-storage-usage" data-server-usage></p>
                         <p class="server-storage-status" data-server-status role="status"></p>
                         <div class="server-transfer" data-server-transfer hidden role="status" aria-live="polite"><div class="server-transfer-heading"><span data-server-transfer-label></span><span data-server-transfer-percent></span></div><progress max="100" value="0" data-server-transfer-progress></progress></div>
                         <div class="server-chat-list" data-server-chat-list></div>
                     </section>
                     <div class="stored-list" data-stored-list hidden></div>
-                    <div class="privacy-pill"><i class="ph-fill ph-shield-check"></i> <span id="privacy-mode-copy">Chat parsing runs in your browser.</span></div>
-                    <div class="app-version-label" data-app-version>v1.8.23</div>
+                    <div class="privacy-pill"><i class="ph-fill ph-shield-check"></i> <span id="privacy-mode-copy" data-i18n="El procesamiento del chat ocurre en tu navegador.">El procesamiento del chat ocurre en tu navegador.</span></div>
+                    <div class="app-version-label" data-app-version>v1.8.24</div>
                 </section>
                 <section class="chat-list hidden" id="chat-list-skeleton" aria-hidden="true">
                     <div class="chat-skeleton">
@@ -139,230 +139,243 @@
                         <div class="chat-skeleton-row"><div class="sk-avatar"></div><div class="sk-body"><div class="sk-line w70"></div><div class="sk-line w40"></div></div></div>
                     </div>
                 </section>
-                <section class="chat-list hidden" id="chat-list-panel" aria-label="Loaded chat">                     
+                <section class="chat-list hidden" id="chat-list-panel" aria-label="Chat cargado" data-i18n-aria-label="Chat cargado">                     
                     <div class="search-bar-sidebar">                         
                         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>                         
-                        <input type="search" id="sidebar-chat-search" placeholder="Search chats" autocomplete="off" aria-label="Search chats">
-                    </div>
+                        <input type="search" id="sidebar-chat-search" placeholder="Buscar chats" autocomplete="off" aria-label="Buscar chats" data-i18n-placeholder="Buscar chats" data-i18n-aria-label="Buscar chats">
+                    </div>                     
                     <button class="chat-item active" id="chat-list-item" type="button">                         
                         <div class="chat-item-avatar" aria-hidden="true"></div>                         
                         <div class="chat-item-info">                             
-                            <h4 id="sidebar-title">Chat History</h4>
-                            <span id="sidebar-sub">Active now</span>
-                        </div>
-                    </button>
-                    <div class="stored-list" data-stored-list hidden></div>
-                    <section class="server-storage" data-server-storage hidden aria-label="Almacenamiento del servidor">
-                        <div class="server-storage-heading"><strong>Chats en Dockploy</strong><button type="button" data-server-refresh aria-label="Actualizar archivos del servidor" title="Actualizar"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i></button></div>
+                            <h4 id="sidebar-title" data-i18n="Historial de chats">Historial de chats</h4>
+                            <span id="sidebar-sub" data-i18n="Activo ahora">Activo ahora</span>
+                        </div>                     
+                    </button>                     
+                    <div class="stored-list" data-stored-list hidden></div>                     
+                    <section class="server-storage" data-server-storage hidden aria-label="Almacenamiento del servidor" data-i18n-aria-label="Almacenamiento del servidor">
+                        <div class="server-storage-heading"><strong data-i18n="Chats en Dockploy">Chats en Dockploy</strong><button type="button" data-server-refresh aria-label="Actualizar archivos del servidor" title="Actualizar" data-i18n-aria-label="Actualizar archivos del servidor" data-i18n-title="Actualizar"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i></button></div>
                         <p class="server-storage-usage" data-server-usage></p>
                         <p class="server-storage-status" data-server-status role="status"></p>
                         <div class="server-transfer" data-server-transfer hidden role="status" aria-live="polite"><div class="server-transfer-heading"><span data-server-transfer-label></span><span data-server-transfer-percent></span></div><progress max="100" value="0" data-server-transfer-progress></progress></div>
                         <div class="server-chat-list" data-server-chat-list></div>
                     </section>
-                    <button class="btn-secondary import-another" id="import-another" type="button"><i class="ph ph-plus"></i> Import another chat</button>
+                    <button class="btn-secondary import-another" id="import-another" type="button"><i class="ph ph-plus"></i> <span data-i18n="Importar otro chat">Importar otro chat</span></button>
                 </section>
             </div>             
-            <section class="drawer" id="profile-drawer" aria-label="Profile drawer">                 
+            <section class="drawer" id="profile-drawer" aria-label="Panel de perfil" data-i18n-aria-label="Panel de perfil">                 
                 <div class="drawer-header">                     
-                    <button class="drawer-close" data-drawer-close="profile" type="button" aria-label="Close profile"><i class="ph ph-arrow-left"></i></button>                     
-                    <h2>Profile</h2>                 
+                    <button class="drawer-close" data-drawer-close="profile" type="button" aria-label="Cerrar perfil" data-i18n-aria-label="Cerrar perfil"><i class="ph ph-arrow-left"></i></button>                     
+                    <h2 data-i18n="Perfil">Perfil</h2>                 
                 </div>                 
                 <div class="drawer-scroll">                     
                     <div class="profile-hero">                         
                         <button class="large-avatar avatar-upload-trigger" id="open-pfp-upload" type="button">                             
-                            <img src="../assets/avatar-placeholder.svg" id="drawer-pfp-img" alt="Profile preview" loading="lazy">                             
+                            <img src="../assets/avatar-placeholder.svg" id="drawer-pfp-img" alt="Vista previa del perfil" data-i18n-alt="Vista previa del perfil" loading="lazy">                             
                             <span class="overlay"><i class="ph ph-camera"></i></span>                         
                         </button>                         
                         <input type="file" id="pfp-upload" hidden accept="image/*">                         
-                        <h2 id="profile-display-name">You</h2>                     
+                        <h2 id="profile-display-name" data-i18n="Tú">Tú</h2>                     
                     </div>                     
                 </div>             
             </section>             
-            <section class="drawer" id="stats-drawer" aria-label="Analytics drawer">                 
+            <section class="drawer" id="stats-drawer" aria-label="Panel de estadísticas" data-i18n-aria-label="Panel de estadísticas">                 
                 <div class="drawer-header">                     
-                    <button class="drawer-close" data-drawer-close="stats" type="button" aria-label="Close analytics"><i class="ph ph-arrow-left"></i></button>                     
-                    <h2>Analytics</h2>                 
+                    <button class="drawer-close" data-drawer-close="stats" type="button" aria-label="Cerrar estadísticas" data-i18n-aria-label="Cerrar estadísticas"><i class="ph ph-arrow-left"></i></button>                     
+                    <h2 data-i18n="Estadísticas">Estadísticas</h2>                 
                 </div>                 
                 <div class="drawer-scroll">                     
                     <div class="wrapped-card">                         
-                        <h3>ChatLume Wrapped  </h3>                         
-                        <p>Generate a beautiful infographic of your chat personality and trends!</p>                         
-                        <button class="btn-wrapped" id="generate-wrapped">Generate Wrapped</button>                     
+                        <h3>ChatLume Wrapped</h3>                         
+                        <p data-i18n="Genera una infografía preciosa de la personalidad y las tendencias de tu chat.">Genera una infografía preciosa de la personalidad y las tendencias de tu chat.</p>                         
+                        <button class="btn-wrapped" id="generate-wrapped" data-i18n="Generar Wrapped">Generar Wrapped</button>                     
                     </div>                     
                     <div class="stats-overview">                         
                         <div class="stat-box">                             
                             <span class="val" id="stat-total">0</span>                             
-                            <span class="label">Messages</span>                         
+                            <span class="label" data-i18n="Mensajes">Mensajes</span>                         
                         </div>                         
                         <div class="stat-box">                             
                             <span class="val" id="stat-media">0</span>                             
-                            <span class="label">Media</span>                         
+                            <span class="label" data-i18n="Archivos">Archivos</span>                         
                         </div>                     
                     </div>                     
-                    <div class="section-label">EMOJI INSIGHTS</div>                     
+                    <div class="section-label" data-i18n="EMOJIS">EMOJIS</div>                     
                     <div class="emoji-grid" id="emoji-grid"></div>                     
-                    <div class="section-label">ACTIVITY BREAKDOWN</div>                     
+                    <div class="section-label" data-i18n="ACTIVIDAD">ACTIVIDAD</div>                     
                     <div class="stats-list" id="stats-list"></div>                 
                 </div>             
             </section>             
-            <section class="drawer" id="settings-drawer" aria-label="Settings drawer">                 
+            <section class="drawer" id="settings-drawer" aria-label="Panel de ajustes" data-i18n-aria-label="Panel de ajustes">                 
                 <div class="drawer-header">                     
-                    <button class="drawer-close" data-drawer-close="settings" type="button" aria-label="Close settings"><i class="ph ph-arrow-left"></i></button>                     
-                    <h2>Settings</h2>                 
+                    <button class="drawer-close" data-drawer-close="settings" type="button" aria-label="Cerrar ajustes" data-i18n-aria-label="Cerrar ajustes"><i class="ph ph-arrow-left"></i></button>                     
+                    <h2 data-i18n="Ajustes">Ajustes</h2>                 
                 </div>                 
                 <div class="drawer-scroll">                     
+                    <div class="settings-group">
+                        <div class="section-label" data-i18n="IDIOMA">IDIOMA</div>
+                        <label class="setting-row" for="setting-language">
+                            <span>
+                                <strong data-i18n="Idioma">Idioma</strong>
+                                <small data-i18n="Elige el idioma de la interfaz.">Elige el idioma de la interfaz.</small>
+                            </span>
+                            <select id="setting-language">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                            </select>
+                        </label>
+                    </div>
                     <div class="settings-group">                         
-                        <div class="section-label">TIME DISPLAY</div>                         
+                        <div class="section-label" data-i18n="VISUALIZACIÓN DE HORA">VISUALIZACIÓN DE HORA</div>                         
                         <label class="setting-row" for="setting-time-format">                             
                             <span>                                 
-                                <strong>Time Format</strong>                                 
-                                <small>Choose original, 12-hour, or 24-hour timestamps.</small>                             
+                                <strong data-i18n="Formato de hora">Formato de hora</strong>                                 
+                                <small data-i18n="Elige la hora original, de 12 o de 24 horas.">Elige la hora original, de 12 o de 24 horas.</small>                             
                             </span>                             
                             <select id="setting-time-format" data-setting="timeFormat">                                 
-                                <option value="auto">Original</option>                                 
-                                <option value="12">12-hour</option>                                 
-                                <option value="24">24-hour</option>                             
+                                <option value="auto" data-i18n="Original">Original</option>                                 
+                                <option value="12" data-i18n="12 horas">12 horas</option>                                 
+                                <option value="24" data-i18n="24 horas">24 horas</option>                             
                             </select>                         
                         </label>                         
                         <label class="setting-row" for="setting-show-seconds">                             
                             <span>                                 
-                                <strong>Show Seconds</strong>                                 
-                                <small>Keep seconds visible when the export includes them.</small>                             
+                                <strong data-i18n="Mostrar segundos">Mostrar segundos</strong>                                 
+                                <small data-i18n="Mantén los segundos visibles cuando la exportación los incluya.">Mantén los segundos visibles cuando la exportación los incluya.</small>                             
                             </span>                             
                             <input type="checkbox" id="setting-show-seconds" data-setting="showSeconds">                         
                         </label>                         
                         <label class="setting-row" for="setting-time-brackets">                             
                             <span>                                 
-                                <strong>Time Brackets</strong>                                 
-                                <small>Add brackets around message timestamps.</small>                             
+                                <strong data-i18n="Paréntesis de hora">Paréntesis de hora</strong>                                 
+                                <small data-i18n="Añade paréntesis alrededor de las horas de los mensajes.">Añade paréntesis alrededor de las horas de los mensajes.</small>                             
                             </span>                             
                             <select id="setting-time-brackets" data-setting="timeBrackets">                                 
-                                <option value="none">None</option>                                 
-                                <option value="square">[Square]</option>                                 
-                                <option value="round">(Round)</option>                             
+                                <option value="none" data-i18n="Ninguno">Ninguno</option>                                 
+                                <option value="square" data-i18n="[Cuadrado]">[Cuadrado]</option>                                 
+                                <option value="round" data-i18n="(Redondo)">(Redondo)</option>                             
                             </select>                         
                         </label>                     
                     </div>                     
                     <div class="settings-group">                         
-                        <div class="section-label">DATE DISPLAY</div>                         
+                        <div class="section-label" data-i18n="VISUALIZACIÓN DE FECHA">VISUALIZACIÓN DE FECHA</div>                         
                         <label class="setting-row" for="setting-date-format">                             
                             <span>                                 
-                                <strong>Date Format</strong>                                 
-                                <small>Control date separators and date jump labels.</small>                             
+                                <strong data-i18n="Formato de fecha">Formato de fecha</strong>                                 
+                                <small data-i18n="Controla los separadores de fecha y las etiquetas del salto de fecha.">Controla los separadores de fecha y las etiquetas del salto de fecha.</small>                             
                             </span>                             
                             <select id="setting-date-format" data-setting="dateFormat">                                 
-                                <option value="original">Original</option>                                 
-                                <option value="dmy">DD/MM/YYYY</option>                                 
-                                <option value="mdy">MM/DD/YYYY</option>                                 
-                                <option value="ymd">YYYY/MM/DD</option>                                 
-                                <option value="long">Long</option>                             
+                                <option value="original" data-i18n="Original">Original</option>                                 
+                                <option value="dmy" data-i18n="DD/MM/AAAA">DD/MM/AAAA</option>                                 
+                                <option value="mdy" data-i18n="MM/DD/AAAA">MM/DD/AAAA</option>                                 
+                                <option value="ymd" data-i18n="AAAA/MM/DD">AAAA/MM/DD</option>                                 
+                                <option value="long" data-i18n="Largo">Largo</option>                             
                             </select>                         
                         </label>                         
                         <label class="setting-row" for="setting-date-separator">                             
                             <span>                                 
-                                <strong>Date Separator</strong>                                 
-                                <small>Used for numeric date formats.</small>                             
+                                <strong data-i18n="Separador de fecha">Separador de fecha</strong>                                 
+                                <small data-i18n="Se usa en los formatos de fecha numéricos.">Se usa en los formatos de fecha numéricos.</small>                             
                             </span>                             
                             <select id="setting-date-separator" data-setting="dateSeparator">                                 
-                                <option value="/">Slash</option>                                 
-                                <option value="-">Dash</option>                                 
-                                <option value=".">Dot</option>                             
+                                <option value="/" data-i18n="Barra">Barra</option>                                 
+                                <option value="-" data-i18n="Guion">Guion</option>                                 
+                                <option value="." data-i18n="Punto">Punto</option>                             
                             </select>                         
                         </label>                         
                         <label class="setting-row" for="setting-date-brackets">                             
                             <span>                                 
-                                <strong>Date Brackets</strong>                                 
-                                <small>Add brackets around sticky date labels.</small>                             
+                                <strong data-i18n="Paréntesis de fecha">Paréntesis de fecha</strong>                                 
+                                <small data-i18n="Añade paréntesis alrededor de las etiquetas de fecha fijas.">Añade paréntesis alrededor de las etiquetas de fecha fijas.</small>                             
                             </span>                             
                             <select id="setting-date-brackets" data-setting="dateBrackets">                                 
-                                <option value="none">None</option>                                 
-                                <option value="square">[Square]</option>                                 
-                                <option value="round">(Round)</option>                             
+                                <option value="none" data-i18n="Ninguno">Ninguno</option>                                 
+                                <option value="square" data-i18n="[Cuadrado]">[Cuadrado]</option>                                 
+                                <option value="round" data-i18n="(Redondo)">(Redondo)</option>                             
                             </select>                         
                         </label>                     
                     </div>                     
                     <div class="settings-group">                         
-                        <div class="section-label">EXPORT DATES</div>                         
+                        <div class="section-label" data-i18n="FECHAS DE LA EXPORTACIÓN">FECHAS DE LA EXPORTACIÓN</div>                         
                         <label class="setting-row" for="setting-date-order">                             
                             <span>                                 
-                                <strong>Date Order in Export</strong>                                 
-                                <small>How day, month and year are ordered in the file. Automatic detects it from the chat.</small>                             
+                                <strong data-i18n="Orden de fechas en la exportación">Orden de fechas en la exportación</strong>                                 
+                                <small data-i18n="Cómo se ordenan día, mes y año en el archivo. Automático lo detecta desde el chat.">Cómo se ordenan día, mes y año en el archivo. Automático lo detecta desde el chat.</small>                             
                             </span>                             
                             <select id="setting-date-order" data-setting="dateOrder">                                 
-                                <option value="auto">Automatic</option>                                 
-                                <option value="dmy">Day / Month / Year</option>                                 
-                                <option value="mdy">Month / Day / Year</option>                                 
-                                <option value="ymd">Year / Month / Day</option>                             
+                                <option value="auto" data-i18n="Automático">Automático</option>                                 
+                                <option value="dmy" data-i18n="Día / Mes / Año">Día / Mes / Año</option>                                 
+                                <option value="mdy" data-i18n="Mes / Día / Año">Mes / Día / Año</option>                                 
+                                <option value="ymd" data-i18n="Año / Mes / Día">Año / Mes / Día</option>                             
                             </select>                         
                         </label>                         
                         <label class="setting-row" for="setting-calendar">                             
                             <span>                                 
-                                <strong>Calendar in Export</strong>                                 
-                                <small>Calendar the file's dates use. Automatic follows era markers such as AP or BE.</small>                             
+                                <strong data-i18n="Calendario de la exportación">Calendario de la exportación</strong>                                 
+                                <small data-i18n="Calendario que usan las fechas del archivo. Automático sigue marcadores como AP o BE.">Calendario que usan las fechas del archivo. Automático sigue marcadores como AP o BE.</small>                             
                             </span>                             
                             <select id="setting-calendar" data-setting="calendar">                                 
-                                <option value="auto">Automatic</option>                                 
-                                <option value="gregorian">Gregorian</option>                                 
-                                <option value="persian">Persian (Solar Hijri)</option>                                 
-                                <option value="buddhist">Buddhist (Thai)</option>                             
+                                <option value="auto" data-i18n="Automático">Automático</option>                                 
+                                <option value="gregorian" data-i18n="Gregoriano">Gregoriano</option>                                 
+                                <option value="persian" data-i18n="Persa (Hijri solar)">Persa (Hijri solar)</option>                                 
+                                <option value="buddhist" data-i18n="Budista (tailandés)">Budista (tailandés)</option>                             
                             </select>                         
                         </label>                     
                     </div>                     
                     <div class="settings-group">                         
-                        <div class="section-label">CHAT DISPLAY</div>                         
+                        <div class="section-label" data-i18n="VISUALIZACIÓN DEL CHAT">VISUALIZACIÓN DEL CHAT</div>                         
                         <label class="setting-row" for="setting-show-senders">                             
                             <span>                                 
-                                <strong>Sender Names</strong>                                 
-                                <small>Show names above incoming grouped messages.</small>                             
+                                <strong data-i18n="Nombres de remitentes">Nombres de remitentes</strong>                                 
+                                <small data-i18n="Muestra los nombres sobre los mensajes agrupados entrantes.">Muestra los nombres sobre los mensajes agrupados entrantes.</small>                             
                             </span>                             
                             <input type="checkbox" id="setting-show-senders" data-setting="showSenderNames">                         
                         </label>                         
                         <label class="setting-row" for="setting-read-ticks">                             
                             <span>                                 
-                                <strong>Read Ticks</strong>                                 
-                                <small>Show decorative double ticks on your messages.</small>                             
+                                <strong data-i18n="Confirmaciones de lectura">Confirmaciones de lectura</strong>                                 
+                                <small data-i18n="Muestra dobles ticks decorativos en tus mensajes.">Muestra dobles ticks decorativos en tus mensajes.</small>                             
                             </span>                             
                             <input type="checkbox" id="setting-read-ticks" data-setting="showReadTicks">                         
                         </label>                         
                         <label class="setting-row" for="setting-rich-formatting">                             
                             <span>                                 
-                                <strong>Rich Text</strong>                                 
-                                <small>Render WhatsApp-style bold, italic, strike, and links.</small>                             
+                                <strong data-i18n="Texto enriquecido">Texto enriquecido</strong>                                 
+                                <small data-i18n="Aplica negrita, cursiva, tachado y enlaces al estilo WhatsApp.">Aplica negrita, cursiva, tachado y enlaces al estilo WhatsApp.</small>                             
                             </span>                             
                             <input type="checkbox" id="setting-rich-formatting" data-setting="richText">
                         </label>
                     </div>
                     <div class="settings-group" id="storage-settings">
-                        <div class="section-label">PERSISTENT STORAGE</div>
+                        <div class="section-label" data-i18n="ALMACENAMIENTO PERSISTENTE">ALMACENAMIENTO PERSISTENTE</div>
                         <label class="setting-row" for="setting-persistent-storage">
                             <span>
-                                <strong>Persistent Storage</strong>
-                                <small>Save the ZIP, display name and last reading position in this browser so the chat resumes after reload. On by default; turn off or delete saved chats here.</small>
+                                <strong data-i18n="Almacenamiento persistente">Almacenamiento persistente</strong>
+                                <small data-i18n="Guarda el ZIP, el nombre visible y la última posición de lectura en este navegador para reanudar el chat al recargar. Activado por defecto; desactívalo o elimina chats guardados aquí.">Guarda el ZIP, el nombre visible y la última posición de lectura en este navegador para reanudar el chat al recargar. Activado por defecto; desactívalo o elimina chats guardados aquí.</small>
                             </span>
                             <input type="checkbox" id="setting-persistent-storage" data-setting="persistentStorage">
                         </label>
-                        <p class="storage-note"><i class="ph-fill ph-shield-check"></i> Stored locally on this device. Not uploaded to ChatLume.</p>
-                        <p class="storage-note storage-note-warn" id="storage-unsupported" hidden><i class="ph-fill ph-warning-circle"></i> Persistent storage isn't available here — it needs a current browser and an HTTPS connection. Chats can still be opened normally; they just won't be kept between visits.</p>
+                        <p class="storage-note"><i class="ph-fill ph-shield-check"></i> <span data-i18n="Guardado localmente en este dispositivo. No se sube a ChatLume.">Guardado localmente en este dispositivo. No se sube a ChatLume.</span></p>
+                        <p class="storage-note storage-note-warn" id="storage-unsupported" hidden><i class="ph-fill ph-warning-circle"></i> <span data-i18n="El almacenamiento persistente no está disponible aquí: necesita un navegador actual y una conexión HTTPS. Los chats se pueden abrir igualmente, pero no se conservarán entre visitas.">El almacenamiento persistente no está disponible aquí: necesita un navegador actual y una conexión HTTPS. Los chats se pueden abrir igualmente, pero no se conservarán entre visitas.</span></p>
                         <div id="storage-manage" hidden>
                             <p class="storage-summary" id="storage-summary"></p>
-                            <p class="storage-note storage-note-warn" id="storage-off-note" hidden><i class="ph-fill ph-info"></i> Persistent storage is off. New imports aren't kept, but the chats below stay on this device until you delete them.</p>
+                            <p class="storage-note storage-note-warn" id="storage-off-note" hidden><i class="ph-fill ph-info"></i> <span data-i18n="El almacenamiento persistente está desactivado. Las nuevas importaciones no se guardarán, pero los chats de abajo seguirán en este dispositivo hasta que los elimines.">El almacenamiento persistente está desactivado. Las nuevas importaciones no se guardarán, pero los chats de abajo seguirán en este dispositivo hasta que los elimines.</span></p>
                             <div class="storage-list" id="storage-list"></div>
-                            <button class="btn-secondary storage-delete-all" id="storage-delete-all" type="button"><i class="ph ph-trash"></i> Delete all stored chats</button>
+                            <button class="btn-secondary storage-delete-all" id="storage-delete-all" type="button"><i class="ph ph-trash"></i> <span data-i18n="Eliminar todos los chats guardados">Eliminar todos los chats guardados</span></button>
                         </div>
                     </div>
-                    <button class="btn-secondary settings-reset" id="reset-settings" type="button">Reset Settings</button>
+                    <button class="btn-secondary settings-reset" id="reset-settings" type="button" data-i18n="Restablecer ajustes">Restablecer ajustes</button>
                 </div>             
             </section>             
-            <section class="drawer" id="info-drawer" aria-label="App info drawer">                 
+            <section class="drawer" id="info-drawer" aria-label="Panel de información de la app" data-i18n-aria-label="Panel de información de la app">                 
                 <div class="drawer-header">                     
-                    <button class="drawer-close" data-drawer-close="info" type="button" aria-label="Close app info"><i class="ph ph-arrow-left"></i></button>                     
-                    <h2>App Info</h2>                 
+                    <button class="drawer-close" data-drawer-close="info" type="button" aria-label="Cerrar información de la app" data-i18n-aria-label="Cerrar información de la app"><i class="ph ph-arrow-left"></i></button>                     
+                    <h2 data-i18n="Información">Información</h2>                 
                 </div>                 
                 <div class="drawer-scroll">                     
                     <div class="info-block">
-                        <h3>About ChatLume</h3>
-                        <p>ChatLume is a privacy-first WhatsApp chat viewer and analytics tool. It turns exported chats into a familiar interface with deep analytics while keeping processing fully inside your browser.</p>
-                        <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)">Version 1.8.23 &nbsp;&middot;&nbsp; by <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Paras Sharma</a></p>
+                        <h3 data-i18n="Acerca de ChatLume">Acerca de ChatLume</h3>
+                        <p data-i18n="ChatLume es un visor de chats de WhatsApp centrado en la privacidad, con estadísticas. Convierte las exportaciones en una interfaz familiar con análisis detallados, procesándolo todo dentro de tu navegador.">ChatLume es un visor de chats de WhatsApp centrado en la privacidad, con estadísticas. Convierte las exportaciones en una interfaz familiar con análisis detallados, procesándolo todo dentro de tu navegador.</p>
+                        <p style="margin-top:8px;font-size:13px;color:var(--text-secondary)"><span id="info-version">Versión 1.8.23</span> &nbsp;&middot;&nbsp; <span data-i18n="por">por</span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color:var(--primary)">Paras Sharma</a></p>
                         <p style="font-size:13px;color:var(--text-secondary);margin-top:4px"><a href="mailto:hello@parassharma.com" style="color:var(--primary)">hello@parassharma.com</a></p>
                         <div class="ph-badge-wrap" style="justify-content:flex-start;margin-top:16px">
                             <a href="https://www.producthunt.com/products/chatlume?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-chatlume" target="_blank" rel="noopener noreferrer">
@@ -371,51 +384,51 @@
                         </div>
                     </div>                                          
                     <div class="info-block">                         
-                        <h3>Capabilities</h3>                         
+                        <h3 data-i18n="Capacidades">Capacidades</h3>                         
                         <ul class="feature-list">                             
-                            <li><i class="ph-fill ph-shield-check"></i> <strong>Private by design:</strong> Parsing stays in your browser; optional Docker storage saves WhatsApp archives only on your own server disk.</li>
-                            <li><i class="ph-fill ph-file-text"></i> <strong>Client-side Parsing:</strong> Reads WhatsApp exports locally. Persistent Storage keeps a private browser copy, your display name and the last reading position so the chat resumes after reload. This local setup has storage on by default; manage or delete it in Settings.</li>
-                            <li><i class="ph-fill ph-image"></i> <strong>Memory-aware Media:</strong> Keeps ZIP attachments local and loads media only when it is needed.</li>                             
-                            <li><i class="ph-fill ph-arrows-out-line-horizontal"></i> <strong>Sliding Message Window:</strong> Adds nearby messages as you scroll and drops older rendered content from the opposite side.</li>                             
-                            <li><i class="ph-fill ph-sparkle"></i> <strong>ChatLume Wrapped:</strong> Extract emojis and hourly patterns to generate a personalized, shareable graphic.</li>                             
-                            <li><i class="ph-fill ph-chart-bar"></i> <strong>Analytics:</strong> View total counts, media usage, and per-sender conversation shares.</li>                         
+                            <li><i class="ph-fill ph-shield-check"></i> <span><strong data-i18n="Privado por diseño:">Privado por diseño:</strong> <span data-i18n="El procesamiento se queda en tu navegador; el almacenamiento Docker opcional guarda los archivos de WhatsApp solo en el disco de tu servidor.">El procesamiento se queda en tu navegador; el almacenamiento Docker opcional guarda los archivos de WhatsApp solo en el disco de tu servidor.</span></span></li>
+                            <li><i class="ph-fill ph-file-text"></i> <span><strong data-i18n="Procesamiento en el navegador:">Procesamiento en el navegador:</strong> <span data-i18n="Lee las exportaciones de WhatsApp localmente. El almacenamiento persistente conserva una copia privada en el navegador, tu nombre visible y la última posición de lectura para reanudar el chat al recargar. Esta instalación local lo tiene activado por defecto; gestiónalo o elimínalo en Ajustes.">Lee las exportaciones de WhatsApp localmente. El almacenamiento persistente conserva una copia privada en el navegador, tu nombre visible y la última posición de lectura para reanudar el chat al recargar. Esta instalación local lo tiene activado por defecto; gestiónalo o elimínalo en Ajustes.</span></span></li>
+                            <li><i class="ph-fill ph-image"></i> <span><strong data-i18n="Medios con memoria consciente:">Medios con memoria consciente:</strong> <span data-i18n="Mantiene los archivos adjuntos del ZIP en local y carga los medios solo cuando se necesitan.">Mantiene los archivos adjuntos del ZIP en local y carga los medios solo cuando se necesitan.</span></span></li>                             
+                            <li><i class="ph-fill ph-arrows-out-line-horizontal"></i> <span><strong data-i18n="Ventana deslizante de mensajes:">Ventana deslizante de mensajes:</strong> <span data-i18n="Añade mensajes cercanos al desplazarte y descarta del lado opuesto el contenido antiguo ya renderizado.">Añade mensajes cercanos al desplazarte y descarta del lado opuesto el contenido antiguo ya renderizado.</span></span></li>                             
+                            <li><i class="ph-fill ph-sparkle"></i> <span><strong data-i18n="ChatLume Wrapped:">ChatLume Wrapped:</strong> <span data-i18n="Extrae emojis y patrones por hora para generar un gráfico personalizado y compartible.">Extrae emojis y patrones por hora para generar un gráfico personalizado y compartible.</span></span></li>                             
+                            <li><i class="ph-fill ph-chart-bar"></i> <span><strong data-i18n="Estadísticas:">Estadísticas:</strong> <span data-i18n="Consulta totales, uso de medios y la participación de cada remitente en la conversación.">Consulta totales, uso de medios y la participación de cada remitente en la conversación.</span></span></li>                         
                         </ul>                     
                     </div>                                          
                     <div class="info-block">                         
-                        <h3>Notes</h3>                         
+                        <h3 data-i18n="Notas">Notas</h3>                         
                         <ul class="feature-list">                             
-                            <li><i class="ph-fill ph-info"></i> ZIP exports provide the richest experience, and attachments are decoded lazily as they enter view.</li>                             
-                            <li><i class="ph-fill ph-broom"></i> Off-screen media object URLs are released automatically to keep memory usage low during long sessions.</li>                             
-                            <li><i class="ph-fill ph-warning-circle"></i> Browser limits still apply. Very large media files can take a moment to decode, but the app avoids loading the entire export into the DOM.</li>                         
+                            <li><i class="ph-fill ph-info"></i> <span data-i18n="Las exportaciones ZIP ofrecen la mejor experiencia; los archivos adjuntos se decodifican de forma diferida al entrar en pantalla.">Las exportaciones ZIP ofrecen la mejor experiencia; los archivos adjuntos se decodifican de forma diferida al entrar en pantalla.</span></li>                             
+                            <li><i class="ph-fill ph-broom"></i> <span data-i18n="Las URL de medios fuera de pantalla se liberan automáticamente para mantener bajo el uso de memoria en sesiones largas.">Las URL de medios fuera de pantalla se liberan automáticamente para mantener bajo el uso de memoria en sesiones largas.</span></li>                             
+                            <li><i class="ph-fill ph-warning-circle"></i> <span data-i18n="Los límites del navegador siguen aplicándose. Los archivos multimedia muy grandes pueden tardar un momento en decodificarse, pero la app evita cargar toda la exportación en el DOM.">Los límites del navegador siguen aplicándose. Los archivos multimedia muy grandes pueden tardar un momento en decodificarse, pero la app evita cargar toda la exportación en el DOM.</span></li>                         
                         </ul>                     
                     </div>                 
                 </div>             
             </section>         
         </aside>         
-        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Close sidebar"></button>         
+        <button class="sidebar-backdrop" id="sidebar-backdrop" type="button" aria-label="Cerrar barra lateral" data-i18n-aria-label="Cerrar barra lateral"></button>         
         <main class="chat-interface">             
             <div class="chat-bg" aria-hidden="true"></div>             
             <header class="chat-header">                 
-                <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open sidebar"><i class="ph ph-list"></i></button>                 
+                <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Abrir barra lateral" data-i18n-aria-label="Abrir barra lateral"><i class="ph ph-list"></i></button>                 
                 <div class="header-profile">                     
-                    <img src="../assets/avatar-placeholder.svg" class="header-pfp" alt="Chat avatar" loading="lazy">                     
+                    <img src="../assets/avatar-placeholder.svg" class="header-pfp" alt="Avatar del chat" data-i18n-alt="Avatar del chat" loading="lazy">                     
                     <div class="header-info">                         
-                        <h2 id="header-name">Welcome</h2>                         
+                        <h2 id="header-name" data-i18n="Bienvenido">Bienvenido</h2>                         
                         <p id="header-meta">ChatLume</p>                     
                     </div>                 
                 </div>                 
                 <div class="header-tools">
-                    <button id="search-toggle" type="button" aria-label="Search messages" aria-controls="search-toolbar" aria-expanded="false" title="Search messages (Ctrl+F or /)"><i class="ph ph-magnifying-glass"></i></button>
+                    <button id="search-toggle" type="button" aria-label="Buscar mensajes" aria-controls="search-toolbar" aria-expanded="false" title="Buscar mensajes (Ctrl+F o /)" data-i18n-aria-label="Buscar mensajes" data-i18n-title="Buscar mensajes (Ctrl+F o /)"><i class="ph ph-magnifying-glass"></i></button>
                     <div class="menu-container">                         
-                        <button id="menu-toggle" type="button" aria-label="Open chat actions" aria-controls="header-menu" aria-expanded="false"><i class="ph ph-dots-three-vertical"></i></button>
+                        <button id="menu-toggle" type="button" aria-label="Abrir acciones del chat" aria-controls="header-menu" aria-expanded="false" data-i18n-aria-label="Abrir acciones del chat"><i class="ph ph-dots-three-vertical"></i></button>
                         <div class="dropdown-menu" id="header-menu">                             
-                            <button type="button" class="menu-item" id="date-jump-action"><i class="ph ph-calendar-blank"></i> Ir a una fecha</button>
+                            <button type="button" class="menu-item" id="date-jump-action"><i class="ph ph-calendar-blank"></i> <span data-i18n="Ir a una fecha">Ir a una fecha</span></button>
                             <button type="button" class="menu-item" id="sender-filter-action" aria-haspopup="dialog" aria-controls="sender-filter-dropdown" aria-expanded="false" hidden>
-                                <i class="ph ph-funnel"></i> Participantes
-                                <span class="menu-item-value" id="sender-filter-summary">Todos</span>
+                                <i class="ph ph-funnel"></i> <span data-i18n="Participantes">Participantes</span>
+                                <span class="menu-item-value" id="sender-filter-summary" data-i18n="Todos">Todos</span>
                             </button>
-                            <button id="favorites-toggle" class="menu-item" type="button" aria-controls="favorites-panel" aria-expanded="false" title="Mensajes favoritos">
-                                <i class="ph ph-star" aria-hidden="true"></i> Favoritos
+                            <button id="favorites-toggle" class="menu-item" type="button" aria-controls="favorites-panel" aria-expanded="false" title="Mensajes favoritos" data-i18n-title="Mensajes favoritos">
+                                <i class="ph ph-star" aria-hidden="true"></i> <span data-i18n="Favoritos">Favoritos</span>
                                 <span class="menu-item-value favorites-count" id="favorites-count">0</span>
                             </button>
                         </div>                     
@@ -425,101 +438,101 @@
             <div class="sender-filter-container" id="sender-filter-container">
                 <div class="sender-filter-dropdown" id="sender-filter-dropdown" role="dialog" aria-labelledby="sender-filter-heading" hidden>
                     <div class="sender-filter-dropdown-header" id="sender-filter-heading">
-                        <span>Participantes</span>
+                        <span data-i18n="Participantes">Participantes</span>
                         <div class="sender-filter-dropdown-actions">
-                            <button type="button" class="sender-filter-reset-btn" id="sender-filter-reset-btn">Restablecer</button>
-                            <button type="button" class="sender-filter-close" id="sender-filter-close" aria-label="Cerrar filtro de participantes"><i class="ph ph-x" aria-hidden="true"></i></button>
+                            <button type="button" class="sender-filter-reset-btn" id="sender-filter-reset-btn" data-i18n="Restablecer">Restablecer</button>
+                            <button type="button" class="sender-filter-close" id="sender-filter-close" aria-label="Cerrar filtro de participantes" data-i18n-aria-label="Cerrar filtro de participantes"><i class="ph ph-x" aria-hidden="true"></i></button>
                         </div>
                     </div>
                     <label class="sender-filter-search-wrap">
                         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-                        <input type="search" class="sender-filter-search" id="sender-filter-search" placeholder="Buscar participante" autocomplete="off" aria-label="Buscar participante">
-                        <button type="button" class="sender-filter-search-clear" id="sender-filter-search-clear" aria-label="Limpiar búsqueda de participantes" hidden><i class="ph ph-x" aria-hidden="true"></i></button>
+                        <input type="search" class="sender-filter-search" id="sender-filter-search" placeholder="Buscar participante" autocomplete="off" aria-label="Buscar participante" data-i18n-placeholder="Buscar participante" data-i18n-aria-label="Buscar participante">
+                        <button type="button" class="sender-filter-search-clear" id="sender-filter-search-clear" aria-label="Limpiar búsqueda de participantes" data-i18n-aria-label="Limpiar búsqueda de participantes" hidden><i class="ph ph-x" aria-hidden="true"></i></button>
                     </label>
-                    <div class="sender-filter-list" id="sender-filter-list" role="group" aria-label="Participantes">
+                    <div class="sender-filter-list" id="sender-filter-list" role="group" aria-label="Participantes" data-i18n-aria-label="Participantes">
                     </div>
-                    <p class="sender-filter-no-results" id="sender-filter-no-results" role="status" hidden>Ningún participante coincide con la búsqueda.</p>
+                    <p class="sender-filter-no-results" id="sender-filter-no-results" role="status" data-i18n="Ningún participante coincide con la búsqueda." hidden>Ningún participante coincide con la búsqueda.</p>
                 </div>
             </div>
             <section class="search-toolbar" id="search-toolbar">                 
                 <div class="search-input-group">                     
-                    <button id="search-close" type="button" aria-label="Close search"><i class="ph ph-arrow-left"></i></button>                     
-                    <input type="search" id="live-search" placeholder="Search messages..." aria-label="Search messages in this chat" autocomplete="off">
+                    <button id="search-close" type="button" aria-label="Cerrar búsqueda" data-i18n-aria-label="Cerrar búsqueda"><i class="ph ph-arrow-left"></i></button>                     
+                    <input type="search" id="live-search" placeholder="Buscar mensajes..." aria-label="Buscar mensajes en este chat" autocomplete="off" data-i18n-placeholder="Buscar mensajes..." data-i18n-aria-label="Buscar mensajes en este chat">
                 </div>                 
                 <div class="search-nav">                     
                     <span id="search-counter" aria-live="polite"></span>                     
-                    <button id="search-up" type="button" aria-label="Previous result"><i class="ph ph-caret-up"></i></button>
-                    <button id="search-down" type="button" aria-label="Next result"><i class="ph ph-caret-down"></i></button>
+                    <button id="search-up" type="button" aria-label="Resultado anterior" data-i18n-aria-label="Resultado anterior"><i class="ph ph-caret-up"></i></button>
+                    <button id="search-down" type="button" aria-label="Resultado siguiente" data-i18n-aria-label="Resultado siguiente"><i class="ph ph-caret-down"></i></button>
                 </div>             
             </section>             
-            <aside id="favorites-panel" class="favorites-panel" aria-label="Mensajes favoritos" hidden>
-                <div class="favorites-panel-heading"><strong>Mensajes favoritos</strong><button id="favorites-close" type="button" aria-label="Cerrar favoritos"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+            <aside id="favorites-panel" class="favorites-panel" aria-label="Mensajes favoritos" data-i18n-aria-label="Mensajes favoritos" hidden>
+                <div class="favorites-panel-heading"><strong data-i18n="Mensajes favoritos">Mensajes favoritos</strong><button id="favorites-close" type="button" aria-label="Cerrar favoritos" data-i18n-aria-label="Cerrar favoritos"><i class="ph ph-x" aria-hidden="true"></i></button></div>
                 <div id="favorites-list" class="favorites-list"></div>
             </aside>
-            <button type="button" class="scroll-latest" id="scroll-latest" hidden aria-label="Jump to the latest message">
+            <button type="button" class="scroll-latest" id="scroll-latest" hidden aria-label="Ir al mensaje más reciente" data-i18n-aria-label="Ir al mensaje más reciente">
                 <i class="ph-bold ph-arrow-down" aria-hidden="true"></i>
             </button>
-            <section class="messages-viewport" id="viewport" aria-label="Messages">                 
+            <section class="messages-viewport" id="viewport" aria-label="Mensajes" data-i18n-aria-label="Mensajes">                 
                 <div class="floating-date-capsule" id="floating-date-capsule" hidden aria-live="polite" aria-atomic="true"><i class="ph ph-calendar-blank" aria-hidden="true"></i><span id="floating-date-label"></span></div>
                 <div class="empty-placeholder" id="empty-state">
                     <div class="illustration">
                         <img src="../assets/logo-192.png" alt="">
                     </div>
-                    <h2>Nothing loaded yet</h2>
-                    <p>Pick a WhatsApp export on the left and it opens right here —<br>history, media, search and stats included.</p>
+                    <h2 data-i18n="Aún no hay nada cargado">Aún no hay nada cargado</h2>
+                    <p data-i18n-html="Elige una exportación de WhatsApp a la izquierda y se abrirá aquí: <br>historial, archivos, búsqueda y estadísticas incluidos.">Elige una exportación de WhatsApp a la izquierda y se abrirá aquí: <br>historial, archivos, búsqueda y estadísticas incluidos.</p>
                     <div class="empty-hints">
-                        <span class="empty-hint"><i class="ph-fill ph-file-text"></i> .txt works</span>
-                        <span class="empty-hint"><i class="ph-fill ph-file-zip"></i> .zip keeps media</span>
-                        <span class="empty-hint"><i class="ph-fill ph-shield-check"></i> Never uploaded</span>
+                        <span class="empty-hint"><i class="ph-fill ph-file-text"></i> <span data-i18n=".txt funciona">.txt funciona</span></span>
+                        <span class="empty-hint"><i class="ph-fill ph-file-zip"></i> <span data-i18n=".zip conserva archivos">.zip conserva archivos</span></span>
+                        <span class="empty-hint"><i class="ph-fill ph-shield-check"></i> <span data-i18n="Nunca se sube">Nunca se sube</span></span>
                     </div>
                     <a class="empty-cta" href="how-to-export.html">
-                        <i class="ph ph-question"></i> How to export a WhatsApp chat
+                        <i class="ph ph-question"></i> <span data-i18n="Cómo exportar un chat de WhatsApp">Cómo exportar un chat de WhatsApp</span>
                     </a>
                 </div>
                 <div class="search-empty" id="search-empty" hidden role="status">
                     <i class="ph-duotone ph-magnifying-glass"></i>
-                    <h3>No messages matched</h3>
-                    <p>Nothing in this chat contains <span class="query" id="search-empty-query"></span>. Try a shorter word or different spelling.</p>
+                    <h3 data-i18n="No hay mensajes coincidentes">No hay mensajes coincidentes</h3>
+                    <p><span data-i18n="Nada en este chat contiene">Nada en este chat contiene</span> <span class="query" id="search-empty-query"></span><span data-i18n=". Prueba con una palabra más corta o una ortografía distinta.">. Prueba con una palabra más corta o una ortografía distinta.</span></p>
                 </div>
                 <div class="message-list" id="message-list"></div>             
             </section>             
             <footer class="chat-footer">                 
-                <button type="button" aria-label="Emoji picker"><i class="ph ph-smiley"></i></button>                 
-                <button type="button" aria-label="Add attachment"><i class="ph ph-plus"></i></button>                 
-                <div class="fake-input">Type a message</div>                 
-                <button type="button" aria-label="Record voice note"><i class="ph ph-microphone"></i></button>             
+                <button type="button" aria-label="Selector de emojis" data-i18n-aria-label="Selector de emojis"><i class="ph ph-smiley"></i></button>                 
+                <button type="button" aria-label="Añadir archivo" data-i18n-aria-label="Añadir archivo"><i class="ph ph-plus"></i></button>                 
+                <div class="fake-input" data-i18n="Escribe un mensaje">Escribe un mensaje</div>                 
+                <button type="button" aria-label="Grabar nota de voz" data-i18n-aria-label="Grabar nota de voz"><i class="ph ph-microphone"></i></button>             
             </footer>         
         </main>
 
         <div class="date-sheet-backdrop" id="date-sheet" hidden>
             <div class="date-sheet" role="dialog" aria-modal="true" aria-labelledby="date-sheet-title" aria-describedby="date-sheet-description">
-                <h3 id="date-sheet-title">Ir a una fecha</h3>
-                <p id="date-sheet-description">Elige una fecha para ir al inicio de ese día.</p>
-                <input type="date" id="date-sheet-input" class="date-sheet-input" aria-label="Date to jump to">
+                <h3 id="date-sheet-title" data-i18n="Ir a una fecha">Ir a una fecha</h3>
+                <p id="date-sheet-description" data-i18n="Elige una fecha para ir al inicio de ese día.">Elige una fecha para ir al inicio de ese día.</p>
+                <input type="date" id="date-sheet-input" class="date-sheet-input" aria-label="Fecha a la que ir" data-i18n-aria-label="Fecha a la que ir">
                 <div class="date-sheet-actions">
-                    <button class="btn-secondary" id="date-sheet-cancel" type="button">Cancelar</button>
-                    <button class="btn-primary" id="date-sheet-apply" type="button">Ir</button>
+                    <button class="btn-secondary" id="date-sheet-cancel" type="button" data-i18n="Cancelar">Cancelar</button>
+                    <button class="btn-primary" id="date-sheet-apply" type="button" data-i18n="Ir">Ir</button>
                 </div>
             </div>
         </div>
         <div class="date-sheet-backdrop" id="confirm-sheet" hidden>
             <div class="date-sheet" role="alertdialog" aria-modal="true" aria-labelledby="confirm-sheet-title">
-                <h3 id="confirm-sheet-title">Delete stored chat?</h3>
+                <h3 id="confirm-sheet-title" data-i18n="¿Eliminar el chat guardado?">¿Eliminar el chat guardado?</h3>
                 <p id="confirm-sheet-body"></p>
                 <div class="date-sheet-actions">
-                    <button class="btn-secondary" id="confirm-sheet-cancel" type="button">Cancel</button>
-                    <button class="btn-primary btn-danger" id="confirm-sheet-apply" type="button">Delete</button>
+                    <button class="btn-secondary" id="confirm-sheet-cancel" type="button" data-i18n="Cancelar">Cancelar</button>
+                    <button class="btn-primary btn-danger" id="confirm-sheet-apply" type="button" data-i18n="Eliminar">Eliminar</button>
                 </div>
             </div>
         </div>
         <div class="persist-card" id="persist-card" hidden role="status" aria-live="polite">
             <div class="persist-card-icon"><i class="ph-fill ph-hard-drives"></i></div>
             <div class="persist-card-text">
-                <strong>Saving chat to this device…</strong>
-                <span id="persist-card-progress">Preparing…</span>
+                <strong data-i18n="Guardando el chat en este dispositivo…">Guardando el chat en este dispositivo…</strong>
+                <span id="persist-card-progress" data-i18n="Preparando…">Preparando…</span>
                 <div class="persist-bar" aria-hidden="true"><div class="persist-bar-fill" id="persist-card-bar"></div></div>
             </div>
-            <button type="button" class="persist-card-cancel" id="persist-card-cancel">Cancel</button>
+            <button type="button" class="persist-card-cancel" id="persist-card-cancel" data-i18n="Cancelar">Cancelar</button>
         </div>
 
         <div class="media-modal" id="wrapped-modal" hidden>             
@@ -527,33 +540,33 @@
             <div class="media-modal-dialog" style="max-width: 600px;" role="dialog" aria-modal="true">                 
                 <div class="media-modal-header">                     
                     <div>                         
-                        <h2>Your ChatLume Wrapped</h2>                         
-                        <p>Save and share your chat personality.</p>                     
+                        <h2 data-i18n="Tu ChatLume Wrapped">Tu ChatLume Wrapped</h2>                         
+                        <p data-i18n="Guarda y comparte la personalidad de tu chat.">Guarda y comparte la personalidad de tu chat.</p>                     
                     </div>                     
                     <div class="media-modal-actions">                         
-                        <button id="close-wrapped" type="button"><i class="ph ph-x"></i></button>                     
+                        <button id="close-wrapped" type="button" aria-label="Cerrar" data-i18n-aria-label="Cerrar"><i class="ph ph-x"></i></button>                     
                     </div>                 
                 </div>                 
                 <div class="media-modal-body" style="display:block; padding: 20px; background: var(--bg-sidebar); overflow: auto;">
                     <div id="wrapped-graphic" class="wrapped-graphic-container">
                         <div class="wg-header">
                             <div class="wg-brand-tag">ChatLume Wrapped</div>
-                            <h2>Your Chat</h2>
-                            <p>Loading...</p>
+                            <h2 data-i18n="Tu chat">Tu chat</h2>
+                            <p data-i18n="Cargando...">Cargando...</p>
                         </div>
                         <div class="wg-divider"></div>
                         <div class="wg-stats-grid">
-                            <div class="wg-stat-card"><span>Messages</span><h3>—</h3></div>
-                            <div class="wg-stat-card"><span>Words</span><h3>—</h3></div>
-                            <div class="wg-stat-card"><span>Media</span><h3>—</h3></div>
-                            <div class="wg-stat-card"><span>Peak Hour</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span data-i18n="Mensajes">Mensajes</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span data-i18n="Palabras">Palabras</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span data-i18n="Archivos">Archivos</span><h3>—</h3></div>
+                            <div class="wg-stat-card"><span data-i18n="Hora punta">Hora punta</span><h3>—</h3></div>
                         </div>
                         <div class="wg-section">
-                            <div class="wg-label">Most Used</div>
+                            <div class="wg-label" data-i18n="Más usados">Más usados</div>
                             <div class="wg-emoji-grid"></div>
                         </div>
                         <div class="wg-section">
-                            <div class="wg-label">Top Contributors</div>
+                            <div class="wg-label" data-i18n="Colaboradores principales">Colaboradores principales</div>
                             <div class="wg-split">
                                 <div class="wg-split-bar"></div>
                                 <div class="wg-split-labels"></div>
@@ -565,7 +578,7 @@
                         </div>
                     </div>                     
                     <button class="btn-primary" id="download-wrapped" style="width: 100%; margin-top: 20px;">                         
-                        <i class="ph ph-download-simple" style="margin-right: 8px;"></i> Download Image                     
+                        <i class="ph ph-download-simple" style="margin-right: 8px;"></i> <span data-i18n="Descargar imagen">Descargar imagen</span>                     
                     </button>                 
                 </div>             
             </div>         
@@ -576,14 +589,14 @@
             <div class="media-modal-dialog" role="dialog" aria-modal="true">
                 <div class="media-modal-header">
                     <div>
-                        <h2>Media</h2>
+                        <h2 data-i18n="Archivos">Archivos</h2>
                         <p id="media-modal-subtitle"></p>
                     </div>
                     <div class="media-modal-actions">
-                        <a id="media-download-link" download style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);color:var(--text-primary);text-decoration:none" title="Download">
+                        <a id="media-download-link" download style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);color:var(--text-primary);text-decoration:none" title="Descargar" data-i18n-title="Descargar">
                             <i class="ph ph-download-simple"></i>
                         </a>
-                        <button id="media-modal-close" type="button"><i class="ph ph-x"></i></button>
+                        <button id="media-modal-close" type="button" aria-label="Cerrar" data-i18n-aria-label="Cerrar"><i class="ph ph-x"></i></button>
                     </div>
                 </div>
                 <div class="media-modal-body" id="media-modal-body"></div>
@@ -593,13 +606,13 @@
         <div class="processing-overlay" id="processing-overlay" hidden>             
             <div class="processing-card" role="status">                 
                 <i class="ph-fill ph-spinner-gap processing-spinner"></i>                 
-                <h2 id="processing-title">Loading chat</h2>                 
-                <p id="processing-copy">Parsing your export locally...</p>             
+                <h2 id="processing-title" data-i18n="Cargando chat">Cargando chat</h2>                 
+                <p id="processing-copy" data-i18n="Procesando tu exportación localmente...">Procesando tu exportación localmente...</p>             
             </div>         
         </div>         
-        <div id="toast" aria-live="polite">Copied to Clipboard</div>
+        <div id="toast" aria-live="polite" data-i18n="Copiado al portapapeles">Copiado al portapapeles</div>
 
     </div>
-    <script src="../js/site.js?v=1.8.23" defer></script>
+    <script src="../js/site.js?v=1.8.24" defer></script>
 </body>
 </html>

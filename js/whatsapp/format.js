@@ -15,8 +15,9 @@ import {
     parseDateLabel,
     parseTimestamp,
     resolveDateOrder
-} from "../whatsapp-parser.js?v=1.8.23";
-import { state } from "./state.js?v=1.8.23";
+} from "../whatsapp-parser.js?v=1.8.24";
+import { getLocale } from "../i18n.js?v=1.8.24";
+import { state } from "./state.js?v=1.8.24";
 
 /** Wraps `value` in the bracket style chosen in Settings. */
 export function applyBrackets(value, bracketStyle) {
@@ -70,7 +71,7 @@ export function formatDateLabel(label) {
 
     if (state.settings.dateFormat === "long") {
         return applyBrackets(
-            parsed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }),
+            parsed.toLocaleDateString(getLocale(), { year: "numeric", month: "short", day: "numeric" }),
             state.settings.dateBrackets
         );
     }

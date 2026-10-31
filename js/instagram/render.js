@@ -8,20 +8,21 @@
  * message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { colorForName } from "../shared/colors.js?v=1.8.23";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.23";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.23";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { colorForName } from "../shared/colors.js?v=1.8.24";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.24";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
 import {
     clampRenderRange,
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.23";
-import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.23";
-import { lazyMedia } from "./media.js?v=1.8.23";
-import { closeMenu } from "./ui.js?v=1.8.23";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.23";
+} from "../shared/virtual-list.js?v=1.8.24";
+import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.24";
+import { lazyMedia } from "./media.js?v=1.8.24";
+import { closeMenu } from "./ui.js?v=1.8.24";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.24";
 
 export const getColor = (name) => colorForName(name, igState.colorMap);
 
@@ -144,7 +145,7 @@ function renderMediaItem(item) {
         return `<div class="media-audio ig-voice-note"><div class="voice-note-row"><i class="ph-fill ph-microphone voice-mic-icon"></i><div class="voice-waveform">${waveHtml}</div><span class="voice-duration" data-media-id="${item.id}">–:––</span></div><audio controls preload="metadata" data-lazy-media="${item.id}" data-media-id="${item.id}"></audio></div>`;
     }
 
-    return `<div class="media-doc"><div class="media-doc-head"><i class="ph-fill ph-file"></i><div><strong>${escapeHtml(item.name)}</strong></div></div><div class="media-doc-actions"><button type="button" class="media-doc-link" data-open-media="${item.id}">Preview</button><button type="button" class="media-doc-link" data-download-media="${item.id}">Download</button></div></div>`;
+    return `<div class="media-doc"><div class="media-doc-head"><i class="ph-fill ph-file"></i><div><strong>${escapeHtml(item.name)}</strong></div></div><div class="media-doc-actions"><button type="button" class="media-doc-link" data-open-media="${item.id}">${escapeHtml(t("Vista previa"))}</button><button type="button" class="media-doc-link" data-download-media="${item.id}">${escapeHtml(t("Descargar"))}</button></div></div>`;
 }
 
 /** Groups reactions by emoji; hovering a pill lists who reacted. */

@@ -6,16 +6,17 @@
  * read out of the export ZIP. The store itself is built in parser.js.
  * ============================================================================
  */
-import { createLazyMediaLoader } from "../shared/lazy-media.js?v=1.8.23";
-import { createMediaModal } from "../shared/media-modal.js?v=1.8.23";
+import { createLazyMediaLoader } from "../shared/lazy-media.js?v=1.8.24";
+import { createMediaModal } from "../shared/media-modal.js?v=1.8.24";
 import {
     clearMediaStore,
     downloadMediaItem,
     ensureMediaUrl as ensureUrl,
     releaseMediaUrlIfUnused
-} from "../shared/media-urls.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
-import { showToast } from "./ui.js?v=1.8.23";
+} from "../shared/media-urls.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
+import { showToast } from "./ui.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
 
 export const ensureMediaUrl = (media) => ensureUrl(igState, media);
 
@@ -33,7 +34,7 @@ export const mediaModal = createMediaModal({
     getMedia: (id) => igState.mediaStore.get(id),
     ensureUrl: ensureMediaUrl,
     subtitleFor: (media) => media.name,
-    documentNoteFor: () => "This file type can't be previewed in the browser.",
+    documentNoteFor: () => t("Este tipo de archivo no se puede previsualizar en el navegador."),
     onClosed: (media) => releaseMediaUrlIfUnused(igState, media)
 });
 
@@ -46,7 +47,7 @@ export async function downloadMedia(id) {
     try {
         await downloadMediaItem(igState, media);
     } catch {
-        showToast("Unable to download media", "error");
+        showToast(t("No se pudo descargar el archivo"), "error");
     }
 }
 

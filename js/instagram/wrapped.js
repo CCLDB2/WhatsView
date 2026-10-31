@@ -1,15 +1,16 @@
 /** Presents Instagram conversation statistics and exports a local image. */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.23";
-import { formatDateLabel } from "./format.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
-import { showToast } from "./ui.js?v=1.8.23";
-import { summarizeInstagramThread } from "./wrapped-model.js?v=1.8.23";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.24";
+import { formatDateLabel } from "./format.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
+import { showToast } from "./ui.js?v=1.8.24";
+import { summarizeInstagramThread } from "./wrapped-model.js?v=1.8.24";
+import { t, getLocale } from "../i18n.js?v=1.8.24";
 
 const HTML2CANVAS_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 
 export function openInstagramWrapped() {
-    if (!igState.messageOnlyCount) { showToast("Load a conversation first to generate Wrapped", "warn"); return; }
+    if (!igState.messageOnlyCount) { showToast(t("Carga una conversación primero para generar el Wrapped"), "warn"); return; }
     renderInstagramWrapped();
     const modal = $("ig-wrapped-modal");
     if (!modal) return;
@@ -31,7 +32,7 @@ export function renderInstagramWrapped() {
     if (!graphic) return;
     const summary = summarizeInstagramThread(igState.messages, igState);
     const dateRange = summary.firstTimestamp == null
-        ? "Unknown dates"
+        ? t("Fecha desconocida")
         : summary.firstTimestamp === summary.lastTimestamp
             ? formatDateLabel(summary.firstTimestamp, igState.settings)
             : `${formatDateLabel(summary.firstTimestamp, igState.settings)} – ${formatDateLabel(summary.lastTimestamp, igState.settings)}`;
@@ -39,8 +40,8 @@ export function renderInstagramWrapped() {
         ? `${String(summary.peakHour).padStart(2, "0")}:00`
         : `${(summary.peakHour % 12) || 12} ${summary.peakHour >= 12 ? "PM" : "AM"}`;
     const emojiHtml = summary.topEmojis.length
-        ? summary.topEmojis.map(([emoji, count]) => `<div class="wg-emoji-cell"><span class="wg-emoji-char">${escapeHtml(emoji)}</span><span class="wg-emoji-count">${count.toLocaleString()}</span></div>`).join("")
-        : "<span style='color:#555;font-size:13px'>No emojis found</span>";
+        ? summary.topEmojis.map(([emoji, count]) => `<div class="wg-emoji-cell"><span class="wg-emoji-char">${escapeHtml(emoji)}</span><span class="wg-emoji-count">${count.toLocaleString(getLocale())}</span></div>`).join("")
+        : `<span style='color:#555;font-size:13px'>${escapeHtml(t("No se encontraron emojis"))}</span>`;
     let barHtml = "", labelsHtml = "";
     for (const [name, count] of summary.topSenders) {
         const pct = summary.messageCount ? ((count / summary.messageCount) * 100).toFixed(1) : "0.0";
@@ -49,12 +50,12 @@ export function renderInstagramWrapped() {
     }
     graphic.innerHTML = `<div class="wg-header"><div class="wg-brand-tag">ChatLume Wrapped · Instagram</div><h2>${escapeHtml(igState.chatTitle)}</h2><p>${escapeHtml(dateRange)}</p></div>
         <div class="wg-divider"></div><div class="wg-stats-grid">
-        <div class="wg-stat-card"><span>Messages</span><h3>${summary.messageCount.toLocaleString()}</h3></div>
-        <div class="wg-stat-card"><span>Words</span><h3>${summary.totalWords.toLocaleString()}</h3></div>
-        <div class="wg-stat-card"><span>Media</span><h3>${summary.mediaCount.toLocaleString()}</h3></div>
-        <div class="wg-stat-card"><span>Peak Hour</span><h3>${peak}</h3></div></div>
-        <div class="wg-section"><div class="wg-label">Most Used</div><div class="wg-emoji-grid">${emojiHtml}</div></div>
-        <div class="wg-section"><div class="wg-label">Top Contributors</div><div class="wg-split"><div class="wg-split-bar">${barHtml}</div><div class="wg-split-labels">${labelsHtml}</div></div></div>
+        <div class="wg-stat-card"><span>${escapeHtml(t("Mensajes"))}</span><h3>${summary.messageCount.toLocaleString(getLocale())}</h3></div>
+        <div class="wg-stat-card"><span>${escapeHtml(t("Palabras"))}</span><h3>${summary.totalWords.toLocaleString(getLocale())}</h3></div>
+        <div class="wg-stat-card"><span>${escapeHtml(t("Archivos"))}</span><h3>${summary.mediaCount.toLocaleString(getLocale())}</h3></div>
+        <div class="wg-stat-card"><span>${escapeHtml(t("Hora punta"))}</span><h3>${peak}</h3></div></div>
+        <div class="wg-section"><div class="wg-label">${escapeHtml(t("Más usados"))}</div><div class="wg-emoji-grid">${emojiHtml}</div></div>
+        <div class="wg-section"><div class="wg-label">${escapeHtml(t("Colaboradores principales"))}</div><div class="wg-split"><div class="wg-split-bar">${barHtml}</div><div class="wg-split-labels">${labelsHtml}</div></div></div>
         <div class="wg-brand-footer"><div class="wg-logo"><img src="../assets/logo-64.png" alt=""> ChatLume</div><div class="wg-url">chatlume.app</div></div>`;
 }
 
@@ -63,7 +64,7 @@ export async function downloadInstagramWrapped() {
     if (!graphic || !button) return;
     const previous = button.innerHTML;
     button.disabled = true;
-    button.textContent = "Generating…";
+    button.textContent = t("Generando...");
     try {
         if (typeof html2canvas === "undefined") await loadHtml2Canvas();
         const canvas = await html2canvas(graphic, { backgroundColor: "#000", scale: 2, useCORS: true, logging: false });
@@ -71,10 +72,10 @@ export async function downloadInstagramWrapped() {
         link.download = `ChatLume_Instagram_Wrapped_${igState.chatTitle.replace(/[^a-z0-9]/gi, "_")}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
-        showToast("Instagram Wrapped downloaded");
+        showToast(t("¡Wrapped de Instagram descargado!"));
     } catch (error) {
         console.error(error);
-        showToast("Failed to download Wrapped image", "error");
+        showToast(t("No se pudo descargar la imagen del Wrapped."), "error");
     } finally {
         button.innerHTML = previous;
         button.disabled = false;

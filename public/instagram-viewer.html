@@ -1,42 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#111b21">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Instagram Viewer | ChatLume</title>
-    <meta name="description" content="View Instagram DM exports privately in your browser. No uploads, no server. Open Instagram JSON zip files locally with ChatLume.">
+    <title>Visor de Instagram | ChatLume</title>
+    <meta name="description" content="Abre tus exportaciones de mensajes de Instagram en privado, desde tu navegador. Sin subidas ni servidor: procesa los .zip JSON de Instagram en local con ChatLume.">
     <meta name="author" content="Paras Sharma">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chatlume.app/instagram-viewer">
     <meta property="og:site_name" content="ChatLume">
-    <meta property="og:title" content="ChatLume – Private Instagram DM Viewer">
-    <meta property="og:description" content="View Instagram DM exports locally in your browser. 100% private, no uploads.">
+    <meta property="og:title" content="ChatLume – Visor privado de mensajes de Instagram">
+    <meta property="og:description" content="Abre tus exportaciones de mensajes de Instagram en local, desde tu navegador. 100% privado, sin subidas.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chatlume.app/instagram-viewer">
     <meta property="og:image" content="https://chatlume.app/assets/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="ChatLume — a private WhatsApp and Instagram chat viewer that runs entirely in your browser.">
-    <meta name="twitter:image:alt" content="ChatLume — a private WhatsApp and Instagram chat viewer that runs entirely in your browser.">
+    <meta property="og:image:alt" content="ChatLume: un visor privado de chats de WhatsApp e Instagram que funciona por completo en tu navegador.">
+    <meta name="twitter:image:alt" content="ChatLume: un visor privado de chats de WhatsApp e Instagram que funciona por completo en tu navegador.">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ChatLume – Private Instagram DM Viewer">
-    <meta name="twitter:description" content="View Instagram DM exports locally in your browser. 100% private, no uploads.">
+    <meta name="twitter:title" content="ChatLume – Visor privado de mensajes de Instagram">
+    <meta name="twitter:description" content="Abre tus exportaciones de mensajes de Instagram en local, desde tu navegador. 100% privado, sin subidas.">
     <meta name="twitter:image" content="https://chatlume.app/assets/og-image.png">
     <link rel="icon" href="../assets/favicon.ico" sizes="any">
     <link rel="icon" href="../assets/logo-192.png" type="image/png">
-    <link rel="stylesheet" href="../css/style.css?v=1.8.23">
+    <link rel="stylesheet" href="../css/style.css?v=1.8.24">
     <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script type="module" src="../js/instagram.js?v=1.8.23"></script>
+    <script type="module" src="../js/instagram.js?v=1.8.24"></script>
     <script defer src="https://umami.parassharma.in/script.js" data-website-id="f3047984-3a15-4f29-8410-82a6d68f0746"></script>
     <style>
         /* ── Instagram accent overrides ── */
@@ -208,11 +208,11 @@
     </script>
 
     <nav class="app-nav">
-        <a href="../index.html" class="back-home"><i class="ph ph-house"></i> Home</a>
+        <a href="../index.html" class="back-home"><i class="ph ph-house"></i> <span data-i18n="Inicio">Inicio</span></a>
         <div class="nav-links">
-            <a href="viewer.html">WhatsApp</a>
-            <a href="how-to-export-instagram.html">How to Export</a>
-            <a href="../sponsors.html">Sponsors</a>
+            <a href="viewer.html" data-i18n="WhatsApp">WhatsApp</a>
+            <a href="how-to-export-instagram.html" data-i18n="Cómo exportar">Cómo exportar</a>
+            <a href="../sponsors.html" data-i18n="Patrocinadores">Patrocinadores</a>
         </div>
     </nav>
 
@@ -220,27 +220,27 @@
         <div class="loader-content">
             <img src="../assets/logo-192.png" alt="" class="loader-logo">
             <div class="progress-bar" aria-hidden="true"><div class="fill"></div></div>
-            <p><i class="ph-fill ph-shield-check"></i> 100% Local Processing</p>
+            <p><i class="ph-fill ph-shield-check"></i> <span data-i18n="Procesamiento 100% local">Procesamiento 100% local</span></p>
         </div>
     </div>
 
     <div class="drag-overlay" id="ig-drag-overlay" aria-hidden="true">
         <div class="drag-overlay-inner">
             <i class="ph ph-file-arrow-up"></i>
-            <p>Drop your chat export here</p>
-            <span>Instagram <strong>.zip</strong> export</span>
+            <p data-i18n="Suelta aquí tu exportación de chat">Suelta aquí tu exportación de chat</p>
+            <span><span data-i18n="Exportación">Exportación</span> Instagram <strong>.zip</strong></span>
         </div>
     </div>
     <div class="app-layout">
-        <aside class="sidebar" id="ig-sidebar" aria-label="Sidebar">
+        <aside class="sidebar" id="ig-sidebar" aria-label="Barra lateral" data-i18n-aria-label="Barra lateral">
             <header class="sidebar-header">
-                <button class="profile-thumb profile-button" type="button" title="App Info" aria-label="App info" style="cursor:default;background:none;border:0;padding:4px 6px">
+                <button class="profile-thumb profile-button" type="button" title="Información de la app" aria-label="Información de la app" data-i18n-title="Información de la app" data-i18n-aria-label="Información de la app" style="cursor:default;background:none;border:0;padding:4px 6px">
                     <span class="ig-wordmark">Instagram</span>
                 </button>
                 <div class="sidebar-nav">
-                    <button id="ig-open-stats" type="button" title="Analytics" aria-label="Open analytics"><i class="ph ph-chart-pie-slice"></i></button>
-                    <button id="ig-open-settings" type="button" title="Settings" aria-label="Open settings"><i class="ph ph-gear-six"></i></button>
-                    <button id="ig-theme-toggle" type="button" title="Toggle Theme" aria-label="Toggle theme"><i class="ph ph-moon-stars"></i></button>
+                    <button id="ig-open-stats" type="button" title="Estadísticas" aria-label="Abrir estadísticas" data-i18n-title="Estadísticas" data-i18n-aria-label="Abrir estadísticas"><i class="ph ph-chart-pie-slice"></i></button>
+                    <button id="ig-open-settings" type="button" title="Ajustes" aria-label="Abrir ajustes" data-i18n-title="Ajustes" data-i18n-aria-label="Abrir ajustes"><i class="ph ph-gear-six"></i></button>
+                    <button id="ig-theme-toggle" type="button" title="Cambiar tema" aria-label="Cambiar tema" data-i18n-title="Cambiar tema" data-i18n-aria-label="Cambiar tema"><i class="ph ph-moon-stars"></i></button>
                 </div>
             </header>
 
@@ -249,141 +249,150 @@
                 <section class="upload-state" id="ig-upload-panel">
                     <div class="brand-hero">
                         <h1 class="ig-brand">Instagram</h1>
-                        <span>DM Viewer</span>
+                        <span data-i18n="Visor de mensajes">Visor de mensajes</span>
                     </div>
                     <div class="input-wrapper">
-                        <label for="ig-my-name">Your Instagram Name</label>
-                        <input type="text" id="ig-my-name" placeholder="Your name as it appears in DMs" autocomplete="name">
+                        <label for="ig-my-name" data-i18n="Tu nombre de Instagram">Tu nombre de Instagram</label>
+                        <input type="text" id="ig-my-name" placeholder="Tu nombre tal como aparece en los mensajes" autocomplete="name" data-i18n-placeholder="Tu nombre tal como aparece en los mensajes">
                     </div>
                     <button class="drop-target" id="ig-drop-target" type="button">
                         <i class="ph ph-file-zip" aria-hidden="true"></i>
-                        <p>Drop <strong>.zip</strong> export</p>
+                        <p data-i18n-html="Suelta la exportación <strong>.zip</strong>">Suelta la exportación <strong>.zip</strong></p>
                         <input type="file" id="ig-file-input" accept=".zip" hidden>
-                        <span class="btn-secondary">Browse</span>
-                        <span class="mobile-tap-hint">Tap to select a file</span>
+                        <span class="btn-secondary" data-i18n="Elegir archivo">Elegir archivo</span>
+                        <span class="mobile-tap-hint" data-i18n="Toca para elegir un archivo">Toca para elegir un archivo</span>
                     </button>
-                    <button class="btn-primary" id="ig-load-btn" type="button">Load DMs</button>
-                    <div class="load-hint">Your data never leaves your device.</div>
-                    <div class="privacy-pill"><i class="ph-fill ph-shield-check"></i> 100% Local Processing. No Uploads.</div>
+                    <button class="btn-primary" id="ig-load-btn" type="button" data-i18n="Cargar mensajes">Cargar mensajes</button>
+                    <div class="load-hint" data-i18n="Tus datos nunca salen de tu dispositivo.">Tus datos nunca salen de tu dispositivo.</div>
+                    <div class="privacy-pill"><i class="ph-fill ph-shield-check"></i> <span data-i18n="Procesamiento 100% local. Sin subidas.">Procesamiento 100% local. Sin subidas.</span></div>
                     <div style="text-align:center;margin-top:12px">
                         <a href="how-to-export-instagram.html" style="font-size:13px;color:var(--text-secondary);text-decoration:none">
-                            <i class="ph ph-question"></i> How to export Instagram DMs
+                            <i class="ph ph-question"></i> <span data-i18n="Cómo exportar tus mensajes de Instagram">Cómo exportar tus mensajes de Instagram</span>
                         </a>
                     </div>
-                    <div class="app-version-label" data-app-version>v1.8.23</div>
+                    <div class="app-version-label" data-app-version>v1.8.24</div>
                 </section>
 
                 <!-- Thread selector -->
-                <section class="chat-list hidden" id="ig-thread-panel" aria-label="Thread list">
-                    <button type="button" class="btn-secondary import-another" data-ig-another-export><i class="ph ph-file-arrow-up"></i> Open another export</button>
-                    <div class="section-label">SELECT A CONVERSATION</div>
+                <section class="chat-list hidden" id="ig-thread-panel" aria-label="Lista de conversaciones" data-i18n-aria-label="Lista de conversaciones">
+                    <button type="button" class="btn-secondary import-another" data-ig-another-export><i class="ph ph-file-arrow-up"></i> <span data-i18n="Abrir otra exportación">Abrir otra exportación</span></button>
+                    <div class="section-label" data-i18n="ELIGE UNA CONVERSACIÓN">ELIGE UNA CONVERSACIÓN</div>
                     <label class="thread-filter" for="ig-thread-filter">
                         <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-                        <input type="text" id="ig-thread-filter" placeholder="Filter conversations" autocomplete="off" aria-label="Filter conversations">
+                        <input type="text" id="ig-thread-filter" placeholder="Filtrar conversaciones" autocomplete="off" aria-label="Filtrar conversaciones" data-i18n-placeholder="Filtrar conversaciones" data-i18n-aria-label="Filtrar conversaciones">
                     </label>
                     <p class="thread-count" id="ig-thread-count"></p>
                     <div id="ig-thread-list"></div>
                     <div class="thread-empty" id="ig-thread-empty" hidden>
                         <i class="ph-duotone ph-user-list" aria-hidden="true"></i>
-                        No conversation matches that name.
+                        <span data-i18n="Ninguna conversación coincide con ese nombre.">Ninguna conversación coincide con ese nombre.</span>
                     </div>
                 </section>
 
                 <!-- Chat loaded -->
-                <section class="chat-list hidden" id="ig-chat-list-panel" aria-label="Loaded conversation">
+                <section class="chat-list hidden" id="ig-chat-list-panel" aria-label="Conversación cargada" data-i18n-aria-label="Conversación cargada">
                     <button class="chat-item active" type="button" id="ig-chat-list-item">
                         <div class="chat-item-avatar ig-avatar-gradient" aria-hidden="true"></div>
                         <div class="chat-item-info">
-                            <h4 id="ig-sidebar-title">Chat History</h4>
-                            <span id="ig-sidebar-sub">Loaded</span>
+                            <h4 id="ig-sidebar-title" data-i18n="Historial de chats">Historial de chats</h4>
+                            <span id="ig-sidebar-sub" data-i18n="Cargado">Cargado</span>
                         </div>
                     </button>
-                    <button type="button" class="btn-secondary import-another" id="ig-change-thread"><i class="ph ph-list-bullets"></i> Choose another conversation</button>
-                    <button type="button" class="btn-secondary import-another" data-ig-another-export><i class="ph ph-file-arrow-up"></i> Open another export</button>
+                    <button type="button" class="btn-secondary import-another" id="ig-change-thread"><i class="ph ph-list-bullets"></i> <span data-i18n="Elegir otra conversación">Elegir otra conversación</span></button>
+                    <button type="button" class="btn-secondary import-another" data-ig-another-export><i class="ph ph-file-arrow-up"></i> <span data-i18n="Abrir otra exportación">Abrir otra exportación</span></button>
                 </section>
             </div>
 
             <!-- Stats drawer -->
-            <section class="drawer" id="ig-stats-drawer" aria-label="Analytics drawer">
+            <section class="drawer" id="ig-stats-drawer" aria-label="Panel de estadísticas" data-i18n-aria-label="Panel de estadísticas">
                 <div class="drawer-header">
-                    <button class="drawer-close" id="ig-close-stats" type="button" aria-label="Close analytics"><i class="ph ph-arrow-left"></i></button>
-                    <h2>Analytics</h2>
+                    <button class="drawer-close" id="ig-close-stats" type="button" aria-label="Cerrar estadísticas" data-i18n-aria-label="Cerrar estadísticas"><i class="ph ph-arrow-left"></i></button>
+                    <h2 data-i18n="Estadísticas">Estadísticas</h2>
                 </div>
                 <div class="drawer-scroll">
                     <div class="stats-overview">
                         <div class="stat-box">
                             <span class="val" id="ig-stat-total">0</span>
-                            <span class="label">Messages</span>
+                            <span class="label" data-i18n="Mensajes">Mensajes</span>
                         </div>
                         <div class="stat-box">
                             <span class="val" id="ig-stat-media">0</span>
-                            <span class="label">Media</span>
+                            <span class="label" data-i18n="Archivos">Archivos</span>
                         </div>
                     </div>
-                    <div class="section-label">EMOJI INSIGHTS</div>
+                    <div class="section-label" data-i18n="EMOJIS">EMOJIS</div>
                     <div class="emoji-grid" id="ig-emoji-grid"></div>
-                    <div class="section-label">ACTIVITY BREAKDOWN</div>
+                    <div class="section-label" data-i18n="ACTIVIDAD">ACTIVIDAD</div>
                     <div class="stats-list" id="ig-stats-list"></div>
-                    <button type="button" class="btn-secondary settings-reset" id="ig-generate-wrapped"><i class="ph ph-sparkle"></i> Generate Instagram Wrapped</button>
+                    <button type="button" class="btn-secondary settings-reset" id="ig-generate-wrapped"><i class="ph ph-sparkle"></i> <span data-i18n="Generar Wrapped de Instagram">Generar Wrapped de Instagram</span></button>
                 </div>
             </section>
-            <section class="drawer" id="ig-settings-drawer" aria-label="Instagram settings">
+            <section class="drawer" id="ig-settings-drawer" aria-label="Ajustes de Instagram" data-i18n-aria-label="Ajustes de Instagram">
                 <div class="drawer-header">
-                    <button class="drawer-close" id="ig-close-settings" type="button" aria-label="Close settings"><i class="ph ph-arrow-left"></i></button>
-                    <h2>Settings</h2>
+                    <button class="drawer-close" id="ig-close-settings" type="button" aria-label="Cerrar ajustes" data-i18n-aria-label="Cerrar ajustes"><i class="ph ph-arrow-left"></i></button>
+                    <h2 data-i18n="Ajustes">Ajustes</h2>
                 </div>
                 <div class="drawer-scroll">
                     <div class="settings-group">
-                        <div class="section-label">TIME DISPLAY</div>
-                        <label class="setting-row" for="ig-setting-time-format"><span><strong>Time Format</strong><small>Choose 12-hour or 24-hour timestamps.</small></span>
-                            <select id="ig-setting-time-format" data-ig-setting="timeFormat"><option value="12">12-hour</option><option value="24">24-hour</option></select>
+                        <div class="section-label" data-i18n="VISUALIZACIÓN DE HORA">VISUALIZACIÓN DE HORA</div>
+                        <label class="setting-row" for="ig-setting-time-format"><span><strong data-i18n="Formato de hora">Formato de hora</strong><small data-i18n="Elige la hora de 12 o de 24 horas.">Elige la hora de 12 o de 24 horas.</small></span>
+                            <select id="ig-setting-time-format" data-ig-setting="timeFormat"><option value="12" data-i18n="12 horas">12 horas</option><option value="24" data-i18n="24 horas">24 horas</option></select>
                         </label>
-                        <label class="setting-row" for="ig-setting-show-seconds"><span><strong>Show Seconds</strong><small>Show seconds from the export timestamps.</small></span>
+                        <label class="setting-row" for="ig-setting-show-seconds"><span><strong data-i18n="Mostrar segundos">Mostrar segundos</strong><small data-i18n="Muestra los segundos de las horas de la exportación.">Muestra los segundos de las horas de la exportación.</small></span>
                             <input type="checkbox" id="ig-setting-show-seconds" data-ig-setting="showSeconds">
                         </label>
-                        <label class="setting-row" for="ig-setting-time-brackets"><span><strong>Time Brackets</strong><small>Add brackets around message timestamps.</small></span>
-                            <select id="ig-setting-time-brackets" data-ig-setting="timeBrackets"><option value="none">None</option><option value="square">[Square]</option><option value="round">(Round)</option></select>
+                        <label class="setting-row" for="ig-setting-time-brackets"><span><strong data-i18n="Paréntesis de hora">Paréntesis de hora</strong><small data-i18n="Añade paréntesis alrededor de las horas de los mensajes.">Añade paréntesis alrededor de las horas de los mensajes.</small></span>
+                            <select id="ig-setting-time-brackets" data-ig-setting="timeBrackets"><option value="none" data-i18n="Ninguno">Ninguno</option><option value="square" data-i18n="[Cuadrado]">[Cuadrado]</option><option value="round" data-i18n="(Redondo)">(Redondo)</option></select>
                         </label>
                     </div>
                     <div class="settings-group">
-                        <div class="section-label">DATE DISPLAY</div>
-                        <label class="setting-row" for="ig-setting-date-format"><span><strong>Date Format</strong><small>Choose the date marker format.</small></span>
-                            <select id="ig-setting-date-format" data-ig-setting="dateFormat"><option value="long">Long</option><option value="dmy">DD/MM/YYYY</option><option value="mdy">MM/DD/YYYY</option><option value="ymd">YYYY/MM/DD</option></select>
+                        <div class="section-label" data-i18n="VISUALIZACIÓN DE FECHA">VISUALIZACIÓN DE FECHA</div>
+                        <label class="setting-row" for="ig-setting-date-format"><span><strong data-i18n="Formato de fecha">Formato de fecha</strong><small data-i18n="Elige el formato de las etiquetas de fecha.">Elige el formato de las etiquetas de fecha.</small></span>
+                            <select id="ig-setting-date-format" data-ig-setting="dateFormat"><option value="long" data-i18n="Largo">Largo</option><option value="dmy" data-i18n="DD/MM/AAAA">DD/MM/AAAA</option><option value="mdy" data-i18n="MM/DD/AAAA">MM/DD/AAAA</option><option value="ymd" data-i18n="AAAA/MM/DD">AAAA/MM/DD</option></select>
                         </label>
-                        <label class="setting-row" for="ig-setting-date-separator"><span><strong>Date Separator</strong><small>Used for numeric date formats.</small></span>
-                            <select id="ig-setting-date-separator" data-ig-setting="dateSeparator"><option value="/">Slash</option><option value="-">Dash</option><option value=".">Dot</option></select>
+                        <label class="setting-row" for="ig-setting-date-separator"><span><strong data-i18n="Separador de fecha">Separador de fecha</strong><small data-i18n="Se usa en los formatos de fecha numéricos.">Se usa en los formatos de fecha numéricos.</small></span>
+                            <select id="ig-setting-date-separator" data-ig-setting="dateSeparator"><option value="/" data-i18n="Barra">Barra</option><option value="-" data-i18n="Guion">Guion</option><option value="." data-i18n="Punto">Punto</option></select>
                         </label>
-                        <label class="setting-row" for="ig-setting-date-brackets"><span><strong>Date Brackets</strong><small>Add brackets around date markers.</small></span>
-                            <select id="ig-setting-date-brackets" data-ig-setting="dateBrackets"><option value="none">None</option><option value="square">[Square]</option><option value="round">(Round)</option></select>
+                        <label class="setting-row" for="ig-setting-date-brackets"><span><strong data-i18n="Paréntesis de fecha">Paréntesis de fecha</strong><small data-i18n="Añade paréntesis alrededor de las etiquetas de fecha.">Añade paréntesis alrededor de las etiquetas de fecha.</small></span>
+                            <select id="ig-setting-date-brackets" data-ig-setting="dateBrackets"><option value="none" data-i18n="Ninguno">Ninguno</option><option value="square" data-i18n="[Cuadrado]">[Cuadrado]</option><option value="round" data-i18n="(Redondo)">(Redondo)</option></select>
                         </label>
-                        <label class="setting-row" for="ig-setting-show-senders"><span><strong>Sender Names</strong><small>Show incoming sender names above grouped messages.</small></span>
+                        <label class="setting-row" for="ig-setting-show-senders"><span><strong data-i18n="Nombres de remitentes">Nombres de remitentes</strong><small data-i18n="Muestra los nombres sobre los mensajes agrupados entrantes.">Muestra los nombres sobre los mensajes agrupados entrantes.</small></span>
                             <input type="checkbox" id="ig-setting-show-senders" data-ig-setting="showSenderNames">
                         </label>
                     </div>
                     <div class="settings-group">
-                        <div class="section-label">PERSISTENT STORAGE</div>
-                        <label class="setting-row" for="ig-setting-persistent-storage"><span><strong>Persistent Storage</strong><small>Keep Instagram export ZIPs on this device. Nothing is uploaded.</small></span>
+                        <div class="section-label" data-i18n="ALMACENAMIENTO PERSISTENTE">ALMACENAMIENTO PERSISTENTE</div>
+                        <label class="setting-row" for="ig-setting-persistent-storage"><span><strong data-i18n="Almacenamiento persistente">Almacenamiento persistente</strong><small data-i18n="Guarda los ZIP de Instagram en este dispositivo. No se sube nada.">Guarda los ZIP de Instagram en este dispositivo. No se sube nada.</small></span>
                             <input type="checkbox" id="ig-setting-persistent-storage" data-ig-setting="persistentStorage">
                         </label>
-                        <p class="storage-note storage-note-warn" id="ig-storage-unsupported" hidden>Local persistent storage requires a supported browser on HTTPS.</p>
+                        <p class="storage-note storage-note-warn" id="ig-storage-unsupported" hidden data-i18n="El almacenamiento local persistente necesita un navegador compatible y HTTPS.">El almacenamiento local persistente necesita un navegador compatible y HTTPS.</p>
                         <p class="storage-note" id="ig-storage-status" role="status"></p>
-                        <button type="button" class="btn-secondary" id="ig-storage-cancel" hidden>Cancel saving</button>
+                        <button type="button" class="btn-secondary" id="ig-storage-cancel" hidden data-i18n="Cancelar el guardado">Cancelar el guardado</button>
                         <div id="ig-storage-manage" hidden>
                             <div class="storage-list" id="ig-storage-list"></div>
-                            <button type="button" class="btn-secondary storage-delete-all" id="ig-storage-delete-all">Delete saved Instagram exports</button>
+                            <button type="button" class="btn-secondary storage-delete-all" id="ig-storage-delete-all" data-i18n="Eliminar las exportaciones de Instagram guardadas">Eliminar las exportaciones de Instagram guardadas</button>
                         </div>
                     </div>
-                    <button type="button" class="btn-secondary settings-reset" id="ig-reset-settings">Reset Settings</button>
+                    <div class="settings-group">
+                        <div class="section-label" data-i18n="IDIOMA">IDIOMA</div>
+                        <label class="setting-row" for="ig-setting-language"><span><strong data-i18n="Idioma">Idioma</strong><small data-i18n="Elige el idioma de la interfaz.">Elige el idioma de la interfaz.</small></span>
+                            <select id="ig-setting-language">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button type="button" class="btn-secondary settings-reset" id="ig-reset-settings" data-i18n="Restablecer ajustes">Restablecer ajustes</button>
                 </div>
             </section>
         </aside>
 
-        <button class="sidebar-backdrop" id="ig-sidebar-backdrop" type="button" aria-label="Close sidebar"></button>
+        <button class="sidebar-backdrop" id="ig-sidebar-backdrop" type="button" aria-label="Cerrar barra lateral" data-i18n-aria-label="Cerrar barra lateral"></button>
 
         <main class="chat-interface">
             <div class="chat-bg" aria-hidden="true"></div>
             <header class="chat-header">
-                <button class="mobile-menu" id="ig-mobile-menu" type="button" aria-label="Open sidebar"><i class="ph ph-list"></i></button>
+                <button class="mobile-menu" id="ig-mobile-menu" type="button" aria-label="Abrir barra lateral" data-i18n-aria-label="Abrir barra lateral"><i class="ph ph-list"></i></button>
                 <div class="header-profile">
                     <div class="ig-story-ring">
                         <div class="ig-story-ring-inner">
@@ -391,70 +400,70 @@
                         </div>
                     </div>
                     <div class="header-info">
-                        <h2 id="ig-header-name">Instagram DMs</h2>
+                        <h2 id="ig-header-name" data-i18n="Mensajes de Instagram">Mensajes de Instagram</h2>
                         <p id="ig-header-meta">ChatLume</p>
                     </div>
                 </div>
                 <div class="header-tools">
                     <div class="sender-filter-container" id="ig-sender-filter-container" hidden>
-                        <button type="button" class="sender-filter-btn" id="ig-sender-filter-btn" aria-haspopup="dialog" aria-controls="ig-sender-filter-dropdown" aria-expanded="false" aria-label="Filter by sender"><i class="ph ph-users-three"></i></button>
-                        <div class="sender-filter-dropdown" id="ig-sender-filter-dropdown" role="dialog" aria-label="Filter messages by sender" hidden>
-                            <div class="sender-filter-dropdown-header"><strong>Participants</strong><button type="button" class="sender-filter-reset-btn" id="ig-sender-filter-reset">Reset</button></div>
-                            <div class="sender-filter-list" id="ig-sender-filter-list" role="group" aria-label="Participants"></div>
+                        <button type="button" class="sender-filter-btn" id="ig-sender-filter-btn" aria-haspopup="dialog" aria-controls="ig-sender-filter-dropdown" aria-expanded="false" aria-label="Filtrar por remitente" data-i18n-aria-label="Filtrar por remitente"><i class="ph ph-users-three"></i></button>
+                        <div class="sender-filter-dropdown" id="ig-sender-filter-dropdown" role="dialog" aria-label="Filtrar mensajes por remitente" data-i18n-aria-label="Filtrar mensajes por remitente" hidden>
+                            <div class="sender-filter-dropdown-header"><strong data-i18n="Participantes">Participantes</strong><button type="button" class="sender-filter-reset-btn" id="ig-sender-filter-reset" data-i18n="Restablecer">Restablecer</button></div>
+                            <div class="sender-filter-list" id="ig-sender-filter-list" role="group" aria-label="Participantes" data-i18n-aria-label="Participantes"></div>
                         </div>
                     </div>
-                    <button id="ig-search-toggle" type="button" aria-label="Search messages" aria-controls="ig-search-toolbar" aria-expanded="false" title="Search messages (Ctrl+F or /)"><i class="ph ph-magnifying-glass"></i></button>
+                    <button id="ig-search-toggle" type="button" aria-label="Buscar mensajes" data-i18n-aria-label="Buscar mensajes" aria-controls="ig-search-toolbar" aria-expanded="false" title="Buscar mensajes (Ctrl+F o /)" data-i18n-title="Buscar mensajes (Ctrl+F o /)"><i class="ph ph-magnifying-glass"></i></button>
                     <div class="menu-container">
-                        <button id="ig-menu-toggle" type="button" aria-label="Open chat actions" aria-controls="ig-header-menu" aria-expanded="false"><i class="ph ph-dots-three-vertical"></i></button>
-                        <div class="dropdown-menu" id="ig-header-menu"><button type="button" class="menu-item" id="ig-date-jump-action"><i class="ph ph-calendar-blank"></i> Go to Date</button></div>
+                        <button id="ig-menu-toggle" type="button" aria-label="Abrir acciones del chat" data-i18n-aria-label="Abrir acciones del chat" aria-controls="ig-header-menu" aria-expanded="false"><i class="ph ph-dots-three-vertical"></i></button>
+                        <div class="dropdown-menu" id="ig-header-menu"><button type="button" class="menu-item" id="ig-date-jump-action"><i class="ph ph-calendar-blank"></i> <span data-i18n="Ir a una fecha">Ir a una fecha</span></button></div>
                     </div>
                 </div>
             </header>
 
             <section class="search-toolbar" id="ig-search-toolbar">
                 <div class="search-input-group">
-                    <button id="ig-search-close" type="button" aria-label="Close search"><i class="ph ph-arrow-left"></i></button>
-                    <input type="search" id="ig-live-search" placeholder="Search messages..." aria-label="Search messages in this conversation" autocomplete="off">
+                    <button id="ig-search-close" type="button" aria-label="Cerrar búsqueda" data-i18n-aria-label="Cerrar búsqueda"><i class="ph ph-arrow-left"></i></button>
+                    <input type="search" id="ig-live-search" placeholder="Buscar mensajes..." aria-label="Buscar mensajes en esta conversación" autocomplete="off" data-i18n-placeholder="Buscar mensajes..." data-i18n-aria-label="Buscar mensajes en esta conversación">
                 </div>
                 <div class="search-nav">
                     <span id="ig-search-counter" aria-live="polite"></span>
-                    <button id="ig-search-up" type="button" aria-label="Previous result"><i class="ph ph-caret-up"></i></button>
-                    <button id="ig-search-down" type="button" aria-label="Next result"><i class="ph ph-caret-down"></i></button>
+                    <button id="ig-search-up" type="button" aria-label="Resultado anterior" data-i18n-aria-label="Resultado anterior"><i class="ph ph-caret-up"></i></button>
+                    <button id="ig-search-down" type="button" aria-label="Resultado siguiente" data-i18n-aria-label="Resultado siguiente"><i class="ph ph-caret-down"></i></button>
                 </div>
             </section>
 
-            <button type="button" class="scroll-latest" id="ig-scroll-latest" hidden aria-label="Jump to the latest message">
+            <button type="button" class="scroll-latest" id="ig-scroll-latest" hidden aria-label="Ir al mensaje más reciente" data-i18n-aria-label="Ir al mensaje más reciente">
                 <i class="ph-bold ph-arrow-down" aria-hidden="true"></i>
             </button>
-            <section class="messages-viewport" id="ig-viewport" aria-label="Messages">
+            <section class="messages-viewport" id="ig-viewport" aria-label="Mensajes" data-i18n-aria-label="Mensajes">
                 <div class="empty-placeholder" id="ig-empty-state">
                     <div class="illustration">
                         <i class="ph-duotone ph-instagram-logo" style="background:linear-gradient(135deg,#833AB4,#C13584,#E1306C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"></i>
                     </div>
-                    <h2 class="ig-brand">Instagram DMs</h2>
-                    <p>Drop the ZIP Instagram emailed you and your conversations open right here —<br>photos, reels and reactions included.</p>
+                    <h2 class="ig-brand" data-i18n="Mensajes de Instagram">Mensajes de Instagram</h2>
+                    <p data-i18n-html="Suelta el ZIP que te envió Instagram y tus conversaciones se abrirán aquí:<br>con fotos, reels y reacciones incluidas.">Suelta el ZIP que te envió Instagram y tus conversaciones se abrirán aquí:<br>con fotos, reels y reacciones incluidas.</p>
                     <div class="empty-hints">
-                        <span class="empty-hint"><i class="ph-fill ph-file-zip"></i> JSON export only</span>
-                        <span class="empty-hint"><i class="ph-fill ph-images"></i> Media stays local</span>
-                        <span class="empty-hint"><i class="ph-fill ph-shield-check"></i> Never uploaded</span>
+                        <span class="empty-hint"><i class="ph-fill ph-file-zip"></i> <span data-i18n="Solo exportaciones JSON">Solo exportaciones JSON</span></span>
+                        <span class="empty-hint"><i class="ph-fill ph-images"></i> <span data-i18n="Los archivos se quedan en local">Los archivos se quedan en local</span></span>
+                        <span class="empty-hint"><i class="ph-fill ph-shield-check"></i> <span data-i18n="Nunca se sube">Nunca se sube</span></span>
                     </div>
                     <a class="empty-cta" href="how-to-export-instagram.html">
-                        <i class="ph ph-question"></i> How to export your Instagram DMs
+                        <i class="ph ph-question"></i> <span data-i18n="Cómo exportar tus mensajes de Instagram">Cómo exportar tus mensajes de Instagram</span>
                     </a>
                 </div>
                 <div class="search-empty" id="ig-search-empty" hidden role="status">
                     <i class="ph-duotone ph-magnifying-glass"></i>
-                    <h3>No messages matched</h3>
-                    <p>Nothing in this conversation contains <span class="query" id="ig-search-empty-query"></span>. Try a shorter word or different spelling.</p>
+                    <h3 data-i18n="No hay mensajes coincidentes">No hay mensajes coincidentes</h3>
+                    <p><span data-i18n="Nada en esta conversación contiene">Nada en esta conversación contiene</span> <span class="query" id="ig-search-empty-query"></span><span data-i18n=". Prueba con una palabra más corta o una ortografía distinta.">. Prueba con una palabra más corta o una ortografía distinta.</span></p>
                 </div>
                 <div class="message-list" id="ig-message-list"></div>
             </section>
 
             <footer class="chat-footer">
-                <button type="button" aria-label="Emoji picker"><i class="ph ph-smiley"></i></button>
-                <button type="button" aria-label="Add attachment"><i class="ph ph-plus"></i></button>
-                <div class="fake-input">Type a message</div>
-                <button type="button" aria-label="Record voice note"><i class="ph ph-microphone"></i></button>
+                <button type="button" aria-label="Selector de emojis" data-i18n-aria-label="Selector de emojis"><i class="ph ph-smiley"></i></button>
+                <button type="button" aria-label="Añadir archivo" data-i18n-aria-label="Añadir archivo"><i class="ph ph-plus"></i></button>
+                <div class="fake-input" data-i18n="Escribe un mensaje">Escribe un mensaje</div>
+                <button type="button" aria-label="Grabar nota de voz" data-i18n-aria-label="Grabar nota de voz"><i class="ph ph-microphone"></i></button>
             </footer>
         </main>
 
@@ -464,14 +473,14 @@
             <div class="media-modal-dialog" role="dialog" aria-modal="true">
                 <div class="media-modal-header">
                     <div>
-                        <h2>Media</h2>
+                        <h2 data-i18n="Archivos">Archivos</h2>
                         <p id="ig-media-modal-subtitle"></p>
                     </div>
                     <div class="media-modal-actions">
-                        <a id="ig-media-download-link" download style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);color:var(--text-primary);text-decoration:none" title="Download">
+                        <a id="ig-media-download-link" download style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);color:var(--text-primary);text-decoration:none" title="Descargar" data-i18n-title="Descargar">
                             <i class="ph ph-download-simple"></i>
                         </a>
-                        <button id="ig-media-modal-close" type="button"><i class="ph ph-x"></i></button>
+                        <button id="ig-media-modal-close" type="button" aria-label="Cerrar" data-i18n-aria-label="Cerrar"><i class="ph ph-x"></i></button>
                     </div>
                 </div>
                 <div class="media-modal-body" id="ig-media-modal-body"></div>
@@ -480,27 +489,27 @@
 
         <div class="date-sheet-backdrop" id="ig-date-sheet" hidden>
             <div class="date-sheet" role="dialog" aria-modal="true" aria-labelledby="ig-date-sheet-title">
-                <h3 id="ig-date-sheet-title">Go to Date</h3>
-                <p>Select a local date in this conversation.</p>
-                <input type="date" id="ig-date-sheet-input" class="date-sheet-input" aria-label="Date to jump to">
-                <p id="ig-date-sheet-error" class="storage-note storage-note-warn" role="status" hidden>No messages were found on or before that date.</p>
+                <h3 id="ig-date-sheet-title" data-i18n="Ir a una fecha">Ir a una fecha</h3>
+                <p data-i18n="Elige una fecha de esta conversación.">Elige una fecha de esta conversación.</p>
+                <input type="date" id="ig-date-sheet-input" class="date-sheet-input" aria-label="Fecha a la que ir" data-i18n-aria-label="Fecha a la que ir">
+                <p id="ig-date-sheet-error" class="storage-note storage-note-warn" role="status" hidden data-i18n="No hay mensajes en esa fecha ni antes.">No hay mensajes en esa fecha ni antes.</p>
                 <div class="date-sheet-actions">
-                    <button class="btn-secondary" id="ig-date-sheet-cancel" type="button">Cancel</button>
-                    <button class="btn-primary" id="ig-date-sheet-apply" type="button">Jump</button>
+                    <button class="btn-secondary" id="ig-date-sheet-cancel" type="button" data-i18n="Cancelar">Cancelar</button>
+                    <button class="btn-primary" id="ig-date-sheet-apply" type="button" data-i18n="Ir">Ir</button>
                 </div>
             </div>
         </div>
 
         <div class="media-modal" id="ig-wrapped-modal" hidden>
-            <button class="media-modal-backdrop" id="ig-wrapped-backdrop" type="button" aria-label="Close Instagram Wrapped"></button>
+            <button class="media-modal-backdrop" id="ig-wrapped-backdrop" type="button" aria-label="Cerrar el Wrapped de Instagram" data-i18n-aria-label="Cerrar el Wrapped de Instagram"></button>
             <div class="media-modal-dialog" style="max-width:600px" role="dialog" aria-modal="true" aria-labelledby="ig-wrapped-title">
                 <div class="media-modal-header">
-                    <div><h2 id="ig-wrapped-title">Your Instagram Wrapped</h2><p>A shareable summary of this conversation.</p></div>
-                    <div class="media-modal-actions"><button id="ig-wrapped-close" type="button" aria-label="Close"><i class="ph ph-x"></i></button></div>
+                    <div><h2 id="ig-wrapped-title" data-i18n="Tu Wrapped de Instagram">Tu Wrapped de Instagram</h2><p data-i18n="Un resumen compartible de esta conversación.">Un resumen compartible de esta conversación.</p></div>
+                    <div class="media-modal-actions"><button id="ig-wrapped-close" type="button" aria-label="Cerrar" data-i18n-aria-label="Cerrar"><i class="ph ph-x"></i></button></div>
                 </div>
                 <div class="media-modal-body" style="display:block;padding:20px;background:var(--bg-sidebar);overflow:auto">
                     <div id="ig-wrapped-graphic" class="wrapped-graphic-container"></div>
-                    <button class="btn-primary" id="ig-wrapped-download" type="button" style="width:100%;margin-top:20px"><i class="ph ph-download-simple"></i> Download Image</button>
+                    <button class="btn-primary" id="ig-wrapped-download" type="button" style="width:100%;margin-top:20px"><i class="ph ph-download-simple"></i> <span data-i18n="Descargar imagen">Descargar imagen</span></button>
                 </div>
             </div>
         </div>
@@ -509,8 +518,8 @@
         <div class="processing-overlay" id="ig-processing-overlay" hidden>
             <div class="processing-card" role="status">
                 <i class="ph-fill ph-spinner-gap processing-spinner"></i>
-                <h2 id="ig-processing-title">Loading</h2>
-                <p id="ig-processing-copy">Please wait...</p>
+                <h2 id="ig-processing-title" data-i18n="Cargando">Cargando</h2>
+                <p id="ig-processing-copy" data-i18n="Un momento...">Un momento...</p>
             </div>
         </div>
 
@@ -519,6 +528,6 @@
 
     
 
-    <script src="../js/site.js?v=1.8.23" defer></script>
+    <script src="../js/site.js?v=1.8.24" defer></script>
 </body>
 </html>

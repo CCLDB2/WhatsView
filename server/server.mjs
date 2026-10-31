@@ -44,6 +44,32 @@ export async function createWhatsViewApp({ dataDir = process.env.DATA_DIR || "/d
         if (error.code !== "ENOENT") throw error;
     }
 
+    // Interface preferences shared by every device that opens this self-hosted
+    // instance. Static hosting falls back to the browser's localStorage.
+    const settingsPath = path.join(resolvedDataDir, "settings.json");
+    const supportedLanguages = ["es", "en"];
+    let settings = { language: "es" };
+    try {
+        const parsed = JSON.parse(await readFile(settingsPath, "utf8"));
+        if (parsed && supportedLanguages.includes(parsed.language)) {
+            settings = { ...settings, language: parsed.language };
+        }
+    } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+    }
+
+    let settingsQueue = Promise.resolve();
+    function updateSettings(patch) {
+        settingsQueue = settingsQueue.then(async () => {
+            const next = { ...settings, ...patch };
+            const temporaryPath = `${settingsPath}.tmp`;
+            await writeFile(temporaryPath, JSON.stringify(next), { mode: 0o600 });
+            await rename(temporaryPath, settingsPath);
+            settings = next;
+        });
+        return settingsQueue;
+    }
+
     let catalogQueue = Promise.resolve();
     const archiveManifestCache = new Map();
 
@@ -209,6 +235,23 @@ export async function createWhatsViewApp({ dataDir = process.env.DATA_DIR || "/d
     const app = express();
     app.disable("x-powered-by");
     app.get("/healthz", (_request, response) => response.status(200).type("text/plain").send("ok\n"));
+
+    app.get("/api/settings", (_request, response) => {
+        response.set("Cache-Control", "no-store").json(settings);
+    });
+
+    app.put("/api/settings", express.json({ limit: "16kb" }), async (request, response, next) => {
+        const language = request.body?.language;
+        if (!supportedLanguages.includes(language)) {
+            return response.status(400).json({ error: "Unsupported language." });
+        }
+        try {
+            await updateSettings({ language });
+            response.set("Cache-Control", "no-store").json(settings);
+        } catch (error) {
+            next(error);
+        }
+    });
 
     app.get("/api/storage", async (_request, response) => {
         const entries = Object.values(catalog);

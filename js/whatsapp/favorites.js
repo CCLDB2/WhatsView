@@ -1,7 +1,8 @@
 /** Per-chat message bookmarks; browser-local with optional server synchronization. */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { state } from "./state.js?v=1.8.23";
-import { jumpToMessage } from "./search.js?v=1.8.23";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { state } from "./state.js?v=1.8.24";
+import { jumpToMessage } from "./search.js?v=1.8.24";
 
 const PREFIX = "chatlume-favorites:";
 let remoteSaveTimer = 0;
@@ -102,10 +103,10 @@ export function renderFavoritesPanel() {
     const favorites = state.messages.filter((item) => item.type === "msg" && state.favoriteIds.has(item.id));
     if (count) count.textContent = String(favorites.length);
     panel.innerHTML = favorites.length ? favorites.map((item) => {
-        const text = item.text || item.mediaItems?.[0]?.name || "Media message";
+        const text = item.text || item.mediaItems?.[0]?.name || t("Mensaje multimedia");
         const snippet = text.length > 120 ? `${text.slice(0, 117)}…` : text;
         return `<button class="favorite-entry" type="button" data-favorite-message="${escapeHtml(item.id)}"><span class="favorite-entry-meta">${escapeHtml(item.sender)} · ${escapeHtml(item.rawDate || item.date || "")} ${escapeHtml(item.rawTime || item.time || "")}</span><span class="favorite-entry-text">${escapeHtml(snippet)}</span></button>`;
-    }).join("") : '<p class="favorites-empty">Todavía no marcaste mensajes como favoritos.</p>';
+    }).join("") : `<p class="favorites-empty">${t("Aún no marcaste mensajes como favoritos.")}</p>`;
 }
 
 export function handleFavoriteListClick(event) {
@@ -124,8 +125,8 @@ export function updateFavoriteControls() {
         icon?.classList.toggle("ph-fill", active);
         icon?.classList.toggle("ph", !active);
         button.setAttribute("aria-pressed", String(active));
-        button.setAttribute("aria-label", active ? "Quitar de favoritos" : "Marcar como favorito");
-        button.title = active ? "Quitar de favoritos" : "Marcar como favorito";
+        button.setAttribute("aria-label", active ? t("Quitar de favoritos") : t("Marcar como favorito"));
+        button.title = active ? t("Quitar de favoritos") : t("Marcar como favorito");
     });
     const count = $("favorites-count");
     if (count) count.textContent = String(state.favoriteIds.size);

@@ -7,11 +7,12 @@
  * messages.
  * ============================================================================
  */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.23";
-import { animateStatsIn, renderStatsPanel } from "../shared/stats-panel.js?v=1.8.23";
-import { createToast } from "../shared/toast.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.24";
+import { animateStatsIn, renderStatsPanel } from "../shared/stats-panel.js?v=1.8.24";
+import { createToast } from "../shared/toast.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
 
 export const showToast = createToast("ig-toast");
 
@@ -20,7 +21,7 @@ export const isMobileLayout = () => window.innerWidth <= 800;
 
 // ── Loading overlay ─────────────────────────────────────────────────────────
 
-export function setLoading(on, title = "Loading", copy = "Please wait...") {
+export function setLoading(on, title = t("Cargando"), copy = t("Un momento...")) {
     igState.isLoading = on;
     const overlay = $("ig-processing-overlay");
     const titleEl = $("ig-processing-title");
@@ -138,7 +139,7 @@ export function showErrorState(title, message) {
         <h2 style="color:var(--text-primary)">${escapeHtml(title)}</h2>
         <p style="max-width:300px">${escapeHtml(message)}</p>
         <a href="how-to-export-instagram.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;color:#C13584;text-decoration:none">
-          <i class="ph ph-question"></i> How to export Instagram DMs
+          <i class="ph ph-question"></i> ${escapeHtml(t("Cómo exportar tus mensajes de Instagram"))}
         </a>`;
     emptyEl.classList.remove("hidden");
 }
@@ -152,9 +153,9 @@ export function showEmptyThreadState(onPickAnother) {
     if (!emptyEl) return;
     emptyEl.innerHTML = `
         <div class="illustration"><i class="ph-duotone ph-file-dashed" style="color:#f5a623"></i></div>
-        <h2>This conversation is empty</h2>
-        <p style="max-width:340px">The thread parsed fine but contained no readable messages. Instagram sometimes ships placeholder folders for conversations you deleted.</p>
-        ${onPickAnother ? `<button type="button" class="empty-cta" id="ig-back-to-threads"><i class="ph ph-arrow-left"></i> Pick another conversation</button>` : ""}`;
+        <h2>${escapeHtml(t("Esta conversación está vacía"))}</h2>
+        <p style="max-width:340px">${escapeHtml(t("La conversación se leyó bien pero no tenía mensajes legibles. A veces Instagram incluye carpetas vacías de conversaciones que borraste."))}</p>
+        ${onPickAnother ? `<button type="button" class="empty-cta" id="ig-back-to-threads"><i class="ph ph-arrow-left"></i> ${escapeHtml(t("Elegir otra conversación"))}</button>` : ""}`;
     emptyEl.classList.remove("hidden");
     if (onPickAnother) $("ig-back-to-threads")?.addEventListener("click", onPickAnother);
 }

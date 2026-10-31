@@ -7,20 +7,21 @@
  * second pick mid-way can't interleave with the first.
  * ============================================================================
  */
-import { exportChatAsHTML } from "../export.js?v=1.8.23";
-import { showSponsorPrompt } from "../support.js?v=1.8.23";
-import { $, q, replayClass, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.23";
-import { clearMediaStore } from "../shared/media-urls.js?v=1.8.23";
-import { fixMojibake } from "./mojibake.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
-import { cleanupZip, lazyMedia } from "./media.js?v=1.8.23";
-import { buildMediaStore, findThreads, folderLabel, initialsFor, parseMessageFile, parseMessages, sortMessageFiles, sortMessagesChronologically } from "./parser.js?v=1.8.23";
-import { collectExportMessages, renderChatList, scrollToBottom } from "./render.js?v=1.8.23";
-import { showThreadSelector } from "./threads.js?v=1.8.23";
-import { persistInstagramImport, markInstagramImportOpened } from "./persistence.js?v=1.8.23";
-import { getInstagramSenders } from "./filter.js?v=1.8.23";
-import { initialThreadSelection } from "./threads-model.js?v=1.8.23";
+import { exportChatAsHTML } from "../export.js?v=1.8.24";
+import { showSponsorPrompt } from "../support.js?v=1.8.24";
+import { $, q, replayClass, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.24";
+import { clearMediaStore } from "../shared/media-urls.js?v=1.8.24";
+import { t, getLocale } from "../i18n.js?v=1.8.24";
+import { fixMojibake } from "./mojibake.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
+import { cleanupZip, lazyMedia } from "./media.js?v=1.8.24";
+import { buildMediaStore, findThreads, folderLabel, initialsFor, parseMessageFile, parseMessages, sortMessageFiles, sortMessagesChronologically } from "./parser.js?v=1.8.24";
+import { collectExportMessages, renderChatList, scrollToBottom } from "./render.js?v=1.8.24";
+import { showThreadSelector } from "./threads.js?v=1.8.24";
+import { persistInstagramImport, markInstagramImportOpened } from "./persistence.js?v=1.8.24";
+import { getInstagramSenders } from "./filter.js?v=1.8.24";
+import { initialThreadSelection } from "./threads-model.js?v=1.8.24";
 import {
     closeMenu,
     generateStats,
@@ -31,7 +32,7 @@ import {
     showErrorState,
     showToast,
     yieldToPaint
-} from "./ui.js?v=1.8.23";
+} from "./ui.js?v=1.8.24";
 
 const ZIP_JS_URL = "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
 let zipApiPromise = null;
@@ -56,8 +57,8 @@ function loadZipApi() {
 export async function initViewer({ file: fileOverride = null, record = null } = {}) {
     if (igState.isLoading) return;
     const file = fileOverride || $("ig-file-input")?.files?.[0] || igState.selectedFile;
-    if (!file) { showToast("Please select an Instagram export ZIP", "warn"); return; }
-    if (!file.name.toLowerCase().endsWith(".zip")) { showToast("Please select a .zip file", "warn"); return; }
+    if (!file) { showToast(t("Selecciona un ZIP de exportación de Instagram"), "warn"); return; }
+    if (!file.name.toLowerCase().endsWith(".zip")) { showToast(t("Selecciona un archivo .zip"), "warn"); return; }
 
     if (exceedsCompatLimit(file)) {
         showToast(fileTooLargeMessage(file), "error");
@@ -74,7 +75,7 @@ export async function initViewer({ file: fileOverride = null, record = null } = 
     igState.restoreThreadFolder = record?.threadFolder || "";
     if (record?.ownerName && $("ig-my-name") && !$("ig-my-name").value.trim()) $("ig-my-name").value = record.ownerName;
 
-    setLoading(true, "Opening ZIP", "Reading your Instagram export...");
+    setLoading(true, t("Abriendo el ZIP"), t("Leyendo tu exportación de Instagram..."));
     try {
         await yieldToPaint();
         if (isStaleZip()) return;
@@ -89,12 +90,12 @@ export async function initViewer({ file: fileOverride = null, record = null } = 
         igState.zipEntries = entries;
         igState.zipReader = reader;
 
-        setLoading(true, "Scanning threads", "Finding message folders...");
+        setLoading(true, t("Escaneando conversaciones"), t("Buscando carpetas de mensajes..."));
         await yieldToPaint();
         if (isStaleZip()) return;
 
         const threads = findThreads(entries);
-        if (!threads.length) throw new Error("No Instagram message folders found. Make sure you selected JSON format when requesting the export.");
+        if (!threads.length) throw new Error(t("No se encontraron carpetas de mensajes de Instagram. Asegúrate de elegir el formato JSON al pedir la exportación."));
 
         igState.threads = threads;
         setLoading(false);
@@ -150,7 +151,7 @@ export async function loadThread(thread) {
     const gen = ++igState.threadGeneration;
     const isStale = () => igState.threadGeneration !== gen;
 
-    setLoading(true, "Loading thread", "Parsing messages...");
+    setLoading(true, t("Cargando la conversación"), t("Procesando mensajes..."));
     try {
         await yieldToPaint();
         if (isStale()) return;
@@ -165,7 +166,7 @@ export async function loadThread(thread) {
         let participants = [];
 
         for (let i = 0; i < sortedFiles.length; i++) {
-            setLoading(true, "Loading thread", `Parsing file ${i + 1} of ${sortedFiles.length}...`);
+            setLoading(true, t("Cargando la conversación"), t("Procesando el archivo {current} de {total}...", { current: i + 1, total: sortedFiles.length }));
             await yieldToPaint();
             if (isStale()) return;
             const text = await sortedFiles[i].getData(new TextWriter("utf-8"));
@@ -199,7 +200,7 @@ export async function loadThread(thread) {
 
         if (igState.messageOnlyCount === 0) {
             showEmptyThreadState(igState.threads.length > 1 ? () => showThreadSelector(igState.threads, loadThread) : null);
-            showToast("No messages found in this thread", "error");
+            showToast(t("No se encontraron mensajes en esta conversación"), "error");
             setLoading(false);
             return;
         }
@@ -208,7 +209,7 @@ export async function loadThread(thread) {
         populateInstagramSenderFilter();
         renderChatList();
         requestAnimationFrame(scrollToBottom);
-        showToast(`Loaded ${igState.messageOnlyCount.toLocaleString()} messages`);
+        showToast(t("Se cargaron {count} mensajes", { count: igState.messageOnlyCount.toLocaleString(getLocale()) }));
         if (isMobileLayout()) setSidebarState(false);
         if (igState.activeImportId) {
             try { await markInstagramImportOpened(thread); }
@@ -218,7 +219,7 @@ export async function loadThread(thread) {
     } catch (err) {
         if (!isStale()) {
             console.error(err);
-            showErrorState("Couldn't parse this file", err.message || "Make sure it's a valid Instagram JSON export ZIP.");
+            showErrorState(t("No se pudo procesar este archivo"), err.message || t("Asegúrate de que sea un ZIP válido con una exportación JSON de Instagram."));
         }
     } finally {
         if (!isStale()) setLoading(false);
@@ -245,16 +246,22 @@ function updateUI(title, participants) {
     // rather than each message.
     replayClass([$("ig-viewport"), q(".chat-header .header-profile")], "chat-revealed");
 
-    const withMedia = igState.mediaCount ? ` • ${igState.mediaCount.toLocaleString()} media` : "";
-    const missing = igState.mediaMissingCount ? ` • ${igState.mediaMissingCount.toLocaleString()} missing` : "";
+    const withMedia = igState.mediaCount ? t(" • {count} archivos", { count: igState.mediaCount.toLocaleString(getLocale()) }) : "";
+    const missing = igState.mediaMissingCount ? t(" • {count} faltantes", { count: igState.mediaMissingCount.toLocaleString(getLocale()) }) : "";
     const avatar = q(".chat-item-avatar", $("ig-chat-list-item"));
     if (avatar) avatar.textContent = initialsFor(title);
     if ($("ig-sidebar-title")) $("ig-sidebar-title").innerText = title;
     if ($("ig-header-name")) $("ig-header-name").innerText = title;
-    if ($("ig-header-meta")) $("ig-header-meta").innerText = `${igState.messageOnlyCount.toLocaleString()} messages${withMedia}${missing}`;
+    if ($("ig-header-meta")) $("ig-header-meta").innerText = t("{count} mensajes{media}{missing}", {
+        count: igState.messageOnlyCount.toLocaleString(getLocale()),
+        media: withMedia,
+        missing
+    });
     if ($("ig-sidebar-sub")) $("ig-sidebar-sub").innerText = igState.mediaMissingCount
-        ? `${igState.mediaMissingCount} missing attachment${igState.mediaMissingCount === 1 ? "" : "s"}`
-        : participants.join(", ") || "Direct Message";
+        ? (igState.mediaMissingCount === 1
+            ? t("{count} archivo adjunto faltante", { count: igState.mediaMissingCount })
+            : t("{count} archivos adjuntos faltantes", { count: igState.mediaMissingCount }))
+        : participants.join(", ") || t("Mensaje directo");
 
     ensureExportButton();
 }
@@ -275,22 +282,24 @@ function ensureExportButton() {
             closeMenu();
             btn.disabled = true;
             try {
-                if (includeAttachments) showToast("Preparing chat and attachments…");
+                if (includeAttachments) showToast(t("Preparando el chat y los archivos adjuntos…"));
                 const result = await exportChatAsHTML({
                     theme: "instagram",
                     colorScheme: document.body.classList.contains("light-theme") ? "light" : "dark",
                     includeAttachments,
                     mediaStore: igState.mediaStore,
-                    title: igState.chatTitle || "Instagram DMs",
+                    title: igState.chatTitle || t("Mensajes directos de Instagram"),
                     messageCount: igState.messageOnlyCount,
                     messages: collectExportMessages()
                 });
                 showToast(includeAttachments
-                    ? `Chat exported with ${result.attachmentCount} attachment${result.attachmentCount === 1 ? "" : "s"}`
-                    : "Chat exported as HTML");
+                    ? (result.attachmentCount === 1
+                        ? t("Chat exportado con {count} archivo adjunto", { count: result.attachmentCount })
+                        : t("Chat exportado con {count} archivos adjuntos", { count: result.attachmentCount }))
+                    : t("Chat exportado como HTML"));
             } catch (err) {
                 console.error("[ChatLume] Export failed:", err);
-                showToast("Export failed", "error");
+                showToast(t("No se pudo exportar"), "error");
             } finally {
                 btn.disabled = false;
             }
@@ -298,6 +307,6 @@ function ensureExportButton() {
         menu.appendChild(btn);
     };
 
-    addButton("ig-export-chat-btn", "Export without attachments (.html)", "ph-file-text", false);
-    addButton("ig-export-chat-media-btn", "Export with attachments (.zip)", "ph-file-zip", true);
+    addButton("ig-export-chat-btn", t("Exportar sin archivos adjuntos (.html)"), "ph-file-text", false);
+    addButton("ig-export-chat-media-btn", t("Exportar con archivos adjuntos (.zip)"), "ph-file-zip", true);
 }

@@ -8,11 +8,12 @@
  * these read `state` only for counts and flags.
  * ============================================================================
  */
-import { $, q, escapeHtml, replayClass } from "../shared/dom.js?v=1.8.23";
-import { pushOverlayState } from "../shared/history.js?v=1.8.23";
-import { createToast } from "../shared/toast.js?v=1.8.23";
-import { animateStatsIn } from "../shared/stats-panel.js?v=1.8.23";
-import { state } from "./state.js?v=1.8.23";
+import { $, q, escapeHtml, replayClass } from "../shared/dom.js?v=1.8.24";
+import { pushOverlayState } from "../shared/history.js?v=1.8.24";
+import { createToast } from "../shared/toast.js?v=1.8.24";
+import { animateStatsIn } from "../shared/stats-panel.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { state } from "./state.js?v=1.8.24";
 
 export const showToast = createToast("toast");
 
@@ -96,7 +97,7 @@ export function handleDocumentClick(event) {
 
 // ── Loading overlay ─────────────────────────────────────────────────────────
 
-export function setLoadingState(isLoading, title = "Loading chat", copy = "Parsing your export locally. This can take a moment for large ZIP files.") {
+export function setLoadingState(isLoading, title = t("Cargando chat"), copy = t("Procesando tu exportación localmente. Puede tardar un momento con archivos grandes.")) {
     state.isLoading = isLoading;
 
     const overlay = $("processing-overlay");
@@ -202,7 +203,7 @@ export function showEmptyState({ icon, iconColor, title, body, actions = "" }) {
 let confirmSheetResolver = null;
 
 /** Resolves true when the user confirms, false on cancel / Back / Escape. */
-export function askConfirm({ title, body, confirmLabel = "Delete" }) {
+export function askConfirm({ title, body, confirmLabel = t("Eliminar") }) {
     const sheet = $("confirm-sheet");
     if (!sheet) return Promise.resolve(false);
 

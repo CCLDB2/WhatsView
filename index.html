@@ -1,36 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0b141a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ChatLume — Free WhatsApp & Instagram Chat Viewer</title>
-    <meta name="description" content="View your WhatsApp and Instagram chat exports for free. 100% private — your chats never leave your device. Works offline. No account needed.">
-    <meta name="keywords" content="whatsapp chat viewer, instagram chat viewer, whatsapp export viewer, instagram dm viewer, view whatsapp backup, chatlume">
+    <title>ChatLume — Visor gratuito de chats de WhatsApp e Instagram</title>
+    <meta name="description" content="Abre tus exportaciones de WhatsApp e Instagram gratis. 100% privado: tus chats nunca salen de tu dispositivo. Funciona sin conexión y sin cuenta.">
+    <meta name="keywords" content="visor de chats de whatsapp, visor de chats de instagram, ver exportación de whatsapp, ver mensajes de instagram, chatlume">
     <meta name="author" content="ChatLume">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chatlume.app/">
     <meta property="og:site_name" content="ChatLume">
-    <meta property="og:title" content="ChatLume — Free WhatsApp & Instagram Chat Viewer">
-    <meta property="og:description" content="100% private WhatsApp & Instagram chat viewer. Everything stays on your device. No uploads, no servers.">
+    <meta property="og:title" content="ChatLume — Visor gratuito de chats de WhatsApp e Instagram">
+    <meta property="og:description" content="Visor de chats de WhatsApp e Instagram 100% privado. Todo se queda en tu dispositivo. Sin subidas ni servidores.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chatlume.app/">
     <meta property="og:image" content="https://chatlume.app/assets/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="ChatLume — a private WhatsApp and Instagram chat viewer that runs entirely in your browser.">
-    <meta name="twitter:image:alt" content="ChatLume — a private WhatsApp and Instagram chat viewer that runs entirely in your browser.">
+    <meta property="og:image:alt" content="ChatLume: un visor privado de chats de WhatsApp e Instagram que funciona por completo en tu navegador.">
+    <meta name="twitter:image:alt" content="ChatLume: un visor privado de chats de WhatsApp e Instagram que funciona por completo en tu navegador.">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ChatLume — Free WhatsApp & Instagram Chat Viewer">
-    <meta name="twitter:description" content="100% private WhatsApp & Instagram chat viewer. Everything stays on your device.">
+    <meta name="twitter:title" content="ChatLume — Visor gratuito de chats de WhatsApp e Instagram">
+    <meta name="twitter:description" content="Visor de chats de WhatsApp e Instagram 100% privado. Todo se queda en tu dispositivo.">
     <meta name="twitter:image" content="https://chatlume.app/assets/og-image.png">
     <link rel="icon" href="assets/favicon.ico" sizes="any">
     <link rel="icon" href="assets/logo-192.png" type="image/png">
-    <link rel="stylesheet" href="./css/style.css?v=1.8.23">
+    <link rel="stylesheet" href="./css/style.css?v=1.8.24">
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
     <link rel="preconnect" href="https://api.producthunt.com" crossorigin>
@@ -45,7 +45,7 @@
         "@type": "WebApplication",
         "name": "ChatLume",
         "url": "https://chatlume.app",
-        "description": "Free WhatsApp and Instagram chat export viewer. 100% private — your chats never leave your device.",
+        "description": "Visor gratuito de exportaciones de chats de WhatsApp e Instagram. 100% privado: tus chats nunca salen de tu dispositivo.",
         "applicationCategory": "Utility",
         "operatingSystem": "Any",
         "offers": {
@@ -54,11 +54,11 @@
             "priceCurrency": "INR"
         },
         "featureList": [
-            "WhatsApp chat viewer",
-            "Instagram DM viewer",
-            "100% private - no data uploaded",
-            "Works offline",
-            "Chat analytics and stats"
+            "Visor de chats de WhatsApp",
+            "Visor de mensajes directos de Instagram",
+            "100% privado: no se sube ningún dato",
+            "Funciona sin conexión",
+            "Estadísticas y análisis del chat"
         ]
     }
     </script>
@@ -77,6 +77,14 @@
     <style>
         /* Paint the light background immediately when booting into light theme. */
         html[data-boot-theme="light"] { background: #f8f9fa; }
+        /* Language switch in the landing nav: the same hit area as the theme button. */
+        .nav-language-toggle {
+            min-width: 40px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
     </style>
 </head>
 <body class="landing-page">
@@ -94,10 +102,11 @@
             <img src="assets/logo-64.png" alt="ChatLume"> ChatLume
         </a>
         <div class="nav-links">
-            <a href="public/viewer.html">WhatsApp</a>
-            <a href="public/instagram-viewer.html">Instagram</a>
-            <a href="sponsors.html">Sponsors</a>
-            <button type="button" class="nav-theme-toggle" data-theme-toggle aria-label="Toggle theme">
+            <a href="public/viewer.html" data-i18n="WhatsApp">WhatsApp</a>
+            <a href="public/instagram-viewer.html" data-i18n="Instagram">Instagram</a>
+            <a href="sponsors.html" data-i18n="Patrocinadores">Patrocinadores</a>
+            <button type="button" class="nav-theme-toggle nav-language-toggle" data-language-toggle aria-label="Cambiar idioma" title="Cambiar idioma" data-i18n-aria-label="Cambiar idioma" data-i18n-title="Cambiar idioma"><span data-language-toggle-label>EN</span></button>
+            <button type="button" class="nav-theme-toggle" data-theme-toggle aria-label="Cambiar tema" data-i18n-aria-label="Cambiar tema">
                 <i class="ph ph-moon-stars"></i>
             </button>
         </div>
@@ -105,20 +114,20 @@
 
     <header class="hero">
         <div class="hero-badges cl-enter">
-            <span class="hero-badge"><span class="live-dot" aria-hidden="true"></span> No uploads, ever</span>
-            <span class="hero-badge"><i class="ph-fill ph-lock-key"></i> Runs 100% in your browser</span>
-            <span class="hero-badge"><i class="ph-fill ph-currency-circle-dollar"></i> Free forever</span>
+            <span class="hero-badge"><span class="live-dot" aria-hidden="true"></span> <span data-i18n="Nunca se sube nada">Nunca se sube nada</span></span>
+            <span class="hero-badge"><i class="ph-fill ph-lock-key"></i> <span data-i18n="Funciona 100% en tu navegador">Funciona 100% en tu navegador</span></span>
+            <span class="hero-badge"><i class="ph-fill ph-currency-circle-dollar"></i> <span data-i18n="Gratis para siempre">Gratis para siempre</span></span>
         </div>
-        <h1 class="cl-enter cl-enter-delay-1">View your chats <span class="hero-accent">privately</span></h1>
-        <p class="cl-enter cl-enter-delay-2">Open your WhatsApp or Instagram exports and read them like the real app. They stay on your device — no accounts, no tracking, no server uploads.</p>
+        <h1 class="cl-enter cl-enter-delay-1"><span data-i18n="Lee tus chats">Lee tus chats</span> <span class="hero-accent" data-i18n="en privado">en privado</span></h1>
+        <p class="cl-enter cl-enter-delay-2" data-i18n="Abre tus exportaciones de WhatsApp o Instagram y léelas como en la app real. Se quedan en tu dispositivo: sin cuentas, sin rastreo y sin subirlas a ningún servidor.">Abre tus exportaciones de WhatsApp o Instagram y léelas como en la app real. Se quedan en tu dispositivo: sin cuentas, sin rastreo y sin subirlas a ningún servidor.</p>
         <div class="hero-actions cl-enter cl-enter-delay-3">
-            <a href="public/viewer.html" class="btn-primary btn-large"><i class="ph ph-folder-open"></i> View a Chat</a>
+            <a href="public/viewer.html" class="btn-primary btn-large"><i class="ph ph-folder-open"></i> <span data-i18n="Ver un chat">Ver un chat</span></a>
         </div>
         <figure class="hero-demo cl-enter cl-enter-delay-4">
-            <video class="hero-demo-video" data-hero-video width="1920" height="1080" autoplay muted loop playsinline preload="metadata" poster="assets/brag-poster.jpg" aria-label="Silent ChatLume product preview" aria-describedby="hero-demo-description">
+            <video class="hero-demo-video" data-hero-video width="1920" height="1080" autoplay muted loop playsinline preload="metadata" poster="assets/brag-poster.jpg" aria-label="Vista previa silenciosa de ChatLume" data-i18n-aria-label="Vista previa silenciosa de ChatLume" aria-describedby="hero-demo-description">
                 <source src="assets/brag.mp4" type="video/mp4">
             </video>
-            <figcaption id="hero-demo-description" class="sr-only">A silent, looping preview of a WhatsApp export displayed as a readable conversation in ChatLume.</figcaption>
+            <figcaption id="hero-demo-description" class="sr-only" data-i18n="Vista previa muda y en bucle de una exportación de WhatsApp mostrada como una conversación legible en ChatLume.">Vista previa muda y en bucle de una exportación de WhatsApp mostrada como una conversación legible en ChatLume.</figcaption>
         </figure>
         <div class="ph-badge-wrap cl-enter cl-enter-delay-4" style="margin-top:32px">
             <a href="https://www.producthunt.com/products/chatlume?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-chatlume" target="_blank" rel="noopener noreferrer">
@@ -131,7 +140,7 @@
     </header>
 
     <!-- Sponsors marquee — rendered by js/sponsors.js -->
-    <a class="sponsors-marquee-container" href="sponsors.html" aria-label="See everyone sponsoring ChatLume"
+    <a class="sponsors-marquee-container" href="sponsors.html" aria-label="Ver a todos los patrocinadores de ChatLume" data-i18n-aria-label="Ver a todos los patrocinadores de ChatLume"
        data-sponsors-marquee data-sponsors-src="sponsors.json" style="margin-bottom:40px;text-decoration:none">
         <div class="sponsors-marquee" id="sponsors-marquee-content" aria-hidden="true"></div>
     </a>
@@ -141,15 +150,15 @@
         <a href="public/viewer.html" class="platform-card is-whatsapp cl-reveal">
             <i class="ph-fill ph-whatsapp-logo" aria-hidden="true"></i>
             <div class="platform-text">
-                <div class="platform-title">WhatsApp Chats</div>
-                <div class="platform-sub">Open .txt or .zip exports</div>
+                <div class="platform-title" data-i18n="Chats de WhatsApp">Chats de WhatsApp</div>
+                <div class="platform-sub" data-i18n="Abre exportaciones .txt o .zip">Abre exportaciones .txt o .zip</div>
             </div>
         </a>
         <a href="public/instagram-viewer.html" class="platform-card is-instagram cl-reveal">
             <i class="ph-fill ph-instagram-logo" aria-hidden="true"></i>
             <div class="platform-text">
-                <div class="platform-title">Instagram DMs</div>
-                <div class="platform-sub">Open JSON export .zip files</div>
+                <div class="platform-title" data-i18n="Mensajes de Instagram">Mensajes de Instagram</div>
+                <div class="platform-sub" data-i18n="Abre archivos .zip con exportaciones JSON">Abre archivos .zip con exportaciones JSON</div>
             </div>
         </a>
     </section>
@@ -157,18 +166,18 @@
     <section class="features">
         <div class="feature-card cl-reveal">
             <i class="ph-fill ph-shield-check"></i>
-            <h3>Private by default</h3>
-            <p>Everything runs in your browser. No server, no accounts, no data collection. Your chats never leave your device.</p>
+            <h3 data-i18n="Privado por defecto">Privado por defecto</h3>
+            <p data-i18n="Todo funciona en tu navegador. Sin servidor, sin cuentas y sin recopilar datos. Tus chats nunca salen de tu dispositivo.">Todo funciona en tu navegador. Sin servidor, sin cuentas y sin recopilar datos. Tus chats nunca salen de tu dispositivo.</p>
         </div>
         <div class="feature-card cl-reveal">
             <i class="ph-fill ph-lightning"></i>
-            <h3>Works offline</h3>
-            <p>After the page loads, you don't need internet. Parse and view massive exports instantly, no waiting.</p>
+            <h3 data-i18n="Funciona sin conexión">Funciona sin conexión</h3>
+            <p data-i18n="Cuando la página ya está cargada no necesitas internet. Procesa y lee exportaciones enormes al instante, sin esperas.">Cuando la página ya está cargada no necesitas internet. Procesa y lee exportaciones enormes al instante, sin esperas.</p>
         </div>
         <div class="feature-card cl-reveal">
             <i class="ph-fill ph-chart-pie-slice"></i>
-            <h3>See your stats</h3>
-            <p>Who messages most. Your favorite emojis. Message frequency by hour. Simple analytics, nothing fancy.</p>
+            <h3 data-i18n="Mira tus estadísticas">Mira tus estadísticas</h3>
+            <p data-i18n="Quién escribe más. Tus emojis favoritos. La frecuencia de mensajes por hora. Estadísticas sencillas, sin complicaciones.">Quién escribe más. Tus emojis favoritos. La frecuencia de mensajes por hora. Estadísticas sencillas, sin complicaciones.</p>
         </div>
     </section>
 
@@ -180,7 +189,7 @@
                     <img class="brand-mark" src="assets/logo-64.png" alt="">
                     <span class="brand-name">ChatLume</span>
                 </div>
-                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0 0 20px;">Privacy-first chat viewer and analytics tool. No uploads, completely local.</p>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0 0 20px;" data-i18n="Visor de chats y estadísticas centrado en la privacidad. Sin subidas y totalmente local.">Visor de chats y estadísticas centrado en la privacidad. Sin subidas y totalmente local.</p>
                 <div class="ph-badge-wrap" style="justify-content:flex-start">
                     <a href="https://www.producthunt.com/products/chatlume?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-chatlume" target="_blank" rel="noopener noreferrer">
                         <img
@@ -191,32 +200,33 @@
                 </div>
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;">Guides</h4>
+                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;" data-i18n="Guías">Guías</h4>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="public/how-to-use.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">How to use ChatLume</a>
-                    <a href="public/how-to-export.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Export WhatsApp chat</a>
-                    <a href="public/how-to-export-instagram.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Export Instagram DMs</a>
+                    <a href="public/how-to-use.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Cómo usar ChatLume">Cómo usar ChatLume</a>
+                    <a href="public/how-to-export.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Exportar un chat de WhatsApp">Exportar un chat de WhatsApp</a>
+                    <a href="public/how-to-export-instagram.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Exportar mensajes de Instagram">Exportar mensajes de Instagram</a>
                 </div>
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;">Legal & Contact</h4>
+                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;" data-i18n="Legal y contacto">Legal y contacto</h4>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="privacy.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Privacy Policy</a>
-                    <a href="sponsors.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Sponsors</a>
-                    <a href="mailto:hello@parassharma.com" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Contact Support</a>
-                    <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Developer Portfolio</a>
+                    <a href="privacy.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Política de privacidad">Política de privacidad</a>
+                    <a href="sponsors.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Patrocinadores">Patrocinadores</a>
+                    <a href="mailto:hello@parassharma.com" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Contactar con soporte">Contactar con soporte</a>
+                    <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;" data-i18n="Portfolio del desarrollador">Portfolio del desarrollador</a>
                 </div>
             </div>
         </div>
         <div style="text-align: center; padding-top: 24px;">
-            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">&copy; <span class="dynamic-year"></span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Paras Sharma</a> (ChatLume). All rights reserved.</p>
+            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">&copy; <span class="dynamic-year"></span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Paras Sharma</a> (ChatLume). <span data-i18n="Todos los derechos reservados.">Todos los derechos reservados.</span></p>
         </div>
     </div>
 </footer>
 
-    <button type="button" class="to-top" data-to-top aria-label="Back to top"><i class="ph ph-arrow-up"></i></button>
+    <button type="button" class="to-top" data-to-top aria-label="Volver arriba" data-i18n-aria-label="Volver arriba"><i class="ph ph-arrow-up"></i></button>
 
-    <script src="./js/site.js?v=1.8.23" defer></script>
-    <script src="./js/sponsors.js?v=1.8.23" defer></script>
+    <script src="./js/site.js?v=1.8.24" defer></script>
+    <script type="module" src="./js/site-i18n.js?v=1.8.24"></script>
+    <script src="./js/sponsors.js?v=1.8.24" defer></script>
 </body>
 </html>

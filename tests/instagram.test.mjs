@@ -234,7 +234,7 @@ describe("Instagram filtering, search, dates, and display settings", () => {
         assert.deepEqual(alice.map((message) => message.id), ["d1", "m1", "d2", "m3"]);
         assert.equal(filterMessagesBySender(messages, []).length, messages.length);
         assert.deepEqual(getInstagramSenders(messages), ["Alice", "Bob"]);
-        assert.equal(getInstagramSenderSummary(["Alice", "Bob"]), "2 participants");
+        assert.equal(getInstagramSenderSummary(["Alice", "Bob"]), "2 participantes");
     });
 
     test("search covers sender, text, media, shares, and Instagram reactions; navigation wraps", () => {
@@ -337,9 +337,9 @@ describe("Instagram UI integration contracts", () => {
         assert.match(script, /\$\("ig-change-thread"\)\?\.addEventListener\("click"/);
         assert.match(script, /senderDropdown\.hidden = true;[\s\S]*setAttribute\("aria-expanded", "false"\)/);
         assert.match(script, /\[data-ig-setting\].*addEventListener\("change"/s);
-        assert.match(session, /setLoading\(true, "Opening ZIP"[\s\S]*?try \{\s*await yieldToPaint\(\)/,
+        assert.match(session, /setLoading\(true, t\("Abriendo el ZIP"\)[\s\S]*?try \{\s*await yieldToPaint\(\)/,
             "ZIP startup waits must be inside the error-handled loading flow");
-        assert.match(session, /setLoading\(true, "Loading thread"[\s\S]*?try \{\s*await yieldToPaint\(\)/,
+        assert.match(session, /setLoading\(true, t\("Cargando la conversación"\)[\s\S]*?try \{\s*await yieldToPaint\(\)/,
             "thread startup waits must be inside the finally-protected loading flow");
         assert.match(session, /finally \{\s*if \(!isStale\(\)\) setLoading\(false\);/,
             "the active thread load always releases the processing overlay");

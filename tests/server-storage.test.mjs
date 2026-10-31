@@ -121,4 +121,38 @@ describe("server-side persistent chat storage", () => {
         assert.equal(deleted.status, 204);
         assert.deepEqual(JSON.parse(await readFile(path.join(dataDir, "chats.json"), "utf8")), {});
     });
+
+    test("interface language defaults to Spanish and persists across restarts", async () => {
+        const dataDir = await mkdtemp(path.join(os.tmpdir(), "whatsview-settings-"));
+        temporaryRoots.push(dataDir);
+        const base = await startApp(dataDir);
+
+        const initial = await fetch(`${base}/api/settings`);
+        assert.equal(initial.status, 200);
+        assert.equal(initial.headers.get("cache-control"), "no-store");
+        assert.deepEqual(await initial.json(), { language: "es" });
+
+        const rejected = await fetch(`${base}/api/settings`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ language: "fr" })
+        });
+        assert.equal(rejected.status, 400);
+        assert.deepEqual(await (await fetch(`${base}/api/settings`)).json(), { language: "es" });
+
+        const updated = await fetch(`${base}/api/settings`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ language: "en" })
+        });
+        assert.equal(updated.status, 200);
+        assert.deepEqual(await updated.json(), { language: "en" });
+        assert.deepEqual(JSON.parse(await readFile(path.join(dataDir, "settings.json"), "utf8")), { language: "en" });
+
+        const server = runningServers.at(-1);
+        await closeServer(server);
+        runningServers.splice(runningServers.indexOf(server), 1);
+        const restartedBase = await startApp(dataDir);
+        assert.deepEqual(await (await fetch(`${restartedBase}/api/settings`)).json(), { language: "en" });
+    });
 });

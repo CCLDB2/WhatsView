@@ -7,19 +7,20 @@
  * filters the conversation down to a single day.
  * ============================================================================
  */
-import { $ } from "../shared/dom.js?v=1.8.23";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.23";
-import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.23";
-import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.23";
-import { renderChatList } from "./render.js?v=1.8.23";
-import { closeMenu, showToast } from "./ui.js?v=1.8.23";
+import { $ } from "../shared/dom.js?v=1.8.24";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.24";
+import { formatDateLabel, parseExportDateLabel } from "./format.js?v=1.8.24";
+import { renderChatList } from "./render.js?v=1.8.24";
+import { closeMenu, showToast } from "./ui.js?v=1.8.24";
 
 export function handleDateJumpAction(event) {
     event.preventDefault();
     closeMenu();
 
     if (!state.messages.length) {
-        showToast("Load a chat first", "warn");
+        showToast(t("Carga un chat primero"), "warn");
         return;
     }
 
@@ -32,9 +33,9 @@ export function openDateSheet() {
     if (!sheet || !input) return;
 
     input.value = "";
-    $("date-sheet-title").textContent = "Ir a una fecha";
-    $("date-sheet-description").textContent = "Elige una fecha para ir al inicio de ese día.";
-    $("date-sheet-apply").textContent = "Ir";
+    $("date-sheet-title").textContent = t("Ir a una fecha");
+    $("date-sheet-description").textContent = t("Elige una fecha para ir al inicio de ese día.");
+    $("date-sheet-apply").textContent = t("Ir");
     sheet.hidden = false;
     requestAnimationFrame(() => {
         sheet.classList.add("open");
@@ -64,7 +65,7 @@ export function cancelDateSheet() {
 export function applyDateSheetSelection() {
     const selectedDate = $("date-sheet-input")?.value || "";
     if (!selectedDate) {
-        showToast("Select a date", "warn");
+        showToast(t("Elige una fecha"), "warn");
         return;
     }
 
@@ -83,7 +84,7 @@ export function handleDateSelection(dateValue) {
 
     const targetDate = new Date(`${dateValue}T00:00:00`);
     if (Number.isNaN(targetDate.getTime())) {
-        showToast("Invalid date format", "error");
+        showToast(t("Formato de fecha no válido"), "error");
         return;
     }
 
@@ -116,7 +117,7 @@ export function handleDateSelection(dateValue) {
 
     const bestIndex = exactIndex !== -1 ? exactIndex : bestBeforeIndex;
     if (bestIndex === -1) {
-        showToast(bestAfterIndex !== -1 ? "No messages on or before that date" : "No valid date markers found", "warn");
+        showToast(bestAfterIndex !== -1 ? t("No hay mensajes en esa fecha ni antes") : t("No se encontraron marcadores de fecha válidos"), "warn");
         return;
     }
 
@@ -128,7 +129,7 @@ export function handleDateSelection(dateValue) {
         const targetEntry = state.filteredMessages[findFirstMessageIndexForDate(bestIndex) ?? bestIndex];
         $(targetEntry?.id)?.scrollIntoView({ block: "start", behavior: "auto" });
         const label = formatDateLabel(state.filteredMessages[bestIndex]?.rawDate || state.filteredMessages[bestIndex]?.content);
-        showToast(exactIndex !== -1 ? `Jumped to ${label}` : `Closest previous date: ${label}`);
+        showToast(exactIndex !== -1 ? t("Salto a {label}", { label }) : t("Fecha anterior más cercana: {label}", { label }));
     }, 50);
 }
 

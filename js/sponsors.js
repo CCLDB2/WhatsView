@@ -12,6 +12,17 @@
     var SPONSOR_URL = "https://github.com/sponsors/ParasSharma2306";
     var FALLBACK_AVATAR_ICON = '<i class="ph-fill ph-user" aria-hidden="true"></i>';
 
+    /**
+     * This file is a classic script, so it borrows the translator that
+     * js/site-i18n.js exposes. Spanish source text is returned when the module
+     * has not loaded yet, matching the rest of the static pages.
+     */
+    function t(text, vars) {
+        var bridge = window.chatLumeI18n;
+        if (!bridge || typeof bridge.t !== "function") return text;
+        return bridge.t(text, vars);
+    }
+
     function esc(value) {
         return String(value == null ? "" : value)
             .replace(/&/g, "&amp;")
@@ -39,7 +50,7 @@
     function normalize(sponsor) {
         var record = sponsor && typeof sponsor === "object" ? sponsor : {};
         return {
-            name: String(record.name || "").trim() || "Anonymous",
+            name: String(record.name || "").trim() || t("Anónimo"),
             amount: String(record.amount == null ? "" : record.amount).trim(),
             message: String(record.message || "").trim(),
             avatar: safeUrl(record.avatar),
@@ -67,11 +78,11 @@
     function fetchSponsors(src) {
         return fetch(src, { cache: "no-cache" })
             .then(function (response) {
-                if (!response.ok) throw new Error("Request failed (" + response.status + ")");
+                if (!response.ok) throw new Error(t("La petición falló ({status})", { status: response.status }));
                 return response.json();
             })
             .then(function (data) {
-                if (!Array.isArray(data)) throw new Error("sponsors.json must contain an array");
+                if (!Array.isArray(data)) throw new Error(t("sponsors.json debe contener una lista"));
                 return data.map(normalize).sort(function (a, b) { return b.value - a.value; });
             });
     }
@@ -120,22 +131,30 @@
     function initMarquee(container) {
         var track = container.querySelector(".sponsors-marquee");
         if (!track) return;
+        var latest = null;
+
+        function paint() {
+            if (!latest || !latest.length) {
+                paintMarquee(track, marqueeCta(t("Sé nuestro primer patrocinador"), "✨"), 1);
+                return;
+            }
+            paintMarquee(track, latest.map(marqueeItem).join(""), latest.length);
+        }
 
         track.innerHTML = marqueeSkeleton(10);
         track.style.setProperty("--marquee-duration", "38s");
 
         fetchSponsors(container.getAttribute("data-sponsors-src") || DEFAULT_SRC)
             .then(function (sponsors) {
-                if (!sponsors.length) {
-                    paintMarquee(track, marqueeCta("Become our first sponsor", "✨"), 1);
-                    return;
-                }
-                paintMarquee(track, sponsors.map(marqueeItem).join(""), sponsors.length);
+                latest = sponsors;
+                paint();
             })
             .catch(function (error) {
                 console.warn("Sponsors marquee unavailable:", error);
-                paintMarquee(track, marqueeCta("Support ChatLume", "💖"), 1);
+                paintMarquee(track, marqueeCta(t("Apoya a ChatLume"), "💖"), 1);
             });
+
+        window.addEventListener("chatlume:languagechange", paint);
     }
 
     /* ── Sponsors page grid ──────────────────────────────────────────────── */
@@ -143,13 +162,13 @@
     function sponsorCard(sponsor) {
         var message = sponsor.message
             ? '<div class="sponsor-message">' + esc(sponsor.message) + "</div>"
-            : '<div class="sponsor-message"><em>Thanks for keeping ChatLume free.</em></div>';
+            : '<div class="sponsor-message"><em>' + esc(t("Gracias por mantener ChatLume gratis.")) + '</em></div>';
         var amount = sponsor.amount
             ? '<div class="sponsor-amount">' + esc(sponsor.amount) + "</div>"
             : "";
         var link = sponsor.url
             ? '<a class="sponsor-link" href="' + sponsor.url + '" target="_blank" rel="noopener noreferrer">' +
-              '<i class="ph ph-arrow-square-out" aria-hidden="true"></i> Profile</a>'
+              '<i class="ph ph-arrow-square-out" aria-hidden="true"></i> ' + esc(t("Perfil")) + '</a>'
             : "";
 
         return '<article class="sponsor-card">' +
@@ -175,23 +194,22 @@
     function emptyState() {
         return '<div class="state-panel">' +
             '<div class="state-icon"><i class="ph-duotone ph-hand-heart" aria-hidden="true"></i></div>' +
-            "<h3>No sponsors yet</h3>" +
-            "<p>ChatLume is free, ad-free and runs entirely in your browser. " +
-            "Sponsorship is what keeps it that way — you could be the first name on this page.</p>" +
+            "<h3>" + esc(t("Todavía no hay patrocinadores")) + "</h3>" +
+            "<p>" + esc(t("ChatLume es gratis, sin anuncios y funciona por completo en tu navegador. Los patrocinios son lo que lo mantiene así: puedes ser el primer nombre de esta página.")) + "</p>" +
             '<div class="state-actions">' +
             '<a class="btn-primary btn-large" href="' + SPONSOR_URL + '" target="_blank" rel="noopener noreferrer">' +
-            '<i class="ph-fill ph-heart" aria-hidden="true"></i> Become the first sponsor</a>' +
+            '<i class="ph-fill ph-heart" aria-hidden="true"></i> ' + esc(t("Conviértete en el primer patrocinador")) + '</a>' +
             "</div></div>";
     }
 
     function errorState(message) {
         return '<div class="state-panel is-error">' +
             '<div class="state-icon"><i class="ph-duotone ph-cloud-warning" aria-hidden="true"></i></div>' +
-            "<h3>Couldn't load sponsors</h3>" +
-            "<p>" + esc(message || "Check your connection and try again.") + "</p>" +
+            "<h3>" + esc(t("No se pudieron cargar los patrocinadores")) + "</h3>" +
+            "<p>" + esc(message || t("Comprueba tu conexión e inténtalo de nuevo.")) + "</p>" +
             '<div class="state-actions">' +
             '<button type="button" class="btn-primary btn-large" data-sponsors-retry>' +
-            '<i class="ph ph-arrow-clockwise" aria-hidden="true"></i> Try again</button>' +
+            '<i class="ph ph-arrow-clockwise" aria-hidden="true"></i> ' + esc(t("Reintentar")) + '</button>' +
             "</div></div>";
     }
 
@@ -206,44 +224,65 @@
         node.hidden = false;
         node.innerHTML =
             '<div class="sponsor-summary-item"><span class="val">' + sponsors.length +
-                '</span><span class="label">Sponsor' + (sponsors.length === 1 ? "" : "s") + "</span></div>" +
+                '</span><span class="label">' + esc(sponsors.length === 1 ? t("Patrocinador") : t("Patrocinadores")) + "</span></div>" +
             (total > 0
                 ? '<div class="sponsor-summary-item"><span class="val">$' + total.toLocaleString() +
-                  '</span><span class="label">Contributed</span></div>'
+                  '</span><span class="label">' + esc(t("Aportado")) + "</span></div>"
                 : "") +
-            '<div class="sponsor-summary-item"><span class="val">$0</span><span class="label">Cost to you</span></div>';
+            '<div class="sponsor-summary-item"><span class="val">$0</span><span class="label">' + esc(t("Lo que te cuesta")) + "</span></div>";
     }
 
     function initGrid(grid) {
         var summary = document.querySelector("[data-sponsor-summary]");
         var src = grid.getAttribute("data-sponsors-src") || DEFAULT_SRC;
+        var latest = null;
+        var failed = null;
+
+        function paint() {
+            if (failed) {
+                grid.innerHTML = errorState(failed);
+                return;
+            }
+            grid.style.display = "grid";
+            if (!latest) {
+                grid.innerHTML = gridSkeleton(6);
+                if (summary) summary.hidden = true;
+                return;
+            }
+            renderSummary(summary, latest);
+            grid.innerHTML = latest.length ? latest.map(sponsorCard).join("") : emptyState();
+            if (!latest.length) return;
+            // Stagger the cards in without blocking first paint.
+            Array.prototype.forEach.call(grid.children, function (card, i) {
+                card.classList.add("cl-reveal");
+                card.style.setProperty("--cl-delay", Math.min(i, 7) * 60 + "ms");
+                window.requestAnimationFrame(function () { card.classList.add("cl-revealed"); });
+            });
+        }
 
         function load() {
-            grid.style.display = "grid";
-            grid.innerHTML = gridSkeleton(6);
-            if (summary) summary.hidden = true;
+            latest = null;
+            failed = null;
+            paint();
 
             fetchSponsors(src)
                 .then(function (sponsors) {
-                    renderSummary(summary, sponsors);
-                    grid.innerHTML = sponsors.length ? sponsors.map(sponsorCard).join("") : emptyState();
-                    if (!sponsors.length) return;
-                    // Stagger the cards in without blocking first paint.
-                    Array.prototype.forEach.call(grid.children, function (card, i) {
-                        card.classList.add("cl-reveal");
-                        card.style.setProperty("--cl-delay", Math.min(i, 7) * 60 + "ms");
-                        window.requestAnimationFrame(function () { card.classList.add("cl-revealed"); });
-                    });
+                    latest = sponsors;
+                    paint();
                 })
                 .catch(function (error) {
                     console.error("Error loading sponsors:", error);
-                    grid.innerHTML = errorState(error.message);
+                    failed = error.message || t("Comprueba tu conexión e inténtalo de nuevo.");
+                    paint();
                 });
         }
 
         grid.addEventListener("click", function (event) {
             if (event.target.closest("[data-sponsors-retry]")) load();
         });
+
+        // Language can arrive from the server after the first render.
+        window.addEventListener("chatlume:languagechange", paint);
 
         load();
     }

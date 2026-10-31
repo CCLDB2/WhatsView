@@ -1,16 +1,17 @@
 /** Coordinates Instagram's date picker with the virtual message list. */
-import { $ } from "../shared/dom.js?v=1.8.23";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.23";
-import { findMessageForDate } from "./date-jump-model.js?v=1.8.23";
-import { localDateBounds } from "./format.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
-import { jumpToMessage } from "./search.js?v=1.8.23";
-import { showToast } from "./ui.js?v=1.8.23";
+import { $ } from "../shared/dom.js?v=1.8.24";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.24";
+import { findMessageForDate } from "./date-jump-model.js?v=1.8.24";
+import { localDateBounds } from "./format.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
+import { jumpToMessage } from "./search.js?v=1.8.24";
+import { showToast } from "./ui.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
 
-export { findMessageForDate, findMessageIdForDate } from "./date-jump-model.js?v=1.8.23";
+export { findMessageForDate, findMessageIdForDate } from "./date-jump-model.js?v=1.8.24";
 
 export function openDateSheet() {
-    if (!igState.messageOnlyCount) { showToast("Load a conversation first", "warn"); return; }
+    if (!igState.messageOnlyCount) { showToast(t("Carga una conversación primero"), "warn"); return; }
     const sheet = $("ig-date-sheet");
     const input = $("ig-date-sheet-input");
     if (!sheet || !input) return;
@@ -45,5 +46,5 @@ export function applyDateJump() {
     $("ig-date-sheet-error")?.setAttribute("hidden", "");
     closeDateSheet();
     jumpToMessage(match.id);
-    if (!match.exact) showToast("No messages on that date. Jumped to the closest previous message.", "info");
+    if (!match.exact) showToast(t("No hay mensajes en esa fecha. Se saltó al mensaje anterior más cercano."), "info");
 }

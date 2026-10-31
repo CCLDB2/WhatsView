@@ -9,9 +9,10 @@
  * with in-chat search.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { state } from "./state.js?v=1.8.23";
-import { parseExportDateLabel } from "./format.js?v=1.8.23";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { state } from "./state.js?v=1.8.24";
+import { parseExportDateLabel } from "./format.js?v=1.8.24";
 
 /** Keeps messages and their day divider only for the selected ISO calendar day. */
 export function filterMessagesByDate(messages, dateValue) {
@@ -136,13 +137,13 @@ export function getChatSenders(senderStats = state.senderStats) {
 export function getSenderFilterSummary(selectedSenders = state.selectedSenders) {
     const list = Array.isArray(selectedSenders) ? selectedSenders : Array.from(selectedSenders || []);
     if (!list.length) {
-        return "Todos";
+        return t("Todos");
     }
     if (list.length === 1) {
         const sender = list[0];
-        return isMeSender(sender) && sender !== "You" ? `${sender} (Tú)` : sender;
+        return isMeSender(sender) && sender !== "You" ? t("{name} (Tú)", { name: sender }) : sender;
     }
-    return `${list.length} participantes`;
+    return t("{count} participantes", { count: list.length });
 }
 
 /**
@@ -171,13 +172,13 @@ export function populateSenderFilter() {
     let html = `
         <label class="sender-filter-item">
             <input type="checkbox" class="sender-filter-checkbox" value="" ${isAll ? "checked" : ""}>
-            <span class="sender-filter-name">Todos los participantes</span>
+            <span class="sender-filter-name">${escapeHtml(t("Todos los participantes"))}</span>
         </label>
     `;
 
     for (const sender of senders) {
         const isMe = isMeSender(sender);
-        const label = isMe && sender !== "You" ? `${sender} (Tú)` : sender;
+        const label = isMe && sender !== "You" ? t("{name} (Tú)", { name: sender }) : sender;
         const count = state.senderStats[sender] || 0;
         const checked = currentSelected.has(sender) ? "checked" : "";
 
@@ -237,16 +238,20 @@ export function updateFilterHeaderMeta() {
     const headerMeta = $("header-meta");
     if (!headerMeta) return;
 
-    const withMedia = state.mediaCount ? ` • ${state.mediaCount.toLocaleString()} media` : "";
+    const withMedia = state.mediaCount ? t(" • {count} archivos", { count: state.mediaCount.toLocaleString() }) : "";
     const hasSelection = Boolean(state.selectedSenders && state.selectedSenders.length > 0);
 
     if (!hasSelection) {
-        headerMeta.innerText = `${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
+        headerMeta.innerText = t("{count} mensajes{media}", { count: state.messageOnlyCount.toLocaleString(), media: withMedia });
         return;
     }
 
     const filteredCount = state.filteredMessages.filter((item) => item.type === "msg").length;
-    headerMeta.innerText = `${filteredCount.toLocaleString()} of ${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
+    headerMeta.innerText = t("{filtered} de {total} mensajes{media}", {
+        filtered: filteredCount.toLocaleString(),
+        total: state.messageOnlyCount.toLocaleString(),
+        media: withMedia
+    });
 }
 
 /**
@@ -313,11 +318,11 @@ export function applySenderFilter(senders, { onRender, onSearch, onToast, silent
 
     if (!silent && typeof onToast === "function") {
         if (list.length === 0) {
-            onToast("Mostrando todos los participantes");
+            onToast(t("Mostrando todos los participantes"));
         } else if (list.length === 1) {
-            onToast(`Mostrando mensajes de ${list[0]}`);
+            onToast(t("Mostrando mensajes de {name}", { name: list[0] }));
         } else {
-            onToast(`Mostrando mensajes de ${list.length} participantes`);
+            onToast(t("Mostrando mensajes de {count} participantes", { count: list.length }));
         }
     }
 }
@@ -397,7 +402,7 @@ export function resetSenderFilterUI() {
     if (listEl) listEl.innerHTML = "";
     if (searchEl) searchEl.value = "";
     if ($("sender-filter-no-results")) $("sender-filter-no-results").hidden = true;
-    if (summaryEl) setSenderFilterSummary(summaryEl, "Todos");
+    if (summaryEl) setSenderFilterSummary(summaryEl, t("Todos"));
     syncSenderFilterBadge();
     if (action) action.hidden = true;
 }

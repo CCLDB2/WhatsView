@@ -13,15 +13,16 @@
  * the dependency pointing one way (session → persistence).
  * ============================================================================
  */
-import * as storage from "../storage.js?v=1.8.23";
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { formatBytes } from "../shared/media-types.js?v=1.8.23";
-import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.23";
-import { STORAGE_KEYS, state } from "./state.js?v=1.8.23";
-import { askConfirm, isMobileLayout, setSidebarState, showToast } from "./ui.js?v=1.8.23";
-import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.23";
-import { filterSidebarChats } from "./sidebar-search.js?v=1.8.23";
-import { captureScrollPosition } from "./render.js?v=1.8.23";
+import * as storage from "../storage.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { formatBytes } from "../shared/media-types.js?v=1.8.24";
+import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.24";
+import { STORAGE_KEYS, state } from "./state.js?v=1.8.24";
+import { askConfirm, isMobileLayout, setSidebarState, showToast } from "./ui.js?v=1.8.24";
+import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.24";
+import { filterSidebarChats } from "./sidebar-search.js?v=1.8.24";
+import { captureScrollPosition } from "./render.js?v=1.8.24";
 
 /**
  * Callbacks supplied by session.js:
@@ -109,7 +110,7 @@ export async function loadStoredImports() {
         // Storage misbehaved — show nothing this session, but forget nothing:
         // the records and files are still there for the next launch.
         console.warn("Persistent storage could not be read:", error);
-        showToast("Stored chats couldn't be read right now. They're still on this device.", "warn");
+        showToast(t("No se pudieron leer los chats guardados ahora mismo. Siguen en este dispositivo."), "warn");
     }
     state.storedImports = records || [];
     state.storedImportsLoaded = true;
@@ -129,13 +130,13 @@ export function handlePersistentStorageToggle() {
         saveSettings();
         syncSettingsControls();
         refreshStorageSettingsUI();
-        showToast("Your browser doesn't support persistent storage", "warn");
+        showToast(t("Tu navegador no admite el almacenamiento persistente"), "warn");
         return;
     }
     refreshStorageSettingsUI();
     if (state.settings.persistentStorage) {
         if (!state.storedImportsLoaded) loadStoredImports();
-        showToast("New imports will be kept on this device", "info");
+        showToast(t("Las nuevas importaciones se guardarán en este dispositivo"), "info");
         return;
     }
     if (state.persistJob) {
@@ -147,8 +148,8 @@ export function handlePersistentStorageToggle() {
     }
     showToast(
         state.storedImports.length
-            ? "Turned off. Stored chats stay on this device until you delete them."
-            : "Persistent storage turned off",
+            ? t("Desactivado. Los chats guardados seguirán en este dispositivo hasta que los elimines.")
+            : t("Almacenamiento persistente desactivado"),
         "info"
     );
 }
@@ -169,7 +170,9 @@ export function refreshStorageSettingsUI() {
     const total = records.reduce((sum, record) => sum + (record.size || 0), 0);
     const summary = $("storage-summary");
     if (summary) {
-        summary.textContent = `${records.length} stored chat${records.length === 1 ? "" : "s"} · ${formatBytes(total) || "0 B"} on this device`;
+        summary.textContent = records.length === 1
+            ? t("{count} chat guardado · {size} en este dispositivo", { count: records.length, size: formatBytes(total) || "0 B" })
+            : t("{count} chats guardados · {size} en este dispositivo", { count: records.length, size: formatBytes(total) || "0 B" });
     }
     const offNote = $("storage-off-note");
     if (offNote) offNote.hidden = Boolean(state.settings.persistentStorage);
@@ -184,7 +187,7 @@ export function refreshStorageSettingsUI() {
                         <strong>${escapeHtml(title)}</strong>
                         <span>${escapeHtml(storedImportMeta(record))}</span>
                     </div>
-                    <button type="button" class="stored-delete" data-stored-delete="${escapeAttribute(record.id)}" title="Delete from this device" aria-label="Delete ${escapeAttribute(title)}"><i class="ph ph-trash"></i></button>
+                    <button type="button" class="stored-delete" data-stored-delete="${escapeAttribute(record.id)}" title="${escapeAttribute(t("Eliminar de este dispositivo"))}" aria-label="${escapeAttribute(t("Eliminar {name}", { name: title }))}"><i class="ph ph-trash"></i></button>
                 </div>`;
         }).join("");
     }
@@ -201,7 +204,7 @@ export function renderStoredImports() {
             list.innerHTML = "";
             return;
         }
-        list.innerHTML = `<div class="stored-list-head"><i class="ph-fill ph-hard-drives"></i> Saved on this device</div>` +
+        list.innerHTML = `<div class="stored-list-head"><i class="ph-fill ph-hard-drives"></i> ${t("Guardados en este dispositivo")}</div>` +
             records.map((record) => {
                 const title = storedImportTitle(record);
                 return `
@@ -213,7 +216,7 @@ export function renderStoredImports() {
                                 <span>${escapeHtml(storedImportMeta(record))}</span>
                             </div>
                         </button>
-                        <button type="button" class="stored-delete" data-stored-delete="${escapeAttribute(record.id)}" title="Delete from this device" aria-label="Delete ${escapeAttribute(title)}"><i class="ph ph-trash"></i></button>
+                        <button type="button" class="stored-delete" data-stored-delete="${escapeAttribute(record.id)}" title="${escapeAttribute(t("Eliminar de este dispositivo"))}" aria-label="${escapeAttribute(t("Eliminar {name}", { name: title }))}"><i class="ph ph-trash"></i></button>
                     </div>`;
             }).join("");
     });
@@ -221,12 +224,12 @@ export function renderStoredImports() {
 }
 
 function storedImportTitle(record) {
-    return record.chatTitle || record.fileName || "Chat";
+    return record.chatTitle || record.fileName || t("Chat");
 }
 
 function storedImportMeta(record) {
     const parts = [];
-    if (record.messageCount) parts.push(`${record.messageCount.toLocaleString()} messages`);
+    if (record.messageCount) parts.push(t("{count} mensajes", { count: record.messageCount.toLocaleString() }));
     parts.push(formatBytes(record.size) || "0 B");
     parts.push(/\.zip$/i.test(record.storedName || "") ? "ZIP" : "TXT");
     return parts.join(" · ");
@@ -264,12 +267,15 @@ async function openStoredImport(record, savedPosition = null) {
             // drop it rather than offering a chat that can't open.
             await storage.deleteImport(record).catch(() => {});
             dropStoredImport(record.id);
-            showToast(`"${storedImportTitle(record)}" was missing or damaged and has been removed from this device`, "error");
+            showToast(t("\"{name}\" faltaba o estaba dañado y se eliminó de este dispositivo", { name: storedImportTitle(record) }), "error");
         } else {
             // Anything else is the storage layer having a moment. The data is
             // intact; don't touch it.
             console.warn("Stored chat could not be opened:", error);
-            showToast(`Couldn't open "${storedImportTitle(record)}" right now (${error.message || error.name}). It's still saved on this device.`, "error");
+            showToast(t("No se pudo abrir \"{name}\" ahora mismo ({error}). Sigue guardado en este dispositivo.", {
+                name: storedImportTitle(record),
+                error: error.message || error.name
+            }), "error");
         }
         return;
     }
@@ -331,7 +337,7 @@ function dropStoredImport(id) {
 export async function persistCurrentImport(file, gen) {
     if (!state.storageSupported) return;
     if (state.persistJob) {
-        showToast("Another chat is still being saved — import this one again once it finishes", "warn");
+        showToast(t("Otro chat todavía se está guardando; vuelve a importar este cuando termine"), "warn");
         return;
     }
 
@@ -360,7 +366,7 @@ export async function persistCurrentImport(file, gen) {
         const duplicate = storage.findDuplicate(state.storedImports, file);
         if (duplicate) {
             if (state.loadGeneration === gen) markStoredImportOpened(duplicate.id);
-            showToast("This export is already saved on this device", "info");
+            showToast(t("Esta exportación ya está guardada en este dispositivo"), "info");
             return;
         }
 
@@ -371,7 +377,10 @@ export async function persistCurrentImport(file, gen) {
         const needed = storage.requiredSpace(file.size);
         const estimate = await storage.estimateStorage();
         if (estimate && estimate.quota > 0 && estimate.available < needed) {
-            showToast(`Not enough storage to keep this chat. It needs ${formatBytes(needed)} but only ${formatBytes(estimate.available) || "0 B"} is available.`, "error");
+            showToast(t("No hay espacio suficiente para guardar este chat. Necesita {needed} y solo hay {available} disponibles.", {
+                needed: formatBytes(needed),
+                available: formatBytes(estimate.available) || "0 B"
+            }), "error");
             return;
         }
 
@@ -415,7 +424,7 @@ export async function persistCurrentImport(file, gen) {
             // No record means no import — don't leave the copy behind.
             await storage.removeStoredFile(storedName);
             hidePersistCard();
-            showToast(`Couldn't save this chat: ${error.message}`, "error");
+            showToast(t("No se pudo guardar este chat: {error}", { error: error.message }), "error");
             return;
         }
 
@@ -428,13 +437,13 @@ export async function persistCurrentImport(file, gen) {
             renderStoredImports();
             refreshStorageSettingsUI();
         }
-        showToast(`Saved "${storedImportTitle(record)}" on this device`);
+        showToast(t("Guardado \"{name}\" en este dispositivo", { name: storedImportTitle(record) }));
     } catch (error) {
         // Nothing above should throw, but a surprise must not become an
         // unhandled rejection with a stuck progress card.
         console.warn("Persisting the import failed:", error);
         hidePersistCard();
-        showToast(`Couldn't save this chat: ${error.message || error}`, "error");
+        showToast(t("No se pudo guardar este chat: {error}", { error: error.message || error }), "error");
     } finally {
         state.persistJob = null;
     }
@@ -446,23 +455,23 @@ function persistFailureToast(error, cancelReason) {
         return [persistCancelMessage(cancelReason), "info"];
     }
     if (error.name === "QuotaExceededError") {
-        return ["The browser ran out of storage before the chat could be saved", "error"];
+        return [t("El navegador se quedó sin espacio antes de poder guardar el chat"), "error"];
     }
     if (error.name === "NotSupportedError" || error.name === "TypeError") {
-        return ["Your browser doesn't support saving chats to the device", "error"];
+        return [t("Tu navegador no admite guardar chats en el dispositivo"), "error"];
     }
     if (error.name === "UnknownError" || error.name === "InvalidStateError") {
         // Safari reports exactly this in Private Browsing, where the
         // file system exists but refuses to open.
-        return ["Persistent storage isn't available in this browsing mode (for example Private Browsing). The chat is open, but it wasn't kept.", "error"];
+        return [t("El almacenamiento persistente no está disponible en este modo de navegación (por ejemplo, la navegación privada). El chat está abierto, pero no se guardó."), "error"];
     }
-    return [`Couldn't save this chat: ${error.message}`, "error"];
+    return [t("No se pudo guardar este chat: {error}", { error: error.message }), "error"];
 }
 
 function persistCancelMessage(reason) {
     return reason === "toggle"
-        ? "Persistent storage turned off — the save in progress was cancelled and the chat wasn't kept"
-        : "Save cancelled — this chat wasn't kept";
+        ? t("Almacenamiento persistente desactivado: se canceló el guardado en curso y el chat no se conservó")
+        : t("Guardado cancelado: este chat no se conservó");
 }
 
 export function cancelPersistCopy(reason = "user") {
@@ -470,7 +479,7 @@ export function cancelPersistCopy(reason = "user") {
     if ("reason" in state.persistJob) state.persistJob.reason = reason;
     state.persistJob.cancel(reason);
     const progress = $("persist-card-progress");
-    if (progress) progress.textContent = "Cancelling…";
+    if (progress) progress.textContent = t("Cancelando…");
     const cancel = $("persist-card-cancel");
     if (cancel) cancel.disabled = true;
 }
@@ -514,24 +523,28 @@ async function deleteStoredImport(id) {
     if (!record) return;
 
     const title = storedImportTitle(record);
-    const openNote = state.activeImportId === id ? " It's open right now and will be closed." : "";
+    const openNote = state.activeImportId === id ? t(" Ahora mismo está abierto y se cerrará.") : "";
     const confirmed = await askConfirm({
-        title: "Delete stored chat?",
-        body: `"${title}" (${formatBytes(record.size) || "0 B"}) will be removed from this device.${openNote} Your original export file is not affected.`,
-        confirmLabel: "Delete"
+        title: t("¿Eliminar el chat guardado?"),
+        body: t("\"{name}\" ({size}) se eliminará de este dispositivo.{note} Tu archivo de exportación original no se verá afectado.", {
+            name: title,
+            size: formatBytes(record.size) || "0 B",
+            note: openNote
+        }),
+        confirmLabel: t("Eliminar")
     });
     if (!confirmed) return;
 
     try {
         await storage.deleteImport(record);
     } catch (error) {
-        showToast(`Couldn't delete this chat: ${error.message}`, "error");
+        showToast(t("No se pudo eliminar este chat: {error}", { error: error.message }), "error");
         return;
     }
     const wasOpen = state.activeImportId === id;
     dropStoredImport(id);
     if (wasOpen) hooks.closeChat();
-    showToast(`Deleted "${title}" from this device`);
+    showToast(t("Eliminado \"{name}\" de este dispositivo", { name: title }));
 }
 
 export async function deleteAllStoredImports() {
@@ -539,16 +552,26 @@ export async function deleteAllStoredImports() {
     const count = state.storedImports.length;
     const total = state.storedImports.reduce((sum, record) => sum + (record.size || 0), 0);
     const confirmed = await askConfirm({
-        title: "Delete all stored chats?",
-        body: `${count} stored chat${count === 1 ? "" : "s"} (${formatBytes(total) || "0 B"}) will be removed from this device${state.activeImportId ? ", and the open chat will be closed" : ""}. Your original export files are not affected.`,
-        confirmLabel: "Delete all"
+        title: t("¿Eliminar todos los chats guardados?"),
+        body: count === 1
+            ? t("{count} chat guardado ({size}) se eliminará de este dispositivo{open}. Tus archivos de exportación originales no se verán afectados.", {
+                count,
+                size: formatBytes(total) || "0 B",
+                open: state.activeImportId ? t(", y el chat abierto se cerrará") : ""
+            })
+            : t("{count} chats guardados ({size}) se eliminarán de este dispositivo{open}. Tus archivos de exportación originales no se verán afectados.", {
+                count,
+                size: formatBytes(total) || "0 B",
+                open: state.activeImportId ? t(", y el chat abierto se cerrará") : ""
+            }),
+        confirmLabel: t("Eliminar todos")
     });
     if (!confirmed) return;
 
     try {
         await storage.deleteImportsByKind("whatsapp");
     } catch (error) {
-        showToast(`Couldn't delete stored chats: ${error.message}`, "error");
+        showToast(t("No se pudieron eliminar los chats guardados: {error}", { error: error.message }), "error");
         await loadStoredImports();
         return;
     }
@@ -562,5 +585,5 @@ export async function deleteAllStoredImports() {
     renderStoredImports();
     refreshStorageSettingsUI();
     if (wasOpen) hooks.closeChat();
-    showToast("All stored chats deleted from this device");
+    showToast(t("Todos los chats guardados se eliminaron de este dispositivo"));
 }

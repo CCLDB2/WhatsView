@@ -7,11 +7,12 @@
  * the user taps.
  * ============================================================================
  */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { folderLabel } from "./parser.js?v=1.8.23";
-import { igState } from "./state.js?v=1.8.23";
-import { isMobileLayout, setSidebarState } from "./ui.js?v=1.8.23";
-import { filterThreadOptions, makeThreadOptions } from "./threads-model.js?v=1.8.23";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { folderLabel } from "./parser.js?v=1.8.24";
+import { igState } from "./state.js?v=1.8.24";
+import { isMobileLayout, setSidebarState } from "./ui.js?v=1.8.24";
+import { filterThreadOptions, makeThreadOptions } from "./threads-model.js?v=1.8.24";
+import { t, getLocale } from "../i18n.js?v=1.8.24";
 
 /**
  * @param {Array}    threads   From parser.findThreads().
@@ -43,14 +44,16 @@ export function showThreadSelector(threads, onSelect) {
       <div class="chat-item-avatar" style="background:linear-gradient(135deg,#833AB4,#C13584,#E1306C)" aria-hidden="true">${escapeHtml(e.label.charAt(0).toUpperCase())}</div>
       <div class="chat-item-info">
         <h4>${escapeHtml(e.label)}</h4>
-        <span>${e.files} file${e.files !== 1 ? "s" : ""}</span>
+        <span>${escapeHtml(e.files === 1 ? t("1 archivo") : t("{count} archivos", { count: e.files.toLocaleString(getLocale()) }))}</span>
       </div>
     </button>`).join("");
 
         if (countEl) {
             countEl.innerText = needle
-                ? `${visible.length} of ${entries.length} conversations`
-                : `${entries.length} conversation${entries.length === 1 ? "" : "s"} found`;
+                ? t("{visible} de {total} conversaciones", { visible: visible.length.toLocaleString(getLocale()), total: entries.length.toLocaleString(getLocale()) })
+                : entries.length === 1
+                    ? t("1 conversación encontrada")
+                    : t("{count} conversaciones encontradas", { count: entries.length.toLocaleString(getLocale()) });
         }
         if (emptyEl) emptyEl.hidden = visible.length > 0;
     }

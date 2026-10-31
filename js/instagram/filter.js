@@ -1,4 +1,6 @@
 /** Sender filtering for Instagram messages, retaining only relevant date markers. */
+import { t } from "../i18n.js?v=1.8.24";
+
 export function filterMessagesBySender(messages, selectedSenders) {
     const selected = selectedSenders instanceof Set
         ? selectedSenders
@@ -26,7 +28,7 @@ export function getInstagramSenders(messages) {
 }
 
 export function getInstagramSenderSummary(selectedSenders) {
-    if (!selectedSenders?.length) return "All participants";
+    if (!selectedSenders?.length) return t("Todos los participantes");
     if (selectedSenders.length === 1) return selectedSenders[0];
-    return `${selectedSenders.length} participants`;
+    return t("{count} participantes", { count: selectedSenders.length });
 }

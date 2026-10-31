@@ -11,8 +11,9 @@
  * must expose `activeMediaId` (also read by the blob-URL release logic).
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "./dom.js?v=1.8.23";
-import { pushOverlayState } from "./history.js?v=1.8.23";
+import { $, escapeAttribute, escapeHtml } from "./dom.js?v=1.8.24";
+import { pushOverlayState } from "./history.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
 
 /**
  * @param {Object}   options
@@ -47,7 +48,7 @@ export function createMediaModal({ state, ids, overlayId, getMedia, ensureUrl, s
             url = await ensureUrl(media);
         } catch (error) {
             console.error(error);
-            body.innerHTML = `<div class="media-missing"><div class="media-missing-head"><i class="ph-fill ph-warning-circle"></i><div><strong>Unable to load media</strong><span>${escapeHtml(media.name)}</span></div></div></div>`;
+            body.innerHTML = `<div class="media-missing"><div class="media-missing-head"><i class="ph-fill ph-warning-circle"></i><div><strong>${t("No se pudo cargar el archivo multimedia")}</strong><span>${escapeHtml(media.name)}</span></div></div></div>`;
             return;
         }
         // The user may have closed this and opened something else meanwhile.
@@ -74,7 +75,7 @@ export function createMediaModal({ state, ids, overlayId, getMedia, ensureUrl, s
                             <span>${escapeHtml(documentNoteFor(media))}</span>
                         </div>
                     </div>
-                    <a class="media-doc-link" href="${escapeAttribute(url)}" download="${escapeAttribute(media.name)}">Download file</a>
+                    <a class="media-doc-link" href="${escapeAttribute(url)}" download="${escapeAttribute(media.name)}">${t("Descargar archivo")}</a>
                 </div>
             `;
         }

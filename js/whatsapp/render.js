@@ -7,11 +7,12 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { colorForName } from "../shared/colors.js?v=1.8.23";
-import { formatBytes, labelForMediaKind } from "../shared/media-types.js?v=1.8.23";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.23";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.23";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { colorForName } from "../shared/colors.js?v=1.8.24";
+import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.24";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.24";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.24";
 import {
     clampRenderRange,
     isAtConversationEnd,
@@ -19,12 +20,12 @@ import {
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.23";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.23";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.23";
-import { lazyMedia } from "./media.js?v=1.8.23";
-import { closeMenu } from "./ui.js?v=1.8.23";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.23";
+} from "../shared/virtual-list.js?v=1.8.24";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.24";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.24";
+import { lazyMedia } from "./media.js?v=1.8.24";
+import { closeMenu } from "./ui.js?v=1.8.24";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.24";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -109,7 +110,7 @@ function renderMessageRow(item, isFirst, dayLabel) {
                 ${senderHtml}
                 ${textHtml}
                 ${mediaHtml}
-                <button class="message-favorite" type="button" data-favorite-toggle="${escapeAttribute(item.id)}" aria-label="Marcar como favorito" aria-pressed="false" title="Marcar como favorito"><i class="ph ph-star" aria-hidden="true"></i></button>
+                <button class="message-favorite" type="button" data-favorite-toggle="${escapeAttribute(item.id)}" aria-label="${escapeAttribute(t("Marcar como favorito"))}" aria-pressed="false" title="${escapeAttribute(t("Marcar como favorito"))}"><i class="ph ph-star" aria-hidden="true"></i></button>
                 <div class="meta">
                     <span>${escapeHtml(formatMessageTime(item.rawTime || item.time))}</span>
                     ${readTick}
@@ -124,7 +125,7 @@ function renderCallCard(text) {
     const isMissed = text.toLowerCase().includes("missed") || text === "null";
     const callIcon = isVideo ? "ph-video-camera" : "ph-phone";
     const callColor = isMissed ? "var(--danger)" : "var(--primary)";
-    const callText = text === "null" ? "Missed call" : text;
+    const callText = text === "null" ? t("Llamada perdida") : text;
 
     return `
         <div class="msg-text has-meta" style="display: flex; align-items: center; gap: 6px; font-weight: 500;">
@@ -180,8 +181,8 @@ function renderMediaItem(item) {
                 <div class="media-missing-head">
                     <i class="ph-fill ph-warning-circle"></i>
                     <div>
-                        <strong>${escapeHtml(item.name || "Missing attachment")}</strong>
-                        <span>Attachment referenced in chat but not present in the export.</span>
+                        <strong>${escapeHtml(item.name === "Media omitted" ? t("Multimedia omitido") : (item.name || t("Archivo adjunto faltante")))}</strong>
+                        <span>${t("Archivo mencionado en el chat pero ausente en la exportación.")}</span>
                     </div>
                 </div>
             </div>
@@ -233,12 +234,12 @@ function renderMediaItem(item) {
                 <i class="ph-fill ph-file"></i>
                 <div>
                     <strong>${escapeHtml(item.name)}</strong>
-                    <span>${labelForMediaKind(item.kind)}${item.size ? ` • ${formatBytes(item.size)}` : ""}</span>
+                    <span>${t(mediaKindSourceLabel(item.kind))}${item.size ? ` • ${formatBytes(item.size)}` : ""}</span>
                 </div>
             </div>
             <div class="media-doc-actions">
-                <button type="button" class="media-doc-link" data-open-media="${item.id}">Preview</button>
-                <button type="button" class="media-doc-link" data-download-media="${item.id}">Download</button>
+                <button type="button" class="media-doc-link" data-open-media="${item.id}">${t("Vista previa")}</button>
+                <button type="button" class="media-doc-link" data-download-media="${item.id}">${t("Descargar")}</button>
             </div>
         </div>
     `;

@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00a884">
-    <title>How It Works | ChatLume</title>
-    <meta name="description" content="Learn how ChatLume parses your WhatsApp exports locally.">
+    <title>Cómo funciona | ChatLume</title>
+    <meta name="description" content="Descubre cómo ChatLume procesa tus exportaciones de WhatsApp en local, sin subir nada.">
     <meta name="author" content="Paras Sharma">
     <meta name="application-name" content="ChatLume">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://chatlume.app/how-it-works">
     <meta property="og:site_name" content="ChatLume">
-    <meta property="og:title" content="How ChatLume Works">
-    <meta property="og:description" content="Learn how ChatLume parses WhatsApp exports locally with no backend or upload.">
+    <meta property="og:title" content="Cómo funciona ChatLume">
+    <meta property="og:description" content="Descubre cómo ChatLume procesa tus exportaciones de WhatsApp en local, sin backend ni subidas.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chatlume.app/how-it-works">
     <meta property="og:image" content="https://chatlume.app/assets/icon-512.png">
-    <meta property="og:image:alt" content="ChatLume app icon">
+    <meta property="og:image:alt" content="Icono de ChatLume">
     <meta name="twitter:card" content="summary">
     <link rel="icon" href="../assets/favicon.ico" sizes="any">
     <link rel="icon" href="../assets/logo-192.png" type="image/png">
-    <link rel="stylesheet" href="../css/style.css?v=1.8.23">
+    <link rel="stylesheet" href="../css/style.css?v=1.8.24">
     <link rel="manifest" href="../manifest.json">
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
@@ -54,17 +54,22 @@
 
     <nav class="landing-nav">
         <a class="logo" href="../index.html"><img src="../assets/logo-64.png" alt="ChatLume"> ChatLume</a>
-        <div class="nav-links"><a href="viewer.html">WhatsApp</a><a href="instagram-viewer.html">Instagram</a><a href="../sponsors.html">Sponsors</a><button type="button" class="nav-theme-toggle" data-theme-toggle aria-label="Toggle theme"><i class="ph ph-moon-stars"></i></button></div>
+        <div class="nav-links">
+            <a href="viewer.html" data-i18n="WhatsApp">WhatsApp</a>
+            <a href="instagram-viewer.html" data-i18n="Instagram">Instagram</a>
+            <a href="../sponsors.html" data-i18n="Patrocinadores">Patrocinadores</a>
+            <button type="button" class="nav-theme-toggle" data-theme-toggle aria-label="Cambiar tema" data-i18n-aria-label="Cambiar tema"><i class="ph ph-moon-stars"></i></button>
+        </div>
     </nav>
     <main class="content-container article-layout">
-        <h1>How ChatLume Works</h1>
-        <p>ChatLume parses your chat exports locally in your browser. Nothing is uploaded to a server.</p>
-        
-        <h2>Local File Parsing</h2>
-        <p>When you drag and drop a `.txt` or `.zip` file into ChatLume, the file is read using the HTML5 File API. The contents are parsed locally by JavaScript running directly in your browser. At no point is a server or external API involved.</p>
+        <h1 data-i18n="Cómo funciona ChatLume">Cómo funciona ChatLume</h1>
+        <p data-i18n="ChatLume procesa tus exportaciones de chat en local, dentro de tu navegador. No se sube nada a ningún servidor.">ChatLume procesa tus exportaciones de chat en local, dentro de tu navegador. No se sube nada a ningún servidor.</p>
 
-        <h2>Privacy Model</h2>
-        <p>Because everything happens locally, your data is fundamentally secure. You could even disconnect your internet after loading the page, and the tool would still parse and display your entire chat perfectly.</p>
+        <h2 data-i18n="Procesamiento local de archivos">Procesamiento local de archivos</h2>
+        <p data-i18n="Cuando arrastras un archivo .txt o .zip a ChatLume, se lee con la API File de HTML5. El contenido lo procesa JavaScript que se ejecuta directamente en tu navegador. En ningún momento interviene un servidor ni una API externa.">Cuando arrastras un archivo .txt o .zip a ChatLume, se lee con la API File de HTML5. El contenido lo procesa JavaScript que se ejecuta directamente en tu navegador. En ningún momento interviene un servidor ni una API externa.</p>
+
+        <h2 data-i18n="Modelo de privacidad">Modelo de privacidad</h2>
+        <p data-i18n="Como todo ocurre en local, tus datos están seguros de raíz. Puedes desconectar internet después de cargar la página y la herramienta seguirá procesando y mostrando tu chat sin problema.">Como todo ocurre en local, tus datos están seguros de raíz. Puedes desconectar internet después de cargar la página y la herramienta seguirá procesando y mostrando tu chat sin problema.</p>
     </main>
     <footer class="landing-footer" style="padding: 60px 20px 40px; border-top: 1px solid var(--border); margin-top: 40px; background: var(--bg-sidebar);">
     <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px;">
@@ -74,34 +79,35 @@
                     <img class="brand-mark" src="../assets/logo-64.png" alt="">
                     <span class="brand-name">ChatLume</span>
                 </div>
-                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0;">Privacy-first chat viewer and analytics tool. No uploads, completely local.</p>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5; margin: 0;" data-i18n="Visor de chats y estadísticas centrado en la privacidad. Sin subidas y totalmente local.">Visor de chats y estadísticas centrado en la privacidad. Sin subidas y totalmente local.</p>
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;">Guides</h4>
+                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;" data-i18n="Guías">Guías</h4>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="../public/how-to-use.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">How to use ChatLume</a>
-                    <a href="../public/how-to-export.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Export WhatsApp chat</a>
-                    <a href="../public/how-to-export-instagram.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Export Instagram DMs</a>
+                    <a href="../public/how-to-use.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Cómo usar ChatLume">Cómo usar ChatLume</a>
+                    <a href="../public/how-to-export.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Exportar un chat de WhatsApp">Exportar un chat de WhatsApp</a>
+                    <a href="../public/how-to-export-instagram.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Exportar mensajes de Instagram">Exportar mensajes de Instagram</a>
                 </div>
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;">Legal & Contact</h4>
+                <h4 style="color: var(--text-primary); font-size: 15px; margin: 0 0 16px 0; font-weight: 600;" data-i18n="Legal y contacto">Legal y contacto</h4>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="../privacy.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Privacy Policy</a>
-                    <a href="mailto:hello@parassharma.com" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Contact Support</a>
-                    <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">Developer Portfolio</a>
+                    <a href="../privacy.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Política de privacidad">Política de privacidad</a>
+                    <a href="mailto:hello@parassharma.com" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Contactar con soporte">Contactar con soporte</a>
+                    <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'" data-i18n="Portfolio del desarrollador">Portfolio del desarrollador</a>
                 </div>
             </div>
         </div>
         <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 24px;">
-            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">&copy; <span class="dynamic-year"></span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Paras Sharma</a> (ChatLume). All rights reserved.</p>
+            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">&copy; <span class="dynamic-year"></span> <a href="https://parassharma.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">Paras Sharma</a> (ChatLume). <span data-i18n="Todos los derechos reservados.">Todos los derechos reservados.</span></p>
         </div>
     </div>
     <script>
         document.querySelectorAll('.dynamic-year').forEach(el => el.textContent = new Date().getFullYear());
     </script>
 </footer>
-    <script src="../js/site.js?v=1.8.23" defer></script>
-    <button type="button" class="to-top" data-to-top aria-label="Back to top"><i class="ph ph-arrow-up"></i></button>
+    <script src="../js/site.js?v=1.8.24" defer></script>
+    <script type="module" src="../js/site-i18n.js?v=1.8.24"></script>
+    <button type="button" class="to-top" data-to-top aria-label="Volver arriba" data-i18n-aria-label="Volver arriba"><i class="ph ph-arrow-up"></i></button>
 </body>
 </html>

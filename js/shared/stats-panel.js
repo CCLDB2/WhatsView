@@ -7,7 +7,8 @@
  * the empty-state copy ("chat" vs "conversation") differ.
  * ============================================================================
  */
-import { $, escapeHtml, prefersReducedMotion } from "./dom.js?v=1.8.23";
+import { $, escapeHtml, prefersReducedMotion } from "./dom.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
 
 /**
  * @param {Object} options
@@ -24,11 +25,12 @@ export function renderStatsPanel({ ids, stats, noun = "chat" }) {
     if (mediaEl) mediaEl.innerText = mediaCount.toLocaleString();
 
     const list = $(ids.list);
+    const nounText = t(noun === "conversation" ? "conversación" : "chat");
     if (list && !messageCount) {
         list.innerHTML = `
             <div class="drawer-empty">
                 <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
-                <p>Load a ${noun} and this fills up with who talks most, when, and how often.</p>
+                <p>${escapeHtml(t("Carga un {noun} y esto se llenará con quién habla más, cuándo y con qué frecuencia.", { noun: nounText }))}</p>
             </div>`;
     } else if (list) {
         const sorted = Object.entries(senderStats).sort((a, b) => b[1] - a[1]);
@@ -56,7 +58,9 @@ export function renderStatsPanel({ ids, stats, noun = "chat" }) {
             grid.innerHTML = `
                 <div class="drawer-empty" style="grid-column:1/-1">
                     <i class="ph-duotone ph-smiley-blank" aria-hidden="true"></i>
-                    <p>${messageCount ? `No emojis in this ${noun} — a rare breed.` : `Emoji highlights appear once a ${noun} is loaded.`}</p>
+                    <p>${messageCount
+                        ? escapeHtml(t("No hay emojis en este {noun}: una especie rara.", { noun: nounText }))
+                        : escapeHtml(t("Los emojis destacados aparecen cuando se carga un {noun}.", { noun: nounText }))}</p>
                 </div>`;
         } else {
             grid.innerHTML = top12.map(([emoji, count]) => `

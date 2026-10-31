@@ -7,14 +7,15 @@
  * and is routed to persistence.js.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.23";
-import { state } from "./state.js?v=1.8.23";
-import { reinferDateOrder } from "./format.js?v=1.8.23";
-import { handlePersistentStorageToggle, refreshStorageSettingsUI } from "./persistence.js?v=1.8.23";
-import { renderChatList } from "./render.js?v=1.8.23";
-import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.23";
-import { generateStats } from "./stats.js?v=1.8.23";
-import { showToast } from "./ui.js?v=1.8.23";
+import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { state } from "./state.js?v=1.8.24";
+import { reinferDateOrder } from "./format.js?v=1.8.24";
+import { handlePersistentStorageToggle, refreshStorageSettingsUI } from "./persistence.js?v=1.8.24";
+import { renderChatList } from "./render.js?v=1.8.24";
+import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.24";
+import { generateStats } from "./stats.js?v=1.8.24";
+import { showToast } from "./ui.js?v=1.8.24";
 
 export function handleSettingChange(event) {
     const control = event.currentTarget;
@@ -38,7 +39,7 @@ export function resetSettings() {
     syncSettingsControls();
     refreshStorageSettingsUI();
     rerenderAfterSettingsChange();
-    showToast("Settings reset");
+    showToast(t("Ajustes restablecidos"));
 }
 
 function rerenderAfterSettingsChange() {

@@ -7,12 +7,13 @@
  * with html2canvas (loaded on first download, not at boot).
  * ============================================================================
  */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.23";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.23";
-import { SITE_URL, state } from "./state.js?v=1.8.23";
-import { formatDateLabel } from "./format.js?v=1.8.23";
-import { getColor } from "./render.js?v=1.8.23";
-import { showToast } from "./ui.js?v=1.8.23";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.24";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { SITE_URL, state } from "./state.js?v=1.8.24";
+import { formatDateLabel } from "./format.js?v=1.8.24";
+import { getColor } from "./render.js?v=1.8.24";
+import { showToast } from "./ui.js?v=1.8.24";
 
 const HTML2CANVAS_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 
@@ -20,7 +21,7 @@ const HTML2CANVAS_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.
 
 export function openWrapped() {
     if (state.messageOnlyCount === 0) {
-        showToast("Load a chat first to generate ChatLume Wrapped!", "warn");
+        showToast(t("Carga un chat primero para generar ChatLume Wrapped."), "warn");
         return;
     }
     populateWrappedGraphic();
@@ -56,7 +57,7 @@ export function populateWrappedGraphic() {
     if (!graphic) return;
 
     const total = state.messageOnlyCount;
-    const chatTitle = state.chatTitle || "Chat History";
+    const chatTitle = state.chatTitle || t("Historial de chats");
 
     // Peak hour
     let peakHour = 0, maxMsgs = 0;
@@ -78,14 +79,14 @@ export function populateWrappedGraphic() {
 
     // Date range
     const dates = state.filteredMessages.filter((m) => m.type === "date");
-    const firstDate = dates.length > 0 ? formatDateLabel(dates[0].rawDate || dates[0].content) : "Unknown Date";
-    const lastDate = dates.length > 0 ? formatDateLabel(dates[dates.length - 1].rawDate || dates[dates.length - 1].content) : "Unknown Date";
-    const dateRange = firstDate !== "Unknown Date" && firstDate !== lastDate ? `${firstDate} - ${lastDate}` : firstDate;
+    const firstDate = dates.length > 0 ? formatDateLabel(dates[0].rawDate || dates[0].content) : t("Fecha desconocida");
+    const lastDate = dates.length > 0 ? formatDateLabel(dates[dates.length - 1].rawDate || dates[dates.length - 1].content) : t("Fecha desconocida");
+    const dateRange = firstDate !== t("Fecha desconocida") && firstDate !== lastDate ? `${firstDate} - ${lastDate}` : firstDate;
 
     // Emojis — top 6 in a 3-column grid
     const sortedEmojis = Object.entries(state.emojiStats).sort((a, b) => b[1] - a[1]).slice(0, 6);
     const emojisHtml = sortedEmojis.length === 0
-        ? "<span style='color:#555; font-size:13px;'>No emojis found</span>"
+        ? `<span style='color:#555; font-size:13px;'>${t("No se encontraron emojis")}</span>`
         : sortedEmojis.map((e) => `<div class="wg-emoji-cell"><span class="wg-emoji-char">${e[0]}</span><span class="wg-emoji-count">${e[1].toLocaleString()}</span></div>`).join("");
 
     // Top senders split
@@ -111,30 +112,30 @@ export function populateWrappedGraphic() {
 
         <div class="wg-stats-grid">
             <div class="wg-stat-card">
-                <span>Messages</span>
+                <span>${t("Mensajes")}</span>
                 <h3>${total.toLocaleString()}</h3>
             </div>
             <div class="wg-stat-card">
-                <span>Words</span>
+                <span>${t("Palabras")}</span>
                 <h3>${totalWords.toLocaleString()}</h3>
             </div>
             <div class="wg-stat-card">
-                <span>Media</span>
+                <span>${t("Archivos")}</span>
                 <h3>${totalMedia.toLocaleString()}</h3>
             </div>
             <div class="wg-stat-card">
-                <span>Peak Hour</span>
+                <span>${t("Hora punta")}</span>
                 <h3>${peakHour12}</h3>
             </div>
         </div>
 
         <div class="wg-section">
-            <div class="wg-label">Most Used</div>
+            <div class="wg-label">${t("Más usados")}</div>
             <div class="wg-emoji-grid">${emojisHtml}</div>
         </div>
 
         <div class="wg-section">
-            <div class="wg-label">Top Contributors</div>
+            <div class="wg-label">${t("Colaboradores principales")}</div>
             <div class="wg-split">
                 <div class="wg-split-bar">${barHtml}</div>
                 <div class="wg-split-labels">${labelsHtml}</div>
@@ -153,12 +154,12 @@ export function populateWrappedGraphic() {
 /** Loads html2canvas from the CDN the first time it is needed. */
 function loadHtml2Canvas() {
     if (typeof html2canvas !== "undefined") return Promise.resolve();
-    showToast("Loading image generator...", "info");
+    showToast(t("Cargando el generador de imágenes..."), "info");
     return new Promise((resolve, reject) => {
         const script = document.createElement("script");
         script.src = HTML2CANVAS_URL;
         script.onload = resolve;
-        script.onerror = () => reject(new Error("Failed to load image generator"));
+        script.onerror = () => reject(new Error(t("No se pudo cargar el generador de imágenes")));
         document.head.appendChild(script);
     });
 }
@@ -169,7 +170,7 @@ export async function downloadWrappedGraphic() {
 
     const btn = $("download-wrapped");
     const oldText = btn.innerHTML;
-    btn.innerHTML = `<i class="ph-fill ph-spinner-gap processing-spinner" style="font-size: 18px; margin-right: 8px;"></i> Generating...`;
+    btn.innerHTML = `<i class="ph-fill ph-spinner-gap processing-spinner" style="font-size: 18px; margin-right: 8px;"></i> ${t("Generando...")}`;
     btn.disabled = true;
 
     try {
@@ -196,10 +197,10 @@ export async function downloadWrappedGraphic() {
         link.href = canvas.toDataURL("image/png");
         link.click();
 
-        showToast("Image downloaded!");
+        showToast(t("¡Imagen descargada!"));
     } catch (err) {
         console.error(err);
-        showToast("Failed to download image.", "error");
+        showToast(t("No se pudo descargar la imagen."), "error");
     } finally {
         btn.innerHTML = oldText;
         btn.disabled = false;

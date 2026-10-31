@@ -10,6 +10,16 @@
     var reduceMotion = typeof window.matchMedia === "function" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    /**
+     * Copy for the cards this file builds. js/site-i18n.js loads the app's
+     * translation module and exposes it here; until it lands (or if the module
+     * fails) the Spanish source below is shown as-is.
+     */
+    function t(text) {
+        var i18n = window.chatLumeI18n;
+        return i18n ? i18n.t(text) : text;
+    }
+
     function readTheme() {
         try {
             return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
@@ -26,7 +36,7 @@
             icon.className = theme === "light" ? "ph ph-sun-dim" : "ph ph-moon-stars";
         });
         document.querySelectorAll("[data-theme-toggle]").forEach(function (btn) {
-            btn.setAttribute("aria-label", theme === "light" ? "Switch to dark theme" : "Switch to light theme");
+            btn.setAttribute("aria-label", theme === "light" ? t("Cambiar a tema oscuro") : t("Cambiar a tema claro"));
         });
     }
 
@@ -233,12 +243,12 @@
             card.innerHTML =
                 '<img src="' + logoPath() + '" alt="" class="install-prompt-icon">' +
                 '<div class="install-prompt-text">' +
-                    "<strong>ChatLume was updated</strong>" +
-                    "<span>Reload to use the latest version.</span>" +
+                    "<strong>" + t("ChatLume se ha actualizado") + "</strong>" +
+                    "<span>" + t("Recarga para usar la última versión.") + "</span>" +
                 "</div>" +
                 '<div class="install-prompt-actions">' +
-                    '<button type="button" class="install-prompt-no">Later</button>' +
-                    '<button type="button" class="install-prompt-yes">Reload</button>' +
+                    '<button type="button" class="install-prompt-no">' + t("Más tarde") + "</button>" +
+                    '<button type="button" class="install-prompt-yes">' + t("Recargar") + "</button>" +
                 "</div>";
             document.body.appendChild(card);
             requestAnimationFrame(function () { card.classList.add("show"); });
@@ -300,16 +310,16 @@
             var card = document.createElement("div");
             card.className = "install-prompt";
             card.setAttribute("role", "dialog");
-            card.setAttribute("aria-label", "Install ChatLume");
+            card.setAttribute("aria-label", t("Instalar ChatLume"));
             card.innerHTML =
                 '<img src="' + iconPath() + '" alt="" class="install-prompt-icon">' +
                 '<div class="install-prompt-text">' +
-                    "<strong>Install ChatLume</strong>" +
-                    "<span>Open your chats offline, straight from your home screen.</span>" +
+                    "<strong>" + t("Instalar ChatLume") + "</strong>" +
+                    "<span>" + t("Abre tus chats sin conexión, directamente desde tu pantalla de inicio.") + "</span>" +
                 "</div>" +
                 '<div class="install-prompt-actions">' +
-                    '<button type="button" class="install-prompt-no">Not now</button>' +
-                    '<button type="button" class="install-prompt-yes">Install</button>' +
+                    '<button type="button" class="install-prompt-no">' + t("Ahora no") + "</button>" +
+                    '<button type="button" class="install-prompt-yes">' + t("Instalar") + "</button>" +
                 "</div>";
             document.body.appendChild(card);
             requestAnimationFrame(function () { card.classList.add("show"); });

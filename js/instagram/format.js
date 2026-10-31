@@ -1,4 +1,6 @@
 /** Display formatting for Instagram's epoch-millisecond timestamps. */
+import { getLocale } from "../i18n.js?v=1.8.24";
+
 export const DEFAULT_IG_SETTINGS = Object.freeze({
     timeFormat: "12",
     showSeconds: false,
@@ -17,7 +19,7 @@ export function formatMessageTime(timestamp, settings = DEFAULT_IG_SETTINGS) {
         hour12: settings.timeFormat !== "24"
     };
     if (settings.showSeconds) options.second = "2-digit";
-    let value = date.toLocaleTimeString(undefined, options);
+    let value = date.toLocaleTimeString(getLocale(), options);
     if (settings.timeBrackets === "square") value = `[${value}]`;
     if (settings.timeBrackets === "round") value = `(${value})`;
     return value;
@@ -27,7 +29,7 @@ export function formatDateLabel(timestamp, settings = DEFAULT_IG_SETTINGS) {
     const date = new Date(timestamp);
     let value;
     if (settings.dateFormat === "long") {
-        value = date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+        value = date.toLocaleDateString(getLocale(), { year: "numeric", month: "long", day: "numeric" });
     } else {
         const y = String(date.getFullYear()).padStart(4, "0");
         const m = String(date.getMonth() + 1).padStart(2, "0");

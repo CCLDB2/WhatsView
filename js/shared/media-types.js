@@ -106,9 +106,25 @@ const KIND_LABELS = {
     contact: "Contact"
 };
 
+/** Spanish source labels for the same kinds; pass through t() to display. */
+const KIND_LABEL_SOURCES = {
+    image: "Imagen",
+    sticker: "Pegatina",
+    video: "Vídeo",
+    audio: "Audio",
+    document: "Documento",
+    archive: "Archivo comprimido",
+    contact: "Contacto"
+};
+
 /** Human label for a media kind, used in cards and the media viewer. */
 export function labelForMediaKind(kind) {
     return KIND_LABELS[kind] || "File";
+}
+
+/** Spanish source label for a media kind, for translation at render time. */
+export function mediaKindSourceLabel(kind) {
+    return KIND_LABEL_SOURCES[kind] || "Archivo";
 }
 
 /** "1.5 MB", "12 KB", … Empty string for 0 so callers can supply a fallback. */

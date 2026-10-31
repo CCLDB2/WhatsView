@@ -8,9 +8,10 @@
  * result list, the pointer and the toolbar.
  * ============================================================================
  */
-import { $, isTypingTarget } from "../shared/dom.js?v=1.8.23";
-import { MAX_RENDERED_ITEMS, SEARCH_DEBOUNCE_MS, state } from "./state.js?v=1.8.23";
-import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.23";
+import { $, isTypingTarget } from "../shared/dom.js?v=1.8.24";
+import { t } from "../i18n.js?v=1.8.24";
+import { MAX_RENDERED_ITEMS, SEARCH_DEBOUNCE_MS, state } from "./state.js?v=1.8.24";
+import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.24";
 
 /** The text a message is matched against. */
 function getSearchableText(entry) {
@@ -73,7 +74,7 @@ export function handleSearch(query) {
 
     if (!state.searchResults.length) {
         state.searchPointer = -1;
-        updateSearchCounter("No matches");
+        updateSearchCounter(t("Sin resultados"));
         setSearchEmptyState(true, query.trim());
         // Re-render so highlights from the previous query don't linger.
         renderChatList();

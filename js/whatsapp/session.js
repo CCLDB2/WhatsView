@@ -9,27 +9,28 @@
  * ============================================================================
  */
 import { BlobReader, ZipReader } from "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
-import { exportChatAsHTML } from "../export.js?v=1.8.23";
-import { showSponsorPrompt } from "../support.js?v=1.8.23";
-import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.23";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.23";
-import { baseName } from "../shared/media-types.js?v=1.8.23";
-import { ISSUES_URL, state } from "./state.js?v=1.8.23";
-import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.23";
-import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.23";
-import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.23";
+import { t } from "../i18n.js?v=1.8.24";
+import { exportChatAsHTML } from "../export.js?v=1.8.24";
+import { showSponsorPrompt } from "../support.js?v=1.8.24";
+import { $, nextFrame, wait } from "../shared/dom.js?v=1.8.24";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.24";
+import { baseName } from "../shared/media-types.js?v=1.8.24";
+import { ISSUES_URL, state } from "./state.js?v=1.8.24";
+import { buildMediaStore, cleanupMediaStore, closeMediaModal, lazyMedia } from "./media.js?v=1.8.24";
+import { parseChatData, parseChatDataFromEntry } from "./parser.js?v=1.8.24";
+import { populateSenderFilter, resetSenderFilterUI } from "./filter.js?v=1.8.24";
 import {
     isPersistentStorageEnabled,
     markStoredImportOpened,
     persistCurrentImport,
     renderStoredImports,
     saveActiveScrollPosition
-} from "./persistence.js?v=1.8.23";
-import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.23";
-import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.23";
-import { generateStats } from "./stats.js?v=1.8.23";
-import { loadFavorites } from "./favorites.js?v=1.8.23";
-import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.23";
+} from "./persistence.js?v=1.8.24";
+import { captureScrollPosition, collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.24";
+import { setSearchEmptyState, toggleSearch, updateSearchCounter } from "./search.js?v=1.8.24";
+import { generateStats } from "./stats.js?v=1.8.24";
+import { loadFavorites } from "./favorites.js?v=1.8.24";
+import { isServerStorageEnabled, rememberServerChat, uploadChatToServer } from "./server-storage.js?v=1.8.24";
 import {
     closeMenu,
     isMobileLayout,
@@ -41,9 +42,9 @@ import {
     showEmptyState,
     showToast,
     updateLoadingCopy
-} from "./ui.js?v=1.8.23";
+} from "./ui.js?v=1.8.24";
 
-const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> How to export WhatsApp chats</a>`;
+const HOW_TO_EXPORT_CTA = `<a class="empty-cta" href="how-to-export.html"><i class="ph ph-question"></i> ${t("Cómo exportar chats de WhatsApp")}</a>`;
 
 /** "Load Chat" button: validates the form, then opens the picked file. */
 export async function initViewer() {
@@ -55,11 +56,11 @@ export async function initViewer() {
     const displayName = nameInput?.value.trim();
 
     if (!file) {
-        showToast("Please select a file", "warn");
+        showToast(t("Selecciona un archivo"), "warn");
         return;
     }
     if (!displayName) {
-        showToast("Enter your display name", "warn");
+        showToast(t("Escribe tu nombre visible"), "warn");
         return;
     }
 
@@ -86,16 +87,16 @@ export async function loadChatFile(file, { displayName, fileLabel = "", persist 
     if (state.isLoading) return;
 
     const remoteChatId = remoteManifest?.id || "";
-    fileLabel ||= remoteManifest?.originalFileName || file?.name || "WhatsApp chat";
+    fileLabel ||= remoteManifest?.originalFileName || file?.name || t("Chat de WhatsApp");
 
     state.myName = displayName;
     state.activeImportId = "";
     state.activeScrollPosition = scrollPosition;
 
     const isZip = remoteChatId ? remoteManifest.archiveType === "zip" : Boolean(file?.name.toLowerCase().endsWith(".zip"));
-    const initText = isZip ? "Opening ZIP and scanning entries..." : "Reading text file...";
+    const initText = isZip ? t("Abriendo el ZIP y escaneando archivos...") : t("Leyendo el archivo de texto...");
 
-    setLoadingState(true, `Loading ${fileLabel}`, initText);
+    setLoadingState(true, t("Cargando {name}", { name: fileLabel }), initText);
 
     // Let the overlay paint before the heavy lifting starts.
     await nextFrame();
@@ -127,8 +128,8 @@ export async function loadChatFile(file, { displayName, fileLabel = "", persist 
 
         updateLoadingCopy(
             attachments.length
-                ? `Matched ${attachments.length.toLocaleString()} attachments. Extracting chat...`
-                : "Extracting chat..."
+                ? t("Se encontraron {count} archivos adjuntos. Extrayendo el chat...", { count: attachments.length.toLocaleString() })
+                : t("Extrayendo el chat...")
         );
 
         await wait(30);
@@ -149,10 +150,10 @@ export async function loadChatFile(file, { displayName, fileLabel = "", persist 
         let completedRemoteId = remoteImportId;
         let remoteSaveError = null;
         if (uploadToServer && file) {
-            updateLoadingCopy("Saving a private copy to the Dockploy server…");
+            updateLoadingCopy(t("Guardando una copia privada en el servidor Dockploy…"));
             try {
                 completedRemoteId = await uploadChatToServer(file, displayName, (percentage) => {
-                    updateLoadingCopy(`Saving a private copy to the Dockploy server… ${percentage}%`);
+                    updateLoadingCopy(t("Guardando una copia privada en el servidor Dockploy… {percent}%", { percent: percentage }));
                 });
             } catch (error) {
                 remoteSaveError = error;
@@ -173,8 +174,8 @@ export async function loadChatFile(file, { displayName, fileLabel = "", persist 
             });
         }
         showToast(remoteSaveError
-            ? `Chat opened, but no server copy was saved (${remoteSaveError.message})`
-            : `Loaded ${state.messageOnlyCount.toLocaleString()} messages`);
+            ? t("Chat abierto, pero no se guardó ninguna copia en el servidor ({error})", { error: remoteSaveError.message })
+            : t("Se cargaron {count} mensajes", { count: state.messageOnlyCount.toLocaleString() }));
         showSponsorPrompt();
 
         if (!importId && persist && file) {
@@ -185,8 +186,8 @@ export async function loadChatFile(file, { displayName, fileLabel = "", persist 
         const shown = showEmptyState({
             icon: "ph-duotone ph-warning-circle",
             iconColor: "#f5a623",
-            title: "Couldn't parse this file",
-            body: error.message || "Make sure it's a valid WhatsApp .txt or .zip export.",
+            title: t("No se pudo procesar este archivo"),
+            body: error.message || t("Asegúrate de que sea una exportación válida de WhatsApp en .txt o .zip."),
             actions: HOW_TO_EXPORT_CTA
         });
         if (!shown) {
@@ -206,21 +207,24 @@ function showNothingParsedState() {
         showEmptyState({
             icon: "ph-duotone ph-calendar-x",
             iconColor: "#f5a623",
-            title: "Unrecognised date format",
-            body: `This looks like a WhatsApp export, but its timestamps use a format ChatLume can't read yet (${unrecognizedHeaders.toLocaleString()} lines such as "${unrecognizedSample}"). Please report this line so the format can be added.`,
-            actions: `<a class="empty-cta" href="${ISSUES_URL}" target="_blank" rel="noopener noreferrer"><i class="ph ph-bug"></i> Report this format</a>`
+            title: t("Formato de fecha no reconocido"),
+            body: t("Parece una exportación de WhatsApp, pero sus horas usan un formato que ChatLume aún no puede leer ({count} líneas como \"{sample}\"). Informa de esta línea para que se pueda añadir el formato.", {
+                count: unrecognizedHeaders.toLocaleString(),
+                sample: unrecognizedSample
+            }),
+            actions: `<a class="empty-cta" href="${ISSUES_URL}" target="_blank" rel="noopener noreferrer"><i class="ph ph-bug"></i> ${t("Informar de este formato")}</a>`
         });
-        showToast("Timestamps in this export use an unsupported format", "error");
+        showToast(t("Las horas de esta exportación usan un formato no compatible"), "error");
         return;
     }
     showEmptyState({
         icon: "ph-duotone ph-file-dashed",
         iconColor: "#f5a623",
-        title: "No messages found",
-        body: "The file opened, but nothing in it looked like WhatsApp messages. Exports must be plain-text chat exports — not backups or database files.",
+        title: t("No se encontraron mensajes"),
+        body: t("El archivo se abrió, pero nada en él parecía un mensaje de WhatsApp. Las exportaciones deben ser chats en texto plano, no copias de seguridad ni bases de datos."),
         actions: HOW_TO_EXPORT_CTA
     });
-    showToast("No messages could be parsed from this export", "error");
+    showToast(t("No se pudo procesar ningún mensaje de esta exportación"), "error");
 }
 
 /**
@@ -237,7 +241,7 @@ async function loadChatExport(file, { remoteChatId = "", remoteManifest = null, 
             uncompressedSize: remoteManifest.chatSize || 1,
             async getData(writableStream) {
                 const response = await fetch(`/api/chats/${encodeURIComponent(remoteChatId)}/chat`, { cache: "no-store" });
-                if (!response.ok) throw new Error(`Unable to read chat from server (HTTP ${response.status})`);
+                if (!response.ok) throw new Error(t("No se pudo leer el chat del servidor (HTTP {status})", { status: response.status }));
                 const total = Number(response.headers.get("Content-Length")) || remoteManifest.chatSize || 0;
                 const writer = writableStream.getWriter();
                 let loaded = 0;
@@ -267,7 +271,7 @@ async function loadChatExport(file, { remoteChatId = "", remoteManifest = null, 
         return { rawText: null, chatEntry, attachments };
     }
 
-    if (!file) throw new Error("No local file was provided.");
+    if (!file) throw new Error(t("No se proporcionó ningún archivo local."));
     if (!file.name.toLowerCase().endsWith(".zip")) {
         return { rawText: await readFileAsText(file), chatEntry: null, attachments: [] };
     }
@@ -282,7 +286,7 @@ async function loadChatExport(file, { remoteChatId = "", remoteManifest = null, 
         .sort((a, b) => b.uncompressedSize - a.uncompressedSize)[0];
 
     if (!chatEntry) {
-        throw new Error("No .txt file found in ZIP");
+        throw new Error(t("No se encontró ningún archivo .txt en el ZIP"));
     }
 
     const attachments = entries
@@ -301,7 +305,7 @@ function readFileAsText(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => resolve(String(event.target?.result || ""));
-        reader.onerror = () => reject(reader.error || new Error("Unable to read file"));
+        reader.onerror = () => reject(reader.error || new Error(t("No se pudo leer el archivo")));
         reader.readAsText(file, "utf-8");
     });
 }
@@ -343,16 +347,18 @@ function updateUIState(filename) {
     // A freshly picked file replaces whichever stored chat was highlighted.
     renderStoredImports();
 
-    state.chatTitle = filename.replace(/(_chat\.txt|WhatsApp Chat with |\.\w+$)/gi, "").trim() || "Chat History";
-    const withMedia = state.mediaCount ? ` • ${state.mediaCount.toLocaleString()} media` : "";
+    state.chatTitle = filename.replace(/(_chat\.txt|WhatsApp Chat with |\.\w+$)/gi, "").trim() || t("Historial de chats");
+    const withMedia = state.mediaCount ? t(" • {count} archivos", { count: state.mediaCount.toLocaleString() }) : "";
 
     if ($("sidebar-title")) $("sidebar-title").innerText = state.chatTitle;
     if ($("header-name")) $("header-name").innerText = state.chatTitle;
-    if ($("header-meta")) $("header-meta").innerText = `${state.messageOnlyCount.toLocaleString()} messages${withMedia}`;
+    if ($("header-meta")) $("header-meta").innerText = t("{count} mensajes{media}", { count: state.messageOnlyCount.toLocaleString(), media: withMedia });
     if ($("sidebar-sub")) $("sidebar-sub").innerText = state.mediaMissingCount
-        ? `${state.mediaMissingCount} missing attachment${state.mediaMissingCount === 1 ? "" : "s"}`
-        : "Loaded successfully";
-    if ($("profile-display-name")) $("profile-display-name").innerText = state.myName || "You";
+        ? (state.mediaMissingCount === 1
+            ? t("{count} archivo adjunto faltante", { count: state.mediaMissingCount })
+            : t("{count} archivos adjuntos faltantes", { count: state.mediaMissingCount }))
+        : t("Cargado correctamente");
+    if ($("profile-display-name")) $("profile-display-name").innerText = state.myName || t("Tú");
 
     ensureExportButton();
     populateSenderFilter();
@@ -378,24 +384,26 @@ function ensureExportButton() {
                 const exportedCount = exportedMessages.filter((m) => m.type === "msg").length;
                 const isFiltered = Boolean(state.selectedSenders && state.selectedSenders.length > 0);
                 const filterSuffix = isFiltered
-                    ? ` (${state.selectedSenders.length === 1 ? state.selectedSenders[0] : `${state.selectedSenders.length} participants`})`
+                    ? ` (${state.selectedSenders.length === 1 ? state.selectedSenders[0] : t("{count} participantes", { count: state.selectedSenders.length })})`
                     : "";
-                if (includeAttachments) showToast("Preparing chat and attachments…");
+                if (includeAttachments) showToast(t("Preparando el chat y los archivos adjuntos…"));
                 const result = await exportChatAsHTML({
                     theme: "whatsapp",
                     colorScheme: document.body.classList.contains("light-theme") ? "light" : "dark",
                     includeAttachments,
                     mediaStore: state.mediaStore,
-                    title: `${state.chatTitle || "WhatsApp Chat"}${filterSuffix}`,
+                    title: `${state.chatTitle || t("Chat de WhatsApp")}${filterSuffix}`,
                     messageCount: exportedCount,
                     messages: exportedMessages
                 });
                 showToast(includeAttachments
-                    ? `Chat exported with ${result.attachmentCount} attachment${result.attachmentCount === 1 ? "" : "s"}`
-                    : "Chat exported as HTML");
+                    ? (result.attachmentCount === 1
+                        ? t("Chat exportado con {count} archivo adjunto", { count: result.attachmentCount })
+                        : t("Chat exportado con {count} archivos adjuntos", { count: result.attachmentCount }))
+                    : t("Chat exportado como HTML"));
             } catch (err) {
                 console.error("[ChatLume] Export failed:", err);
-                showToast("Export failed", "error");
+                showToast(t("La exportación falló"), "error");
             } finally {
                 btn.disabled = false;
             }
@@ -403,8 +411,8 @@ function ensureExportButton() {
         menu.appendChild(btn);
     };
 
-    addButton("export-chat-btn", "Export without attachments (.html)", "ph-file-text", false);
-    addButton("export-chat-media-btn", "Export with attachments (.zip)", "ph-file-zip", true);
+    addButton("export-chat-btn", t("Exportar sin archivos adjuntos (.html)"), "ph-file-text", false);
+    addButton("export-chat-media-btn", t("Exportar con archivos adjuntos (.zip)"), "ph-file-zip", true);
 }
 
 /**
@@ -421,13 +429,13 @@ export function closeActiveChat() {
     resetSenderFilterUI();
     state.activeImportId = "";
     state.activeScrollPosition = null;
-    state.chatTitle = "Chat History";
+    state.chatTitle = t("Historial de chats");
     restoreEmptyState();
     $("empty-state")?.classList.remove("hidden");
-    if ($("header-name")) $("header-name").innerText = "Welcome";
+    if ($("header-name")) $("header-name").innerText = t("Bienvenido");
     if ($("header-meta")) $("header-meta").innerText = "ChatLume";
-    if ($("sidebar-title")) $("sidebar-title").innerText = "Chat History";
-    if ($("sidebar-sub")) $("sidebar-sub").innerText = "Active now";
+    if ($("sidebar-title")) $("sidebar-title").innerText = t("Historial de chats");
+    if ($("sidebar-sub")) $("sidebar-sub").innerText = t("Activo ahora");
     // updateUIState() re-creates this on the next load.
     $("export-chat-btn")?.remove();
     generateStats();

@@ -18,24 +18,25 @@
  * All processing is client-side; nothing is uploaded.
  * ============================================================================
  */
-import { $, q, escapeHtml } from "./shared/dom.js?v=1.8.23";
-import { COMPAT_LIMIT_MESSAGE, exceedsCompatLimit, showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.23";
-import { assignFileToInput, setupDropTarget, setupGlobalDropZone } from "./shared/drop-zone.js?v=1.8.23";
-import { popOverlayState } from "./shared/history.js?v=1.8.23";
-import { runSplashLoader } from "./shared/splash.js?v=1.8.23";
-import { createThemeController } from "./shared/theme.js?v=1.8.23";
-import { igState } from "./instagram/state.js?v=1.8.23";
-import { closeMediaModal, handleMessageListClick } from "./instagram/media.js?v=1.8.23";
-import { handleViewportScroll, jumpToBottom, renderChatList, resetRenderToBottom } from "./instagram/render.js?v=1.8.23";
-import { handleSearchInput, handleSearchShortcut, isSearchOpen, navSearch, runSearch, toggleSearch } from "./instagram/search.js?v=1.8.23";
-import { filterMessagesBySender, getInstagramSenderSummary } from "./instagram/filter.js?v=1.8.23";
-import { applyDateJump, closeDateSheet, openDateSheet } from "./instagram/date-jump.js?v=1.8.23";
-import { closeInstagramWrapped, downloadInstagramWrapped, openInstagramWrapped } from "./instagram/wrapped.js?v=1.8.23";
-import { cancelInstagramCopy, deleteAllInstagramImports, handleInstagramStorageClick, handleInstagramStorageSetting, initInstagramPersistence } from "./instagram/persistence.js?v=1.8.23";
-import { DEFAULT_IG_SETTINGS } from "./instagram/format.js?v=1.8.23";
-import { readInstagramSettings, writeInstagramSettings } from "./instagram/settings.js?v=1.8.23";
-import { initViewer, loadThread } from "./instagram/session.js?v=1.8.23";
-import { showThreadSelector } from "./instagram/threads.js?v=1.8.23";
+import { $, q, escapeHtml } from "./shared/dom.js?v=1.8.24";
+import { COMPAT_LIMIT_MESSAGE, exceedsCompatLimit, showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.24";
+import { assignFileToInput, setupDropTarget, setupGlobalDropZone } from "./shared/drop-zone.js?v=1.8.24";
+import { popOverlayState } from "./shared/history.js?v=1.8.24";
+import { runSplashLoader } from "./shared/splash.js?v=1.8.24";
+import { createThemeController } from "./shared/theme.js?v=1.8.24";
+import { igState } from "./instagram/state.js?v=1.8.24";
+import { closeMediaModal, handleMessageListClick } from "./instagram/media.js?v=1.8.24";
+import { handleViewportScroll, jumpToBottom, renderChatList, resetRenderToBottom } from "./instagram/render.js?v=1.8.24";
+import { handleSearchInput, handleSearchShortcut, isSearchOpen, navSearch, runSearch, toggleSearch } from "./instagram/search.js?v=1.8.24";
+import { filterMessagesBySender, getInstagramSenderSummary } from "./instagram/filter.js?v=1.8.24";
+import { applyDateJump, closeDateSheet, openDateSheet } from "./instagram/date-jump.js?v=1.8.24";
+import { closeInstagramWrapped, downloadInstagramWrapped, openInstagramWrapped } from "./instagram/wrapped.js?v=1.8.24";
+import { cancelInstagramCopy, deleteAllInstagramImports, handleInstagramStorageClick, handleInstagramStorageSetting, initInstagramPersistence } from "./instagram/persistence.js?v=1.8.24";
+import { DEFAULT_IG_SETTINGS } from "./instagram/format.js?v=1.8.24";
+import { readInstagramSettings, writeInstagramSettings } from "./instagram/settings.js?v=1.8.24";
+import { initViewer, loadThread } from "./instagram/session.js?v=1.8.24";
+import { showThreadSelector } from "./instagram/threads.js?v=1.8.24";
+import { initI18n, setLanguage, t, getLocale } from "./i18n.js?v=1.8.24";
 import {
     closeAllDrawers,
     closeMenu,
@@ -47,15 +48,16 @@ import {
     showToast,
     toggleMenu,
     toggleSidebar
-} from "./instagram/ui.js?v=1.8.23";
+} from "./instagram/ui.js?v=1.8.24";
 
-const IG_APP_VERSION = "1.8.23";
+const IG_APP_VERSION = "1.8.24";
 
 const theme = createThemeController({ iconSelector: "#ig-theme-toggle i" });
 
 // ── Boot ────────────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", async () => {
+    await initI18n();
     theme.applySaved();
     igState.settings = readInstagramSettings();
     syncInstagramSettingsControls();
@@ -152,6 +154,13 @@ function bindUI() {
     $("ig-storage-delete-all")?.addEventListener("click", deleteAllInstagramImports);
     $("ig-storage-cancel")?.addEventListener("click", cancelInstagramCopy);
     $("ig-reset-settings")?.addEventListener("click", resetInstagramSettings);
+    $("ig-setting-language")?.addEventListener("change", async (event) => {
+        const next = event.target.value;
+        if (!next) return;
+        await setLanguage(next);
+        // Reload so every module renders its strings in the new language.
+        window.location.reload();
+    });
 
     // Header menu (the thread session adds its export action here).
     $("ig-menu-toggle")?.addEventListener("click", toggleMenu);
@@ -228,14 +237,14 @@ function resetInstagramSettings() {
     syncInstagramSettingsControls();
     if (wasStoring) handleInstagramStorageSetting({ target: { checked: false } });
     renderChatList();
-    showToast("Instagram settings reset");
+    showToast(t("Ajustes de Instagram restablecidos"));
 }
 
 function applyInstagramSenderFilter() {
     igState.selectedSenders = [...($("ig-sender-filter-list")?.querySelectorAll("input[type=checkbox]:checked") || [])].map((input) => input.value);
     igState.filteredMessages = filterMessagesBySender(igState.messages, igState.selectedSenders);
     const summary = getInstagramSenderSummary(igState.selectedSenders);
-    $("ig-sender-filter-btn")?.setAttribute("aria-label", `Filter by sender. ${summary}`);
+    $("ig-sender-filter-btn")?.setAttribute("aria-label", t("Filtrar por remitente. {summary}", { summary }));
     if (igState.searchQuery) runSearch(igState.searchQuery);
     else resetRenderToBottom();
 }
@@ -310,11 +319,11 @@ function setupFileIntake() {
 function handleDroppedFile(file) {
     const name = file.name.toLowerCase();
     if (name.endsWith(".txt")) {
-        showToast("Instagram exports are .zip (JSON format) — .txt is WhatsApp only", "error");
+        showToast(t("Las exportaciones de Instagram son .zip (formato JSON); el .txt es solo para WhatsApp"), "error");
         return;
     }
     if (!name.endsWith(".zip")) {
-        showToast("Please drop a .zip Instagram export", "error");
+        showToast(t("Suelta un ZIP de exportación de Instagram"), "error");
         return;
     }
     if (exceedsCompatLimit(file)) {
@@ -328,7 +337,7 @@ function handleDroppedFile(file) {
     // user back at the Load button.
     if ($("ig-upload-panel")?.classList.contains("hidden")) {
         if (isMobileLayout()) setSidebarState(true);
-        showToast("File ready — tap Load DMs to open it", "info");
+        showToast(t("Archivo listo: toca Cargar mensajes para abrirlo"), "info");
     }
 }
 
@@ -340,7 +349,7 @@ function reflectSelectedFile(file) {
     const icon = q("i", dropTarget);
     const label = q("p", dropTarget);
     if (icon) { icon.className = "ph-fill ph-check-circle"; icon.style.color = "#C13584"; }
-    if (label) label.innerHTML = `<strong>${escapeHtml(file.name)}</strong><br><span style="font-size:12px;opacity:0.7">Ready to load</span>`;
+    if (label) label.innerHTML = `<strong>${escapeHtml(file.name)}</strong><br><span style="font-size:12px;opacity:0.7">${escapeHtml(t("Listo para cargar"))}</span>`;
 }
 
 function resetDropTarget() {
@@ -350,5 +359,5 @@ function resetDropTarget() {
     const icon = q("i", dropTarget);
     const label = q("p", dropTarget);
     if (icon) { icon.className = "ph ph-file-zip"; icon.style.color = ""; }
-    if (label) label.innerHTML = "Drop <strong>.zip</strong> export";
+    if (label) label.innerHTML = t("Suelta la exportación <strong>.zip</strong>");
 }
