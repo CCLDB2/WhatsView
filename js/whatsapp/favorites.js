@@ -1,8 +1,8 @@
 /** Per-chat message bookmarks; browser-local with optional server synchronization. */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.26";
-import { t } from "../i18n.js?v=1.8.26";
-import { state } from "./state.js?v=1.8.26";
-import { jumpToMessage } from "./search.js?v=1.8.26";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.27";
+import { t } from "../i18n.js?v=1.8.27";
+import { state } from "./state.js?v=1.8.27";
+import { jumpToMessage } from "./search.js?v=1.8.27";
 
 const PREFIX = "chatlume-favorites:";
 let remoteSaveTimer = 0;

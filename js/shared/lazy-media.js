@@ -25,7 +25,7 @@
  * corrections add up instead of fighting.
  * ============================================================================
  */
-import { $ } from "./dom.js?v=1.8.26";
+import { $ } from "./dom.js?v=1.8.27";
 
 /** Browsers with native scroll anchoring need no help and must not get any. */
 const HAS_SCROLL_ANCHORING = typeof document !== "undefined"

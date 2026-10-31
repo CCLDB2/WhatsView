@@ -8,7 +8,7 @@
  * ============================================================================
  */
 
-import { t } from "../i18n.js?v=1.8.26";
+import { t } from "../i18n.js?v=1.8.27";
 
 export const SUPPORTS_STREAMING =
     typeof DecompressionStream !== "undefined" &&

@@ -7,21 +7,21 @@
  * second pick mid-way can't interleave with the first.
  * ============================================================================
  */
-import { exportChatAsHTML } from "../export.js?v=1.8.26";
-import { showSponsorPrompt } from "../support.js?v=1.8.26";
-import { $, q, replayClass, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.26";
-import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.26";
-import { clearMediaStore } from "../shared/media-urls.js?v=1.8.26";
-import { t, getLocale } from "../i18n.js?v=1.8.26";
-import { fixMojibake } from "./mojibake.js?v=1.8.26";
-import { igState } from "./state.js?v=1.8.26";
-import { cleanupZip, lazyMedia } from "./media.js?v=1.8.26";
-import { buildMediaStore, findThreads, folderLabel, initialsFor, parseMessageFile, parseMessages, sortMessageFiles, sortMessagesChronologically } from "./parser.js?v=1.8.26";
-import { collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.26";
-import { showThreadSelector } from "./threads.js?v=1.8.26";
-import { persistInstagramImport, markInstagramImportOpened } from "./persistence.js?v=1.8.26";
-import { getInstagramSenders } from "./filter.js?v=1.8.26";
-import { initialThreadSelection } from "./threads-model.js?v=1.8.26";
+import { exportChatAsHTML } from "../export.js?v=1.8.27";
+import { showSponsorPrompt } from "../support.js?v=1.8.27";
+import { $, q, replayClass, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.27";
+import { exceedsCompatLimit, fileTooLargeMessage } from "../shared/compat.js?v=1.8.27";
+import { clearMediaStore } from "../shared/media-urls.js?v=1.8.27";
+import { t, getLanguage, getLocale } from "../i18n.js?v=1.8.27";
+import { fixMojibake } from "./mojibake.js?v=1.8.27";
+import { igState } from "./state.js?v=1.8.27";
+import { cleanupZip, lazyMedia } from "./media.js?v=1.8.27";
+import { buildMediaStore, findThreads, folderLabel, initialsFor, parseMessageFile, parseMessages, sortMessageFiles, sortMessagesChronologically } from "./parser.js?v=1.8.27";
+import { collectExportMessages, renderChatList, restoreScrollPosition, scrollToBottom } from "./render.js?v=1.8.27";
+import { showThreadSelector } from "./threads.js?v=1.8.27";
+import { persistInstagramImport, markInstagramImportOpened } from "./persistence.js?v=1.8.27";
+import { getInstagramSenders } from "./filter.js?v=1.8.27";
+import { initialThreadSelection } from "./threads-model.js?v=1.8.27";
 import {
     closeMenu,
     generateStats,
@@ -32,7 +32,7 @@ import {
     showErrorState,
     showToast,
     yieldToPaint
-} from "./ui.js?v=1.8.26";
+} from "./ui.js?v=1.8.27";
 
 const ZIP_JS_URL = "https://cdn.jsdelivr.net/npm/@zip.js/zip.js/+esm";
 let zipApiPromise = null;
@@ -302,7 +302,9 @@ function ensureExportButton() {
                     mediaStore: igState.mediaStore,
                     title: igState.chatTitle || t("Mensajes directos de Instagram"),
                     messageCount: igState.messageOnlyCount,
-                    messages: collectExportMessages()
+                    messages: collectExportMessages(),
+                    // Baked into the file: whoever opens it has no selector.
+                    language: getLanguage()
                 });
                 showToast(includeAttachments
                     ? (result.attachmentCount === 1

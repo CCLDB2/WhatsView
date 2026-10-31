@@ -18,25 +18,25 @@
  * All processing is client-side; nothing is uploaded.
  * ============================================================================
  */
-import { $, q, escapeHtml } from "./shared/dom.js?v=1.8.26";
-import { COMPAT_LIMIT_MESSAGE, exceedsCompatLimit, showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.26";
-import { assignFileToInput, setupDropTarget, setupGlobalDropZone } from "./shared/drop-zone.js?v=1.8.26";
-import { popOverlayState } from "./shared/history.js?v=1.8.26";
-import { runSplashLoader } from "./shared/splash.js?v=1.8.26";
-import { createThemeController } from "./shared/theme.js?v=1.8.26";
-import { igState } from "./instagram/state.js?v=1.8.26";
-import { closeMediaModal, handleMessageListClick } from "./instagram/media.js?v=1.8.26";
-import { captureScrollPosition, handleViewportScroll, jumpToBottom, renderChatList, resetRenderToBottom } from "./instagram/render.js?v=1.8.26";
-import { handleSearchInput, handleSearchShortcut, isSearchOpen, navSearch, runSearch, toggleSearch } from "./instagram/search.js?v=1.8.26";
-import { filterMessagesBySender, getInstagramSenderSummary } from "./instagram/filter.js?v=1.8.26";
-import { applyDateJump, closeDateSheet, openDateSheet } from "./instagram/date-jump.js?v=1.8.26";
-import { closeInstagramWrapped, downloadInstagramWrapped, openInstagramWrapped } from "./instagram/wrapped.js?v=1.8.26";
-import { cancelInstagramCopy, deleteAllInstagramImports, handleInstagramStorageClick, handleInstagramStorageSetting, initInstagramPersistence, saveActiveInstagramScrollPosition } from "./instagram/persistence.js?v=1.8.26";
-import { DEFAULT_IG_SETTINGS } from "./instagram/format.js?v=1.8.26";
-import { readInstagramSettings, writeInstagramSettings } from "./instagram/settings.js?v=1.8.26";
-import { initViewer, loadThread } from "./instagram/session.js?v=1.8.26";
-import { showThreadSelector } from "./instagram/threads.js?v=1.8.26";
-import { initI18n, setLanguage, t, getLocale } from "./i18n.js?v=1.8.26";
+import { $, q, escapeHtml } from "./shared/dom.js?v=1.8.27";
+import { COMPAT_LIMIT_MESSAGE, exceedsCompatLimit, showCompatBannerIfNeeded } from "./shared/compat.js?v=1.8.27";
+import { assignFileToInput, setupDropTarget, setupGlobalDropZone } from "./shared/drop-zone.js?v=1.8.27";
+import { popOverlayState } from "./shared/history.js?v=1.8.27";
+import { runSplashLoader } from "./shared/splash.js?v=1.8.27";
+import { createThemeController } from "./shared/theme.js?v=1.8.27";
+import { igState } from "./instagram/state.js?v=1.8.27";
+import { closeMediaModal, handleMessageListClick } from "./instagram/media.js?v=1.8.27";
+import { captureScrollPosition, handleViewportScroll, jumpToBottom, renderChatList, resetRenderToBottom } from "./instagram/render.js?v=1.8.27";
+import { handleSearchInput, handleSearchShortcut, isSearchOpen, navSearch, runSearch, toggleSearch } from "./instagram/search.js?v=1.8.27";
+import { filterMessagesBySender, getInstagramSenderSummary } from "./instagram/filter.js?v=1.8.27";
+import { applyDateJump, closeDateSheet, openDateSheet } from "./instagram/date-jump.js?v=1.8.27";
+import { closeInstagramWrapped, downloadInstagramWrapped, openInstagramWrapped } from "./instagram/wrapped.js?v=1.8.27";
+import { cancelInstagramCopy, deleteAllInstagramImports, handleInstagramStorageClick, handleInstagramStorageSetting, initInstagramPersistence, saveActiveInstagramScrollPosition } from "./instagram/persistence.js?v=1.8.27";
+import { DEFAULT_IG_SETTINGS } from "./instagram/format.js?v=1.8.27";
+import { readInstagramSettings, writeInstagramSettings } from "./instagram/settings.js?v=1.8.27";
+import { initViewer, loadThread } from "./instagram/session.js?v=1.8.27";
+import { showThreadSelector } from "./instagram/threads.js?v=1.8.27";
+import { initI18n, setLanguage, t, getLocale } from "./i18n.js?v=1.8.27";
 import {
     closeAllDrawers,
     closeMenu,
@@ -48,9 +48,9 @@ import {
     showToast,
     toggleMenu,
     toggleSidebar
-} from "./instagram/ui.js?v=1.8.26";
+} from "./instagram/ui.js?v=1.8.27";
 
-const IG_APP_VERSION = "1.8.26";
+const IG_APP_VERSION = "1.8.27";
 
 const theme = createThemeController({ iconSelector: "#ig-theme-toggle i" });
 
