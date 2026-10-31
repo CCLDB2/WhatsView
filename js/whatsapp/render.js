@@ -7,26 +7,27 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.25";
-import { t } from "../i18n.js?v=1.8.25";
-import { colorForName } from "../shared/colors.js?v=1.8.25";
-import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.25";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.25";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.25";
-import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.25";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.26";
+import { t } from "../i18n.js?v=1.8.26";
+import { colorForName } from "../shared/colors.js?v=1.8.26";
+import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.26";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.26";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.26";
+import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.26";
 import {
     clampRenderRange,
     isAtConversationEnd,
     isSavedPositionAtConversationEnd,
     paginateOnScroll,
+    settleAnchorOffset,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.25";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.25";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.25";
-import { lazyMedia } from "./media.js?v=1.8.25";
-import { closeMenu } from "./ui.js?v=1.8.25";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.25";
+} from "../shared/virtual-list.js?v=1.8.26";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.26";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.26";
+import { lazyMedia } from "./media.js?v=1.8.26";
+import { closeMenu } from "./ui.js?v=1.8.26";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.26";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -212,7 +213,7 @@ function renderMediaItem(item) {
         return `
             <div class="media-video">
                 ${placeholder}
-                <video controls preload="none" ${srcAttr} data-media-id="${item.id}"></video>
+                <video controls preload="none" ${srcAttr} data-media-id="${item.id}"${ratioAttr}></video>
             </div>
         `;
     }
@@ -361,13 +362,16 @@ export function restoreScrollPosition(position) {
             end: Math.min(state.filteredMessages.length, start + MAX_RENDERED_ITEMS)
         };
         renderChatList();
+        // See js/instagram/render.js: one frame is not enough, because a photo
+        // above the anchor can still be refining its box.
+        const offset = Number(position.offset) || 0;
         requestAnimationFrame(() => {
             const anchor = document.getElementById(position.messageId);
             if (!anchor) return;
-            const currentOffset = anchor.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
-            viewport.scrollTop += currentOffset - (Number(position.offset) || 0);
+            viewport.scrollTop += anchor.getBoundingClientRect().top - viewport.getBoundingClientRect().top - offset;
             syncScrollLatest(viewport);
         });
+        settleAnchorOffset(viewport, () => document.getElementById(position.messageId), offset);
         return true;
     }
 

@@ -25,6 +25,7 @@ const { readInstagramSettings, sanitizeInstagramSettings, writeInstagramSettings
 const { summarizeInstagramThread } = await versioned("../js/instagram/wrapped-model.js");
 const { importsOfKind } = await versioned("../js/shared/import-records.js");
 const { filterThreadOptions, initialThreadSelection, makeThreadOptions } = await versioned("../js/instagram/threads-model.js");
+const { captureScrollPosition, renderChatList, restoreScrollPosition } = await versioned("../js/instagram/render.js");
 
 /** Pure helpers of the Instagram viewer. */
 
@@ -317,6 +318,211 @@ describe("Instagram Wrapped and kind-scoped storage", () => {
         const whatsappPersistence = readFileSync(new URL("../js/whatsapp/persistence.js", import.meta.url), "utf8");
         assert.match(instagramPersistence, /deleteImportsByKind\("instagram"\)/);
         assert.match(whatsappPersistence, /deleteImportsByKind\("whatsapp"\)/);
+    });
+});
+
+describe("Instagram position memory", () => {
+    beforeEach(resetInstagramState);
+
+    test("captures the first visible row and puts it back after a reopen", () => {
+        const harness = createInstagramScrollHarness(300);
+        igState.filteredMessages = harness.messages;
+        const saved = withInstagramDom(harness, () => {
+            harness.viewport.scrollTop = 5000;
+            igState.renderRange = { start: 120, end: 300 };
+            return captureScrollPosition(harness.viewport);
+        });
+
+        assert.equal(saved.messageId, "m83");
+        assert.equal(saved.offset, -20);
+        assert.equal(saved.atBottom, false);
+
+        // Reopen: a fresh virtual window and the viewport at the top.
+        igState.renderRange = { start: 120, end: 300 };
+        harness.viewport.scrollTop = 0;
+
+        const restored = withInstagramDom(harness, () => restoreScrollPosition(saved));
+        assert.equal(restored, true);
+        assert.equal(igState.renderRange.start, 23, "the window is rebuilt around the saved row");
+        assert.equal(harness.offsetOf(saved.messageId), saved.offset, "the row sits where the reader left it");
+    });
+
+    test("a reader who left at the newest message lands there again", () => {
+        const harness = createInstagramScrollHarness(300);
+        igState.filteredMessages = harness.messages;
+        igState.renderRange = { start: 120, end: 300 };
+        harness.viewport.scrollTop = harness.viewport.scrollHeight - harness.viewport.clientHeight;
+
+        const saved = withInstagramDom(harness, () => captureScrollPosition(harness.viewport));
+        assert.equal(saved.atBottom, true);
+
+        harness.viewport.scrollTop = 0;
+        igState.renderRange = { start: 120, end: 300 };
+        assert.equal(withInstagramDom(harness, () => restoreScrollPosition(saved)), true);
+        assert.equal(harness.viewport.scrollTop, harness.viewport.scrollHeight);
+    });
+
+    test("a thread that was never opened has nothing to restore", () => {
+        const harness = createInstagramScrollHarness(10);
+        igState.filteredMessages = harness.messages;
+        assert.equal(withInstagramDom(harness, () => restoreScrollPosition(null)), false);
+    });
+
+    test("the saved anchor travels from the stored record into the thread loader", () => {
+        const persistence = readFileSync(new URL("../js/instagram/persistence.js", import.meta.url), "utf8");
+        const session = readFileSync(new URL("../js/instagram/session.js", import.meta.url), "utf8");
+        assert.match(persistence, /igState\.pendingScrollPosition = record\.scrollPosition \|\| null/,
+            "opening a stored export hands its anchor to the loader");
+        assert.match(session, /const savedPosition = igState\.pendingScrollPosition[\s\S]*?restoreScrollPosition\(savedPosition\)/,
+            "the loader restores the saved anchor before falling back to the bottom");
+        assert.match(session, /igState\.activeScrollPosition = null/,
+            "a new thread does not inherit the previous anchor");
+        assert.match(readFileSync(new URL("../js/instagram.js", import.meta.url), "utf8"),
+            /saveActiveInstagramScrollPosition\(captureScrollPosition\(event\.currentTarget\)\)/,
+            "scrolling saves the anchor");
+    });
+
+    test("the restored row is held in place while media above it settles", () => {
+        // Applying the offset once left a measured 14px drift: a photo above
+        // the anchor refined its reserved box after the first frame. The
+        // restore must keep re-correcting until the layout stops moving.
+        for (const path of ["../js/instagram/render.js", "../js/whatsapp/render.js"]) {
+            const source = readFileSync(new URL(path, import.meta.url), "utf8");
+            assert.match(source, /settleAnchorOffset\(viewport, \(\) => document\.getElementById\(position\.messageId\), offset\)/,
+                `${path} settles the anchor over the following frames`);
+        }
+    });
+});
+
+/** A vertical list of rows that reflows with `scrollTop`, as a real viewport does. */
+function createInstagramScrollHarness(count, { rowHeight = 60, clientHeight = 320 } = {}) {
+    const ids = Array.from({ length: count }, (_, index) => `m${index}`);
+    const messages = ids.map((id) => ({
+        id, type: "msg", ts: 1_700_000_000_000, sender: "Ana", text: "hi", isMe: false, reactions: [], mediaItems: []
+    }));
+    let scrollTop = 0;
+    let elements = new Map();
+
+    const viewport = {
+        get scrollTop() { return scrollTop; },
+        set scrollTop(value) { scrollTop = Math.max(0, value); },
+        scrollHeight: count * rowHeight,
+        clientHeight,
+        getBoundingClientRect: () => ({ top: 0, bottom: clientHeight }),
+        querySelectorAll: (selector) => (selector.includes("msg-row") ? [...elements.values()] : [])
+    };
+
+    const mount = () => {
+        elements = new Map(ids.map((id, index) => [id, {
+            id,
+            isConnected: true,
+            getBoundingClientRect: () => ({
+                top: index * rowHeight - scrollTop,
+                bottom: index * rowHeight - scrollTop + rowHeight
+            })
+        }]));
+    };
+
+    mount();
+    return {
+        messages,
+        viewport,
+        list: { innerHTML: "", querySelectorAll: () => [] },
+        elementById: (id) => (id === "ig-viewport" ? viewport : elements.get(id) || null),
+        offsetOf: (id) => elements.get(id)?.getBoundingClientRect().top ?? null
+    };
+}
+
+/** Runs `callback` with the Instagram ids bound to a harness and frames drained. */
+function withInstagramDom(harness, callback) {
+    const hadDocument = "document" in globalThis;
+    const hadWindow = "window" in globalThis;
+    const originalDocument = globalThis.document;
+    const originalWindow = globalThis.window;
+    const originalRaf = globalThis.requestAnimationFrame;
+    const frames = [];
+    globalThis.document = {
+        getElementById: (id) => (id === "ig-message-list" ? harness.list : harness.elementById(id)),
+        querySelector: () => null,
+        querySelectorAll: () => []
+    };
+    // The lazy loader probes `window`; the harness has no observer to offer.
+    globalThis.window = { setTimeout: () => 0, addEventListener() {} };
+    globalThis.requestAnimationFrame = (frameCallback) => frames.push(frameCallback);
+    try {
+        const result = callback();
+        frames.splice(0).forEach((frameCallback) => frameCallback());
+        return result;
+    } finally {
+        if (hadDocument) globalThis.document = originalDocument;
+        else delete globalThis.document;
+        if (hadWindow) globalThis.window = originalWindow;
+        else delete globalThis.window;
+        if (originalRaf) globalThis.requestAnimationFrame = originalRaf;
+        else delete globalThis.requestAnimationFrame;
+    }
+}
+
+describe("Instagram rendered attachments", () => {
+    beforeEach(resetInstagramState);
+
+    /** Renders one message and returns the produced HTML. */
+    function renderOne(message, media = []) {
+        const html = { value: "" };
+        const list = {
+            set innerHTML(value) { html.value = value; },
+            get innerHTML() { return html.value; },
+            querySelectorAll: () => []
+        };
+        igState.filteredMessages = [message];
+        igState.renderRange = { start: 0, end: 1 };
+        media.forEach((item) => igState.mediaStore.set(item.id, item));
+
+        const hadDocument = "document" in globalThis;
+        const originalDocument = globalThis.document;
+        globalThis.document = {
+            getElementById: (id) => (id === "ig-message-list" ? list : null),
+            querySelector: () => null,
+            querySelectorAll: () => []
+        };
+        try {
+            renderChatList();
+        } finally {
+            if (hadDocument) globalThis.document = originalDocument;
+            else delete globalThis.document;
+        }
+        return html.value;
+    }
+
+    const message = {
+        id: "m1",
+        type: "msg",
+        ts: new Date(2024, 0, 1, 10).getTime(),
+        sender: "Alice",
+        text: "",
+        isMe: false,
+        reactions: [],
+        mediaItems: [{ id: "vid1", kind: "video", status: "available", name: "clip.mp4" }]
+    };
+
+    test("a video row reserves the box its decoded size implies", () => {
+        const html = renderOne(message, [{ id: "vid1", ratio: 0.5625 }]);
+        assert.match(html, /<video[^>]*style="aspect-ratio: 0.5625"/);
+    });
+
+    test("a video without a known ratio reserves nothing", () => {
+        assert.doesNotMatch(renderOne(message, []), /aspect-ratio/);
+    });
+
+    test("missing media is described in the interface language, not in English", () => {
+        const html = renderOne({
+            ...message,
+            mediaItems: [{ id: "gone", kind: "image", status: "missing", name: "Media omitted" }]
+        });
+        assert.match(html, /Multimedia omitido/);
+        assert.match(html, /Archivo mencionado en el chat pero ausente en la exportación\./);
+        assert.doesNotMatch(html, /Missing media/);
+        assert.doesNotMatch(html, /Not included in this export\./);
     });
 });
 

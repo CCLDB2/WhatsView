@@ -8,10 +8,10 @@
  * result list, the pointer and the toolbar.
  * ============================================================================
  */
-import { $, isTypingTarget } from "../shared/dom.js?v=1.8.25";
-import { t } from "../i18n.js?v=1.8.25";
-import { MAX_RENDERED_ITEMS, SEARCH_DEBOUNCE_MS, state } from "./state.js?v=1.8.25";
-import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.25";
+import { $, isTypingTarget } from "../shared/dom.js?v=1.8.26";
+import { t } from "../i18n.js?v=1.8.26";
+import { MAX_RENDERED_ITEMS, SEARCH_DEBOUNCE_MS, state } from "./state.js?v=1.8.26";
+import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.26";
 
 /** The text a message is matched against. */
 function getSearchableText(entry) {

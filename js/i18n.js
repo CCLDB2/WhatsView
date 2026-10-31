@@ -11,7 +11,7 @@
  * devices.
  * ============================================================================
  */
-import { EN } from "./i18n-dictionary.js?v=1.8.25";
+import { EN } from "./i18n-dictionary.js?v=1.8.26";
 
 const STORAGE_KEY = "chatlume-language";
 export const SUPPORTED_LANGUAGES = Object.freeze(["es", "en"]);

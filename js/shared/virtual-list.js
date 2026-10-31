@@ -8,7 +8,7 @@
  * restores the scroll position against an anchor element so nothing jumps.
  * ============================================================================
  */
-import { $ } from "./dom.js?v=1.8.25";
+import { $ } from "./dom.js?v=1.8.26";
 
 /** The window that shows the newest messages. */
 export function tailRange(total, maxRendered) {
@@ -93,6 +93,36 @@ export function restoreScrollAnchor(viewport, anchor) {
     const delta = rect.top - viewportRect.top - anchor.offset;
     if (Math.abs(delta) >= 0.5) viewport.scrollTop += delta;
     return true;
+}
+
+/**
+ * Keeps an anchor row at `targetOffset` until the layout stops moving.
+ *
+ * A restored anchor is applied in the first frame, but media above it may
+ * still be settling: a photo that has not decoded yet refines its box a frame
+ * or two later, and that growth pushes the anchored row down by the same
+ * amount. Correcting once left a measured 14px drift; re-correcting the
+ * *remaining* delta every frame converges instead. The loop stops as soon as
+ * the row is in place, the element leaves the DOM, or the frame budget runs
+ * out, so it cannot fight the reader's own scrolling for long.
+ *
+ * @param {HTMLElement} viewport
+ * @param {() => HTMLElement|null} getElement  Resolved each frame: a render
+ *   may replace the node the anchor was found in.
+ * @param {number} targetOffset  Row top relative to the viewport top.
+ * @param {number} [frames]      Maximum correction frames.
+ */
+export function settleAnchorOffset(viewport, getElement, targetOffset, frames = 6) {
+    const target = Number(targetOffset) || 0;
+    const correct = (remaining) => {
+        const element = getElement();
+        if (!element) return;
+        const delta = element.getBoundingClientRect().top - viewport.getBoundingClientRect().top - target;
+        if (Math.abs(delta) < 0.5) return;
+        viewport.scrollTop += delta;
+        if (remaining > 1) requestAnimationFrame(() => correct(remaining - 1));
+    };
+    requestAnimationFrame(() => correct(frames));
 }
 
 /**

@@ -25,7 +25,7 @@
  * corrections add up instead of fighting.
  * ============================================================================
  */
-import { $ } from "./dom.js?v=1.8.25";
+import { $ } from "./dom.js?v=1.8.26";
 
 /** Browsers with native scroll anchoring need no help and must not get any. */
 const HAS_SCROLL_ANCHORING = typeof document !== "undefined"
@@ -69,6 +69,24 @@ export function mediaRatioStyle(media) {
 }
 
 /**
+ * The aspect ratio a decoded attachment reports, or 0 when it has none yet.
+ *
+ * Photos expose `naturalWidth`/`naturalHeight`; videos only expose
+ * `videoWidth`/`videoHeight`. Reading both matters: without the video pair a
+ * vertical video keeps the generic 16/9 placeholder and changes height on the
+ * next render, which moves the conversation under the reader.
+ *
+ * @param {HTMLImageElement|HTMLVideoElement} element
+ * @returns {number} width / height, or 0 while the size is still unknown.
+ */
+export function mediaRatioFrom(element) {
+    const width = element?.naturalWidth || element?.videoWidth || 0;
+    const height = element?.naturalHeight || element?.videoHeight || 0;
+    if (!width || !height) return 0;
+    return width / height;
+}
+
+/**
  * @param {Object}   options
  * @param {string}   options.rootId       Scroll container the observer watches.
  * @param {Function} options.getMedia     id → media record (or undefined).
@@ -81,12 +99,13 @@ export function createLazyMediaLoader({ rootId, getMedia, ensureUrl, onDetached 
     let observer = null;
 
     /**
-     * Remembers a decoded photo's aspect ratio on its media record so the next
-     * render can reserve the same box before the bytes arrive again.
+     * Remembers a decoded attachment's aspect ratio on its media record so the
+     * next render can reserve the same box before the bytes arrive again.
      */
     function rememberMediaRatio(media, element) {
-        if (media.ratio || !element.naturalWidth || !element.naturalHeight) return;
-        media.ratio = element.naturalWidth / element.naturalHeight;
+        if (media.ratio) return;
+        const ratio = mediaRatioFrom(element);
+        if (ratio) media.ratio = ratio;
     }
 
     /**

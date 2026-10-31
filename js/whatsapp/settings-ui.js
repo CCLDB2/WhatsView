@@ -7,15 +7,15 @@
  * and is routed to persistence.js.
  * ============================================================================
  */
-import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.25";
-import { t } from "../i18n.js?v=1.8.25";
-import { state } from "./state.js?v=1.8.25";
-import { reinferDateOrder } from "./format.js?v=1.8.25";
-import { handlePersistentStorageToggle, refreshStorageSettingsUI } from "./persistence.js?v=1.8.25";
-import { renderChatList } from "./render.js?v=1.8.25";
-import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.25";
-import { generateStats } from "./stats.js?v=1.8.25";
-import { showToast } from "./ui.js?v=1.8.25";
+import { DEFAULT_SETTINGS, sanitizeSettings } from "../settings.js?v=1.8.26";
+import { t } from "../i18n.js?v=1.8.26";
+import { state } from "./state.js?v=1.8.26";
+import { reinferDateOrder } from "./format.js?v=1.8.26";
+import { handlePersistentStorageToggle, refreshStorageSettingsUI } from "./persistence.js?v=1.8.26";
+import { renderChatList } from "./render.js?v=1.8.26";
+import { saveSettings, syncSettingsControls } from "./settings-store.js?v=1.8.26";
+import { generateStats } from "./stats.js?v=1.8.26";
+import { showToast } from "./ui.js?v=1.8.26";
 
 export function handleSettingChange(event) {
     const control = event.currentTarget;

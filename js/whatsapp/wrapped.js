@@ -7,13 +7,13 @@
  * with html2canvas (loaded on first download, not at boot).
  * ============================================================================
  */
-import { $, escapeHtml } from "../shared/dom.js?v=1.8.25";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.25";
-import { t } from "../i18n.js?v=1.8.25";
-import { SITE_URL, state } from "./state.js?v=1.8.25";
-import { formatDateLabel } from "./format.js?v=1.8.25";
-import { getColor } from "./render.js?v=1.8.25";
-import { showToast } from "./ui.js?v=1.8.25";
+import { $, escapeHtml } from "../shared/dom.js?v=1.8.26";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.26";
+import { t } from "../i18n.js?v=1.8.26";
+import { SITE_URL, state } from "./state.js?v=1.8.26";
+import { formatDateLabel } from "./format.js?v=1.8.26";
+import { getColor } from "./render.js?v=1.8.26";
+import { showToast } from "./ui.js?v=1.8.26";
 
 const HTML2CANVAS_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
 

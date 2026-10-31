@@ -1,12 +1,13 @@
 /** Opt-in local ZIP storage, isolated from WhatsApp records and preferences. */
-import * as storage from "../storage.js?v=1.8.25";
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.25";
-import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.25";
-import { igState } from "./state.js?v=1.8.25";
-import { writeInstagramSettings } from "./settings.js?v=1.8.25";
-import { importsOfKind } from "../shared/import-records.js?v=1.8.25";
-import { showToast } from "./ui.js?v=1.8.25";
-import { t, getLocale } from "../i18n.js?v=1.8.25";
+import * as storage from "../storage.js?v=1.8.26";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.26";
+import { readStored, removeStored, writeStored } from "../shared/safe-storage.js?v=1.8.26";
+import { igState } from "./state.js?v=1.8.26";
+import { writeInstagramSettings } from "./settings.js?v=1.8.26";
+import { importsOfKind } from "../shared/import-records.js?v=1.8.26";
+import { showToast } from "./ui.js?v=1.8.26";
+import { captureScrollPosition } from "./render.js?v=1.8.26";
+import { t, getLocale } from "../i18n.js?v=1.8.26";
 
 const USED_KEY = "chatlume-instagram-persist-used";
 const LAST_KEY = "chatlume-instagram-last-import";
@@ -14,6 +15,36 @@ const hooks = { openImport: null };
 let copyJob = null;
 let copyingFile = null;
 let pendingThread = null;
+let positionSaveTimer = 0;
+
+/**
+ * Remembers the row the reader is on, so a reopen lands there.
+ *
+ * Debounced because a scroll fires on every pixel: the record is written to
+ * IndexedDB, which is far too expensive to touch per frame. Mirrors the
+ * WhatsApp viewer's save (js/whatsapp/persistence.js).
+ */
+export function saveActiveInstagramScrollPosition(position) {
+    if (!igState.activeImportId || !position) return;
+    igState.activeScrollPosition = position;
+    if (positionSaveTimer) clearTimeout(positionSaveTimer);
+    positionSaveTimer = setTimeout(flushActiveScrollPosition, 250);
+}
+
+function flushActiveScrollPosition() {
+    positionSaveTimer = 0;
+    const id = igState.activeImportId;
+    const position = igState.activeScrollPosition;
+    if (!id || !position) return;
+    const record = igState.storedImports.find((item) => item.id === id);
+    if (!record) return;
+    record.scrollPosition = position;
+    storage.putImport(record).catch(() => {});
+}
+
+if (typeof window !== "undefined") {
+    window.addEventListener("pagehide", flushActiveScrollPosition);
+}
 
 export async function initInstagramPersistence({ openImport }) {
     hooks.openImport = openImport;
@@ -107,6 +138,7 @@ export async function persistInstagramImport(file, thread) {
             messageCount: savedDetails.messageCount,
             ownerName: savedDetails.ownerName,
             threadFolder: savedDetails.thread?.folder || "",
+            scrollPosition: null,
             createdAt: Date.now(),
             lastOpenedAt: Date.now()
         };
@@ -142,6 +174,9 @@ async function updateStoredThread(record, thread) {
 export async function markInstagramImportOpened(thread) {
     const record = igState.storedImports.find((item) => item.id === igState.activeImportId);
     if (!record) return;
+    // Keep whatever anchor the reader already had; only fall back to the
+    // current viewport when this is the first time the thread is opened.
+    record.scrollPosition = igState.activeScrollPosition || record.scrollPosition || captureScrollPosition() || null;
     await updateStoredThread(record, thread);
 }
 
@@ -150,8 +185,12 @@ async function openInstagramStoredImport(record) {
         const file = await storage.getImportFile(record);
         igState.restoreImportId = record.id;
         igState.restoreThreadFolder = record.threadFolder || "";
+        // The anchor travels with the record so the thread loader can put the
+        // reader back on their row instead of jumping to the newest message.
+        igState.pendingScrollPosition = record.scrollPosition || null;
         await hooks.openImport?.(file, record);
     } catch (error) {
+        igState.pendingScrollPosition = null;
         if (storage.isUnrecoverable(error)) {
             await deleteInstagramImport(record.id);
             showToast(t("Esa exportación guardada ya no está disponible"), "warn");

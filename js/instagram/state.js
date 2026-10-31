@@ -8,7 +8,7 @@
  * ============================================================================
  */
 
-import { readInstagramSettings } from "./settings.js?v=1.8.25";
+import { readInstagramSettings } from "./settings.js?v=1.8.26";
 
 export const IG_BATCH_SIZE = 60;
 export const IG_MAX_RENDERED = 180;
@@ -56,6 +56,11 @@ export const igState = {
 
     // ── Session ──────────────────────────────────────────────────────────
     isLoading: false,
+    // Anchor of the last visible row, saved so reopening a stored chat puts
+    // the reader back where they were instead of at the bottom.
+    activeScrollPosition: null,
+    // Anchor to apply once the next thread finishes rendering.
+    pendingScrollPosition: null,
     // Picking a second ZIP while the first is still being scanned would
     // otherwise let the older scan finish last and overwrite the entries.
     loadGeneration: 0,

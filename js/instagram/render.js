@@ -8,22 +8,26 @@
  * message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.25";
-import { colorForName } from "../shared/colors.js?v=1.8.25";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.25";
-import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.25";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.25";
-import { t } from "../i18n.js?v=1.8.25";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.26";
+import { colorForName } from "../shared/colors.js?v=1.8.26";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.26";
+import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.26";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.26";
+import { t } from "../i18n.js?v=1.8.26";
 import {
     clampRenderRange,
+    getScrollAnchor,
+    isAtConversationEnd,
+    isSavedPositionAtConversationEnd,
     paginateOnScroll,
+    settleAnchorOffset,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.25";
-import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.25";
-import { lazyMedia } from "./media.js?v=1.8.25";
-import { closeMenu } from "./ui.js?v=1.8.25";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.25";
+} from "../shared/virtual-list.js?v=1.8.26";
+import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.26";
+import { lazyMedia } from "./media.js?v=1.8.26";
+import { closeMenu } from "./ui.js?v=1.8.26";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.26";
 
 export const getColor = (name) => colorForName(name, igState.colorMap);
 
@@ -121,7 +125,7 @@ function renderMediaStack(items) {
 
 function renderMediaItem(item) {
     if (item.status === "missing") {
-        return `<div class="media-missing"><div class="media-missing-head"><i class="ph-fill ph-warning-circle"></i><div><strong>${escapeHtml(item.name || "Missing media")}</strong><span>Not included in this export.</span></div></div></div>`;
+        return `<div class="media-missing"><div class="media-missing-head"><i class="ph-fill ph-warning-circle"></i><div><strong>${escapeHtml(item.name === "Media omitted" ? t("Multimedia omitido") : (item.name || t("Archivo adjunto faltante")))}</strong><span>${escapeHtml(t("Archivo mencionado en el chat pero ausente en la exportación."))}</span></div></div></div>`;
     }
 
     const media = igState.mediaStore.get(item.id);
@@ -139,7 +143,7 @@ function renderMediaItem(item) {
 
     if (item.kind === "video") {
         const placeholder = loaded ? "" : `<div class="media-placeholder" aria-hidden="true"><i class="ph-fill ph-play-circle"></i></div>`;
-        return `<div class="media-video">${placeholder}<video controls preload="none" ${srcAttr} data-media-id="${item.id}"></video></div>`;
+        return `<div class="media-video">${placeholder}<video controls preload="none" ${srcAttr} data-media-id="${item.id}"${ratioAttr}></video></div>`;
     }
 
     if (item.kind === "audio") {
@@ -234,4 +238,74 @@ export function jumpToBottom() {
     closeMenu();
     resetRenderToBottom();
     requestAnimationFrame(scrollToBottom);
+}
+
+/**
+ * Saves the row the reader is looking at.
+ *
+ * Instagram had no equivalent of the WhatsApp viewer's position memory, so
+ * every reopen started at the newest message. The anchor is the first row
+ * that is at least partly visible plus its offset from the top of the
+ * viewport, which survives a different window size and a different render
+ * window. `atBottom` lets a reader who left at the end land back at the end
+ * even after new messages were imported.
+ */
+export function captureScrollPosition(viewport = $("ig-viewport")) {
+    if (!viewport) return null;
+    const anchor = getScrollAnchor(viewport);
+    return {
+        messageId: anchor?.id || "",
+        offset: anchor ? anchor.offset : 0,
+        scrollTop: viewport.scrollTop,
+        atBottom: isAtConversationEnd(viewport, igState)
+    };
+}
+
+/**
+ * Puts the reader back on their saved row.
+ *
+ * The virtual window is rebuilt around the saved message before rendering,
+ * so the anchor is actually in the DOM. Returns false when there is nothing
+ * usable, which lets the caller fall back to the usual "open at the bottom".
+ */
+export function restoreScrollPosition(position) {
+    const viewport = $("ig-viewport");
+    if (!viewport || !position) return false;
+
+    if (isSavedPositionAtConversationEnd(position, igState.filteredMessages, IG_MAX_RENDERED)) {
+        resetRenderToBottom();
+        requestAnimationFrame(scrollToBottom);
+        return true;
+    }
+
+    const index = position.messageId
+        ? igState.filteredMessages.findIndex((item) => item.id === position.messageId)
+        : -1;
+    if (index >= 0) {
+        const start = Math.max(0, index - Math.floor(IG_MAX_RENDERED / 3));
+        igState.renderRange = {
+            start,
+            end: Math.min(igState.filteredMessages.length, start + IG_MAX_RENDERED)
+        };
+        renderChatList();
+        // Applying the offset in one frame is not enough: a photo above the
+        // anchor that has not decoded yet refines its reserved box a frame or
+        // two later, pushing the row down. Re-correcting the remaining delta
+        // until the layout settles keeps the reader exactly where they were.
+        const offset = Number(position.offset) || 0;
+        requestAnimationFrame(() => {
+            const anchor = document.getElementById(position.messageId);
+            if (!anchor) return;
+            viewport.scrollTop += anchor.getBoundingClientRect().top - viewport.getBoundingClientRect().top - offset;
+            syncScrollLatest(viewport);
+        });
+        settleAnchorOffset(viewport, () => document.getElementById(position.messageId), offset);
+        return true;
+    }
+
+    if (Number.isFinite(position.scrollTop)) {
+        requestAnimationFrame(() => { viewport.scrollTop = Math.max(0, position.scrollTop); });
+        return true;
+    }
+    return false;
 }

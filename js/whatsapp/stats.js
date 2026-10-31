@@ -5,8 +5,8 @@
  * Thin binding of the shared stats panel to this viewer's element ids.
  * ============================================================================
  */
-import { renderStatsPanel } from "../shared/stats-panel.js?v=1.8.25";
-import { state } from "./state.js?v=1.8.25";
+import { renderStatsPanel } from "../shared/stats-panel.js?v=1.8.26";
+import { state } from "./state.js?v=1.8.26";
 
 /** Repaints the totals, sender bars and emoji grid from `state`. */
 export function generateStats() {

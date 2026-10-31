@@ -7,8 +7,8 @@ const { applyTextFormatting, buildRichText, highlightOutsideTags } = await versi
 const { baseName, detectMediaType, formatBytes, inferMimeType, labelForMediaKind } = await versioned("../js/shared/media-types.js");
 const { SENDER_COLORS, colorForName } = await versioned("../js/shared/colors.js");
 const { countEmojis } = await versioned("../js/shared/emoji.js");
-const { clampRenderRange, fallbackScrollTop, getScrollAnchor, isAtConversationEnd, isSavedPositionAtConversationEnd, paginateOnScroll, restoreScrollAnchor, syncScrollLatestButton, tailRange } = await versioned("../js/shared/virtual-list.js");
-const { compensatingScrollShift, mediaRatioStyle } = await versioned("../js/shared/lazy-media.js");
+const { clampRenderRange, fallbackScrollTop, getScrollAnchor, isAtConversationEnd, isSavedPositionAtConversationEnd, paginateOnScroll, restoreScrollAnchor, settleAnchorOffset, syncScrollLatestButton, tailRange } = await versioned("../js/shared/virtual-list.js");
+const { compensatingScrollShift, mediaRatioFrom, mediaRatioStyle } = await versioned("../js/shared/lazy-media.js");
 
 /**
  * The utilities both viewers share. These used to be duplicated (with small
@@ -155,6 +155,35 @@ describe("shared/virtual-list", () => {
         assert.equal(isSavedPositionAtConversationEnd({ atBottom: true, messageId: "msg-300" }, messages, 180), false);
         assert.equal(isSavedPositionAtConversationEnd({ atBottom: true, messageId: "msg-900" }, messages, 180), true);
         assert.equal(isSavedPositionAtConversationEnd({ atBottom: false, messageId: "msg-900" }, messages, 180), false);
+    });
+
+    test("keeps re-correcting an anchor until the rows above it stop growing", () => {
+        let rowTop = 100;
+        let scrollTop = 0;
+        const viewport = {
+            get scrollTop() { return scrollTop; },
+            set scrollTop(value) { scrollTop = value; rowTop -= value - (viewport.__last ?? value); viewport.__last = value; },
+            getBoundingClientRect: () => ({ top: 0 })
+        };
+        viewport.__last = 0;
+        const element = { getBoundingClientRect: () => ({ top: rowTop }) };
+
+        // A photo above the row finishes decoding after the first frame.
+        const frames = [];
+        const originalRaf = globalThis.requestAnimationFrame;
+        globalThis.requestAnimationFrame = (callback) => frames.push(callback);
+        try {
+            settleAnchorOffset(viewport, () => element, 0, 6);
+            frames.splice(0).forEach((callback) => callback());
+            assert.equal(rowTop, 0, "the first frame puts the row in place");
+
+            rowTop += 14; // the late photo pushes everything below it down
+            frames.splice(0).forEach((callback) => callback());
+            assert.equal(rowTop, 0, "the next frame absorbs the late growth");
+        } finally {
+            if (originalRaf) globalThis.requestAnimationFrame = originalRaf;
+            else delete globalThis.requestAnimationFrame;
+        }
     });
 
     test("does not show jump-to-latest from a stale animation frame", () => {
@@ -428,6 +457,24 @@ describe("shared/lazy-media", () => {
 
     test("a decoded photo reserves its real ratio on the next render", () => {
         assert.equal(mediaRatioStyle({ ratio: 1.5 }), ' style="aspect-ratio: 1.5"');
+    });
+
+    test("a decoded photo reports the ratio its intrinsic size implies", () => {
+        assert.equal(mediaRatioFrom({ naturalWidth: 800, naturalHeight: 600 }), 800 / 600);
+    });
+
+    test("a decoded video reports its ratio from videoWidth/videoHeight", () => {
+        // A vertical clip: only videos expose these fields, which is why the
+        // photo-only version kept the generic 16/9 placeholder.
+        assert.equal(mediaRatioFrom({ videoWidth: 720, videoHeight: 1280 }), 0.5625);
+        assert.equal(mediaRatioFrom({ naturalWidth: 0, naturalHeight: 0, videoWidth: 1920, videoHeight: 1080 }), 1920 / 1080);
+    });
+
+    test("an undecoded attachment reports no ratio", () => {
+        assert.equal(mediaRatioFrom({}), 0);
+        assert.equal(mediaRatioFrom({ naturalWidth: 0, naturalHeight: 0 }), 0);
+        assert.equal(mediaRatioFrom({ naturalWidth: 800 }), 0);
+        assert.equal(mediaRatioFrom(undefined), 0);
     });
 
     test("an unknown ratio reserves nothing", () => {

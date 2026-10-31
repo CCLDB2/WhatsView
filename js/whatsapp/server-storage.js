@@ -1,7 +1,7 @@
 /** Optional self-hosted archive storage with resumable, proxy-safe uploads. */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.25";
-import { formatBytes } from "../shared/media-types.js?v=1.8.25";
-import { getLocale, t } from "../i18n.js?v=1.8.25";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.26";
+import { formatBytes } from "../shared/media-types.js?v=1.8.26";
+import { getLocale, t } from "../i18n.js?v=1.8.26";
 
 const LAST_CLOUD_CHAT_KEY = "chatlume-last-server-chat";
 const LAST_POSITION_KEY = "chatlume-last-position";
