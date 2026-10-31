@@ -1732,6 +1732,49 @@ body.light-theme .sent .meta { color: rgba(17, 27, 33, 0.56); }
     transition: opacity 0.3s ease-out;
 }
 
+/* An <img> with no src has no intrinsic size, so a photo row used to collapse
+   to a ~19px sliver and jump to full height the moment the bytes arrived.
+   A placeholder box reserves the size the photo will actually take (the same
+   max-width the loaded rule uses); `loaded` hands the box back to the file's
+   own dimensions. The lazy loader compensates for whatever difference is
+   left, so neither step can move the conversation under the reader. */
+.media-image img:not(.loaded) {
+    width: min(320px, 60vw);
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Stickers are square and stay small; a landscape box would reserve more room
+   than the finished sticker ever needs. */
+.media-sticker img:not(.loaded) {
+    width: min(160px, 40vw);
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+}
+
+/* Video placeholders take the video's place instead of stacking with it: a
+   placeholder that added its own height would grow the row twice, once for
+   the box and once for the media that replaces it. */
+.media-video {
+    position: relative;
+}
+
+.media-video .media-placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+}
+
+.media-video video:not(.loaded) {
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
 .media-image img.loaded,
 .media-sticker img.loaded,
 .media-video video.loaded {

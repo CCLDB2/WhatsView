@@ -8,7 +8,7 @@
  * restores the scroll position against an anchor element so nothing jumps.
  * ============================================================================
  */
-import { $ } from "./dom.js?v=1.8.24";
+import { $ } from "./dom.js?v=1.8.25";
 
 /** The window that shows the newest messages. */
 export function tailRange(total, maxRendered) {
@@ -42,7 +42,15 @@ export function clampRenderRange(state, maxRendered) {
     state.renderRange = { start, end };
 }
 
-/** First row that is at least partly visible, with its offset from the top. */
+/**
+ * First row that is at least partly visible, with its offset from the top.
+ *
+ * The row itself is kept alongside its id: `document.getElementById` is how a
+ * restored anchor is normally found, but an element that lost its id (or a
+ * render that has not finished) can still be followed through the reference.
+ * The viewport metrics are part of the snapshot so a failed restore can
+ * correct the scroll position without asking the DOM again.
+ */
 export function getScrollAnchor(viewport) {
     const viewportRect = viewport.getBoundingClientRect();
     const candidates = viewport.querySelectorAll(".message-list > .msg-row, .message-list > .system-msg");
@@ -52,7 +60,11 @@ export function getScrollAnchor(viewport) {
         if (rect.bottom >= viewportRect.top) {
             return {
                 id: element.id,
-                offset: rect.top - viewportRect.top
+                element,
+                offset: rect.top - viewportRect.top,
+                scrollTop: viewport.scrollTop,
+                scrollHeight: viewport.scrollHeight,
+                clientHeight: viewport.clientHeight
             };
         }
     }
@@ -60,20 +72,59 @@ export function getScrollAnchor(viewport) {
     return null;
 }
 
-/** Scrolls so the anchor row sits where it was before the re-render. */
+/**
+ * Scrolls so the anchor row sits where it was before the re-render.
+ *
+ * Safe to call when nothing moved (a sub-pixel drift is ignored) and safe to
+ * call after the browser already applied its own scroll anchoring: only the
+ * remaining offset is corrected, never the whole distance.
+ */
 export function restoreScrollAnchor(viewport, anchor) {
-    if (!anchor?.id) return false;
-    const element = $(anchor.id);
+    if (!anchor) return false;
+    // Prefer the element we measured: it is the exact row even if a render
+    // changed ids, and it avoids a lookup in the common case.
+    const byReference = anchor.element?.isConnected ? anchor.element : null;
+    const byId = !byReference && anchor.id && typeof document !== "undefined" ? $(anchor.id) : null;
+    const element = byReference || byId;
     if (!element) return false;
 
     const viewportRect = viewport.getBoundingClientRect();
     const rect = element.getBoundingClientRect();
-    viewport.scrollTop += rect.top - viewportRect.top - anchor.offset;
+    const delta = rect.top - viewportRect.top - anchor.offset;
+    if (Math.abs(delta) >= 0.5) viewport.scrollTop += delta;
     return true;
 }
 
 /**
+ * Where `scrollTop` belongs when the anchored row did not survive the render.
+ *
+ * Paging backwards inserts rows *above* the reader, so the extra height is
+ * exactly how far the content moved down. Paging forwards appends rows below,
+ * where the distance from the bottom — not the distance from the top — is what
+ * the reader is holding on to. Falling back to `0` or to the bottom edge (as
+ * this used to) threw the reader into a different part of the chat.
+ */
+export function fallbackScrollTop(anchor, direction, viewport) {
+    if (!anchor) return viewport.scrollTop;
+
+    if (direction === "back") {
+        const growth = viewport.scrollHeight - anchor.scrollHeight;
+        return Math.max(0, anchor.scrollTop + growth);
+    }
+
+    const distanceFromBottom = anchor.scrollHeight - anchor.scrollTop - anchor.clientHeight;
+    return Math.max(0, viewport.scrollHeight - viewport.clientHeight - distanceFromBottom);
+}
+
+/**
  * Slides the window when the viewport hits the top or bottom edge.
+ *
+ * The reader's position is the hard constraint here: the anchor row is
+ * measured *before* the window moves, the render replaces the DOM, and the
+ * same row is put back at the same pixel offset. Only if that row no longer
+ * exists does the scroll position fall back to the distance the content moved
+ * — never to the top or the bottom of the list, which would drop the reader
+ * somewhere unrelated.
  *
  * @param {HTMLElement} viewport
  * @param {Object}      state                 Carries renderRange / filteredMessages.
@@ -85,26 +136,26 @@ export function restoreScrollAnchor(viewport, anchor) {
 export function paginateOnScroll(viewport, state, { batchSize, maxRendered, render }) {
     const total = state.filteredMessages.length;
 
+    let direction = "";
     if (viewport.scrollTop <= 0 && state.renderRange.start > 0) {
-        const anchor = getScrollAnchor(viewport);
+        direction = "back";
         state.renderRange.start = Math.max(0, state.renderRange.start - batchSize);
         state.renderRange.end = Math.min(total, state.renderRange.start + maxRendered);
-        render();
-        if (!restoreScrollAnchor(viewport, anchor)) {
-            viewport.scrollTop = 1;
-        }
-        return;
-    }
-
-    if (viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 20 && state.renderRange.end < total) {
-        const anchor = getScrollAnchor(viewport);
+    } else if (viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 20 && state.renderRange.end < total) {
+        direction = "forward";
         state.renderRange.end = Math.min(total, state.renderRange.end + batchSize);
         state.renderRange.start = Math.max(0, state.renderRange.end - maxRendered);
-        render();
-        if (!restoreScrollAnchor(viewport, anchor)) {
-            viewport.scrollTop = Math.max(0, viewport.scrollHeight - viewport.clientHeight - 1);
-        }
     }
+
+    if (!direction) return false;
+
+    const anchor = getScrollAnchor(viewport);
+    render();
+
+    if (!restoreScrollAnchor(viewport, anchor)) {
+        viewport.scrollTop = fallbackScrollTop(anchor, direction, viewport);
+    }
+    return true;
 }
 
 /** How far from the bottom (px) before the jump-to-latest pill appears. */

@@ -1,5 +1,5 @@
 /** Display formatting for Instagram's epoch-millisecond timestamps. */
-import { getLocale } from "../i18n.js?v=1.8.24";
+import { getLocale } from "../i18n.js?v=1.8.25";
 
 export const DEFAULT_IG_SETTINGS = Object.freeze({
     timeFormat: "12",

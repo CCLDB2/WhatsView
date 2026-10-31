@@ -7,12 +7,13 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.24";
-import { t } from "../i18n.js?v=1.8.24";
-import { colorForName } from "../shared/colors.js?v=1.8.24";
-import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.24";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.24";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.24";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.25";
+import { t } from "../i18n.js?v=1.8.25";
+import { colorForName } from "../shared/colors.js?v=1.8.25";
+import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.25";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.25";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.25";
+import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.25";
 import {
     clampRenderRange,
     isAtConversationEnd,
@@ -20,12 +21,12 @@ import {
     paginateOnScroll,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.24";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.24";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.24";
-import { lazyMedia } from "./media.js?v=1.8.24";
-import { closeMenu } from "./ui.js?v=1.8.24";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.24";
+} from "../shared/virtual-list.js?v=1.8.25";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.25";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.25";
+import { lazyMedia } from "./media.js?v=1.8.25";
+import { closeMenu } from "./ui.js?v=1.8.25";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.25";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -195,11 +196,13 @@ function renderMediaItem(item) {
     // Already-decoded media gets its src straight away; the rest waits for
     // the lazy loader (see shared/lazy-media.js).
     const srcAttr = isLoaded ? `src="${escapeAttribute(url)}" class="loaded"` : `data-lazy-media="${item.id}"`;
+    // Reserve the known box so a re-render cannot collapse the row.
+    const ratioAttr = mediaRatioStyle(media);
 
     if (item.kind === "image" || item.kind === "sticker") {
         return `
             <button class="media-button media-${item.kind}" type="button" data-open-media="${item.id}">
-                <img ${srcAttr} data-media-id="${item.id}" alt="${escapeAttribute(item.name)}" loading="lazy" decoding="async">
+                <img ${srcAttr} data-media-id="${item.id}" alt="${escapeAttribute(item.name)}" loading="lazy" decoding="async"${ratioAttr}>
             </button>
         `;
     }

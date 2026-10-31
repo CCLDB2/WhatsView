@@ -7,7 +7,8 @@ const { applyTextFormatting, buildRichText, highlightOutsideTags } = await versi
 const { baseName, detectMediaType, formatBytes, inferMimeType, labelForMediaKind } = await versioned("../js/shared/media-types.js");
 const { SENDER_COLORS, colorForName } = await versioned("../js/shared/colors.js");
 const { countEmojis } = await versioned("../js/shared/emoji.js");
-const { clampRenderRange, isAtConversationEnd, isSavedPositionAtConversationEnd, syncScrollLatestButton, tailRange } = await versioned("../js/shared/virtual-list.js");
+const { clampRenderRange, fallbackScrollTop, getScrollAnchor, isAtConversationEnd, isSavedPositionAtConversationEnd, paginateOnScroll, restoreScrollAnchor, syncScrollLatestButton, tailRange } = await versioned("../js/shared/virtual-list.js");
+const { compensatingScrollShift, mediaRatioStyle } = await versioned("../js/shared/lazy-media.js");
 
 /**
  * The utilities both viewers share. These used to be duplicated (with small
@@ -188,5 +189,251 @@ describe("shared/virtual-list", () => {
             if (originalWindow) globalThis.window = originalWindow;
             else delete globalThis.window;
         }
+    });
+});
+
+/**
+ * A scroll viewport whose rows can be replaced the way `innerHTML = html`
+ * replaces them, so paging can be tested without a browser.
+ */
+function createScrollHarness(ids, { clientHeight = 320, rowHeight = 60, viewportTop = 100 } = {}) {
+    let rows = ids.map((id) => ({ id, height: rowHeight }));
+    let elements = new Map();
+
+    const viewport = {
+        scrollTop: 0,
+        clientHeight,
+        get scrollHeight() {
+            return rows.reduce((total, row) => total + row.height, 0);
+        },
+        getBoundingClientRect: () => ({ top: viewportTop, bottom: viewportTop + clientHeight }),
+        querySelectorAll: () => [...elements.values()]
+    };
+
+    function rectOf(row) {
+        let top = viewportTop - viewport.scrollTop;
+        for (const candidate of rows) {
+            if (candidate === row) break;
+            top += candidate.height;
+        }
+        return { top, bottom: top + row.height };
+    }
+
+    function mount() {
+        elements = new Map(rows.map((row) => [row.id, {
+            id: row.id,
+            isConnected: true,
+            getBoundingClientRect: () => rectOf(row)
+        }]));
+    }
+
+    /** Replaces the DOM, as a render does: old nodes disconnect, new ones mount. */
+    function render(before = [], after = [], { replace = false } = {}) {
+        elements.forEach((element) => { element.isConnected = false; });
+        const kept = replace ? [] : rows;
+        rows = [
+            ...before.map((id) => ({ id, height: rowHeight })),
+            ...kept,
+            ...after.map((id) => ({ id, height: rowHeight }))
+        ];
+        mount();
+    }
+
+    function offsetOf(id) {
+        const element = elements.get(id);
+        return element ? element.getBoundingClientRect().top - viewportTop : null;
+    }
+
+    mount();
+    return { viewport, render, offsetOf, elementById: (id) => elements.get(id) || null };
+}
+
+/** Runs `callback` with `document.getElementById` bound to a harness. */
+function withDocumentFor(harness, callback) {
+    const hadDocument = "document" in globalThis;
+    const original = globalThis.document;
+    globalThis.document = { getElementById: harness.elementById };
+    try {
+        return callback();
+    } finally {
+        if (hadDocument) globalThis.document = original;
+        else delete globalThis.document;
+    }
+}
+
+describe("shared/virtual-list paging", () => {
+    test("anchors on the first row that is at least partly visible", () => {
+        const list = createScrollHarness(["a", "b", "c", "d"]);
+        list.viewport.scrollTop = 70; // "a" is fully above, "b" straddles the top
+        const anchor = getScrollAnchor(list.viewport);
+        assert.equal(anchor.id, "b");
+        assert.equal(Math.round(anchor.offset), -10);
+        assert.equal(anchor.scrollTop, 70);
+        assert.equal(anchor.scrollHeight, 240);
+        assert.equal(anchor.clientHeight, 320);
+    });
+
+    test("puts the anchor row back after the DOM is rebuilt", () => {
+        const list = createScrollHarness(["a", "b", "c", "d"]);
+        list.viewport.scrollTop = 40;
+        const before = list.offsetOf("b");
+        const anchor = getScrollAnchor(list.viewport);
+
+        withDocumentFor(list, () => {
+            list.render();
+            // A row above grows by 60px, pushing everything below it down.
+            list.viewport.scrollTop += 60;
+            assert.equal(restoreScrollAnchor(list.viewport, anchor), true);
+        });
+
+        assert.equal(Math.round(list.offsetOf("b")), Math.round(before));
+    });
+
+    test("does not nudge the viewport when the anchor already sits in place", () => {
+        const list = createScrollHarness(["a", "b", "c", "d"]);
+        list.viewport.scrollTop = 90;
+        const anchor = getScrollAnchor(list.viewport);
+        restoreScrollAnchor(list.viewport, anchor);
+        assert.equal(list.viewport.scrollTop, 90);
+    });
+
+    test("falls back to the distance the content grew, never to the top", () => {
+        const list = createScrollHarness(["a", "b", "c"]);
+        list.viewport.scrollTop = 0;
+        const anchor = getScrollAnchor(list.viewport);
+        list.render(["x", "y", "z"]); // 180px inserted above
+        assert.equal(fallbackScrollTop(anchor, "back", list.viewport), 180);
+    });
+
+    test("falls back to the distance from the bottom when paging forward", () => {
+        const viewport = { scrollHeight: 900, scrollTop: 500, clientHeight: 300 };
+        const anchor = { scrollTop: 500, scrollHeight: 700, clientHeight: 300, offset: 0, id: "a" };
+        // 200px were appended below; the reader keeps the same 100px from the edge.
+        assert.equal(fallbackScrollTop(anchor, "forward", viewport), 700);
+    });
+
+    test("paging back keeps the reader on the same row", () => {
+        const list = createScrollHarness(["m1", "m2", "m3", "m4", "m5", "m6"]);
+        const state = { filteredMessages: new Array(20), renderRange: { start: 6, end: 12 } };
+        list.viewport.scrollTop = 0;
+        const before = list.offsetOf("m1");
+
+        withDocumentFor(list, () => {
+            paginateOnScroll(list.viewport, state, {
+                batchSize: 6,
+                maxRendered: 12,
+                render: () => list.render(["n1", "n2", "n3", "n4", "n5", "n6"])
+            });
+        });
+
+        assert.deepEqual(state.renderRange, { start: 0, end: 12 });
+        assert.equal(Math.round(list.offsetOf("m1")), Math.round(before));
+    });
+
+    test("paging forward keeps the reader on the same row", () => {
+        const list = createScrollHarness(["m1", "m2", "m3", "m4", "m5", "m6"]);
+        const state = { filteredMessages: new Array(20), renderRange: { start: 6, end: 12 } };
+        list.viewport.scrollTop = list.viewport.scrollHeight - list.viewport.clientHeight;
+        const before = list.offsetOf("m4");
+
+        withDocumentFor(list, () => {
+            paginateOnScroll(list.viewport, state, {
+                batchSize: 6,
+                maxRendered: 12,
+                render: () => list.render([], ["n1", "n2", "n3", "n4", "n5", "n6"])
+            });
+        });
+
+        assert.deepEqual(state.renderRange, { start: 6, end: 18 });
+        assert.equal(Math.round(list.offsetOf("m4")), Math.round(before));
+    });
+
+    test("restoring the same anchor twice never double-corrects", () => {
+        const list = createScrollHarness(["a", "b", "c", "d"]);
+        list.viewport.scrollTop = 45;
+        const anchor = getScrollAnchor(list.viewport);
+        const before = list.offsetOf("b");
+
+        withDocumentFor(list, () => {
+            list.render();
+            list.viewport.scrollTop += 60;
+            assert.equal(restoreScrollAnchor(list.viewport, anchor), true);
+            // A second caller (another photo finishing) must see nothing to do.
+            assert.equal(restoreScrollAnchor(list.viewport, anchor), true);
+        });
+
+        assert.equal(Math.round(list.offsetOf("b")), Math.round(before));
+    });
+
+    test("a lost anchor corrects by the content delta instead of teleporting", () => {
+        const list = createScrollHarness(["m1", "m2", "m3", "m4", "m5", "m6"]);
+        const state = { filteredMessages: new Array(20), renderRange: { start: 6, end: 12 } };
+        list.viewport.scrollTop = 0;
+
+        withDocumentFor(list, () => {
+            paginateOnScroll(list.viewport, state, {
+                batchSize: 6,
+                maxRendered: 12,
+                // None of the previously rendered rows survive this render.
+                render: () => list.render(["n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10", "n11", "n12"], [], { replace: true })
+            });
+        });
+
+        // 360px of new rows now sit above the old window: the reader is moved
+        // down by exactly that instead of being thrown to the top or bottom.
+        assert.equal(list.viewport.scrollTop, 360);
+    });
+
+    test("does nothing at the edges of the whole conversation", () => {
+        const list = createScrollHarness(["m1", "m2"]);
+        const state = { filteredMessages: [{}, {}], renderRange: { start: 0, end: 2 } };
+        list.viewport.scrollTop = 0;
+        const rendered = [];
+        const changed = paginateOnScroll(list.viewport, state, {
+            batchSize: 6,
+            maxRendered: 12,
+            render: () => rendered.push(1)
+        });
+        assert.equal(changed, false);
+        assert.equal(rendered.length, 0);
+        assert.equal(list.viewport.scrollTop, 0);
+    });
+});
+
+describe("shared/lazy-media", () => {
+    const box = (top, height) => ({ top, height });
+
+    test("a photo growing above the reader shifts the viewport by its growth", () => {
+        // Box sat from -120 to 60 in viewport coordinates; the reader is at 0.
+        const previous = box(-120, 180);
+        const current = box(-120, 380);
+        assert.equal(compensatingScrollShift(previous, current, 0), 200);
+    });
+
+    test("a photo below the reading line does not move the reader", () => {
+        const previous = box(40, 180);
+        const current = box(40, 380);
+        assert.equal(compensatingScrollShift(previous, current, 0), 0);
+    });
+
+    test("a photo shrinking above the reader shifts back", () => {
+        const previous = box(-200, 400);
+        const current = box(-200, 120);
+        assert.equal(compensatingScrollShift(previous, current, 0), -280);
+    });
+
+    test("an unchanged box is a no-op", () => {
+        assert.equal(compensatingScrollShift(box(-50, 200), box(-50, 200), 0), 0);
+    });
+
+    test("a decoded photo reserves its real ratio on the next render", () => {
+        assert.equal(mediaRatioStyle({ ratio: 1.5 }), ' style="aspect-ratio: 1.5"');
+    });
+
+    test("an unknown ratio reserves nothing", () => {
+        assert.equal(mediaRatioStyle(undefined), "");
+        assert.equal(mediaRatioStyle({}), "");
+        assert.equal(mediaRatioStyle({ ratio: 0 }), "");
+        assert.equal(mediaRatioStyle({ ratio: Number.NaN }), "");
     });
 });

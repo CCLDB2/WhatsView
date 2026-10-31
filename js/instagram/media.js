@@ -6,17 +6,17 @@
  * read out of the export ZIP. The store itself is built in parser.js.
  * ============================================================================
  */
-import { createLazyMediaLoader } from "../shared/lazy-media.js?v=1.8.24";
-import { createMediaModal } from "../shared/media-modal.js?v=1.8.24";
+import { createLazyMediaLoader } from "../shared/lazy-media.js?v=1.8.25";
+import { createMediaModal } from "../shared/media-modal.js?v=1.8.25";
 import {
     clearMediaStore,
     downloadMediaItem,
     ensureMediaUrl as ensureUrl,
     releaseMediaUrlIfUnused
-} from "../shared/media-urls.js?v=1.8.24";
-import { igState } from "./state.js?v=1.8.24";
-import { showToast } from "./ui.js?v=1.8.24";
-import { t } from "../i18n.js?v=1.8.24";
+} from "../shared/media-urls.js?v=1.8.25";
+import { igState } from "./state.js?v=1.8.25";
+import { showToast } from "./ui.js?v=1.8.25";
+import { t } from "../i18n.js?v=1.8.25";
 
 export const ensureMediaUrl = (media) => ensureUrl(igState, media);
 

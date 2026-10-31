@@ -1,14 +1,14 @@
 /** Coordinates Instagram's date picker with the virtual message list. */
-import { $ } from "../shared/dom.js?v=1.8.24";
-import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.24";
-import { findMessageForDate } from "./date-jump-model.js?v=1.8.24";
-import { localDateBounds } from "./format.js?v=1.8.24";
-import { igState } from "./state.js?v=1.8.24";
-import { jumpToMessage } from "./search.js?v=1.8.24";
-import { showToast } from "./ui.js?v=1.8.24";
-import { t } from "../i18n.js?v=1.8.24";
+import { $ } from "../shared/dom.js?v=1.8.25";
+import { pushOverlayState, popOverlayState } from "../shared/history.js?v=1.8.25";
+import { findMessageForDate } from "./date-jump-model.js?v=1.8.25";
+import { localDateBounds } from "./format.js?v=1.8.25";
+import { igState } from "./state.js?v=1.8.25";
+import { jumpToMessage } from "./search.js?v=1.8.25";
+import { showToast } from "./ui.js?v=1.8.25";
+import { t } from "../i18n.js?v=1.8.25";
 
-export { findMessageForDate, findMessageIdForDate } from "./date-jump-model.js?v=1.8.24";
+export { findMessageForDate, findMessageIdForDate } from "./date-jump-model.js?v=1.8.25";
 
 export function openDateSheet() {
     if (!igState.messageOnlyCount) { showToast(t("Carga una conversación primero"), "warn"); return; }
