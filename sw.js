@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chatlume-v1.8.27';
+const CACHE_NAME = 'chatlume-v1.8.28';
 const OFFLINE_FALLBACK = 'index.html';
 // Scripts, modules and styles are addressed with a release token (`?v=`).
 // A page from one release therefore only ever asks for that release's files,
@@ -57,6 +57,8 @@ const ASSETS_TO_CACHE = [
     versioned('js/shared/media-types.js'),
     versioned('js/shared/media-urls.js'),
     versioned('js/shared/safe-storage.js'),
+    versioned('js/shared/search-index.js'),
+    versioned('js/shared/search-text.js'),
     versioned('js/shared/splash.js'),
     versioned('js/shared/stats-panel.js'),
     versioned('js/shared/text.js'),

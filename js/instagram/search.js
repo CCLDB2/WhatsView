@@ -6,10 +6,11 @@
  * captions — the same surface the WhatsApp viewer searches.
  * ============================================================================
  */
-import { $, isTypingTarget } from "../shared/dom.js?v=1.8.27";
-import { IG_MAX_RENDERED, IG_SEARCH_DEBOUNCE_MS, igState } from "./state.js?v=1.8.27";
-import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.27";
-import { findMessageSearchResults, nextSearchIndex } from "./search-model.js?v=1.8.27";
+import { $, isTypingTarget } from "../shared/dom.js?v=1.8.28";
+import { t } from "../i18n.js?v=1.8.28";
+import { IG_MAX_RENDERED, IG_SEARCH_DEBOUNCE_MS, igState } from "./state.js?v=1.8.28";
+import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.28";
+import { findMessageSearchResults, nextSearchIndex } from "../shared/search-index.js?v=1.8.28";
 
 export const isSearchOpen = () => Boolean($("ig-search-toolbar")?.classList.contains("active"));
 
@@ -43,7 +44,7 @@ export function handleSearchInput(event) {
 export function runSearch(query) {
     clearTimeout(igState.searchTimer);
     igState.searchTimer = null;
-    const normalized = String(query || "").trim().toLowerCase();
+    const normalized = String(query || "").trim();
     igState.searchQuery = normalized;
     if (!normalized) {
         igState.searchResults = [];
@@ -56,7 +57,7 @@ export function runSearch(query) {
     igState.searchResults = findMessageSearchResults(igState.filteredMessages, normalized);
     if (!igState.searchResults.length) {
         igState.searchPointer = -1;
-        updateSearchCounter("No matches");
+        updateSearchCounter(t("Sin resultados"));
         setSearchEmptyState(true, query.trim());
         // Re-render so highlights from the previous query don't linger.
         renderChatList();

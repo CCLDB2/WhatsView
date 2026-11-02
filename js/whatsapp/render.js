@@ -7,13 +7,14 @@
  * Also produces the normalised message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.27";
-import { t } from "../i18n.js?v=1.8.27";
-import { colorForName } from "../shared/colors.js?v=1.8.27";
-import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.27";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.27";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.27";
-import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.27";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.28";
+import { t } from "../i18n.js?v=1.8.28";
+import { colorForName } from "../shared/colors.js?v=1.8.28";
+import { formatBytes, mediaKindSourceLabel } from "../shared/media-types.js?v=1.8.28";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.28";
+import { missingMediaLabel } from "../shared/search-index.js?v=1.8.28";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.28";
+import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.28";
 import {
     clampRenderRange,
     isAtConversationEnd,
@@ -22,12 +23,12 @@ import {
     settleAnchorOffset,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.27";
-import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.27";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.27";
-import { lazyMedia } from "./media.js?v=1.8.27";
-import { closeMenu } from "./ui.js?v=1.8.27";
-import { updateFavoriteControls } from "./favorites.js?v=1.8.27";
+} from "../shared/virtual-list.js?v=1.8.28";
+import { BATCH_SIZE, MAX_RENDERED_ITEMS, state } from "./state.js?v=1.8.28";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.28";
+import { lazyMedia } from "./media.js?v=1.8.28";
+import { closeMenu } from "./ui.js?v=1.8.28";
+import { updateFavoriteControls } from "./favorites.js?v=1.8.28";
 
 /** Colour for a sender's name label, stable for the life of the chat. */
 export const getColor = (name) => colorForName(name, state.colorMap);
@@ -94,7 +95,7 @@ function renderMessageRow(item, isFirst, dayLabel) {
     const tailClass = isFirst ? (item.isMe ? "tail-out" : "tail-in") : "";
     const rowClass = `msg-row ${item.isMe ? "sent" : "received"} ${isFirst ? "tail" : ""} ${tailClass}`.trim();
     const senderHtml = state.settings.showSenderNames && !item.isMe && isFirst
-        ? `<div class="sender" style="color:${getColor(item.sender)}">${escapeHtml(item.sender)}</div>`
+        ? `<div class="sender" style="color:${getColor(item.sender)}">${highlightLabel(item.sender)}</div>`
         : "";
 
     let textHtml = "";
@@ -132,13 +133,24 @@ function renderCallCard(text) {
     return `
         <div class="msg-text has-meta" style="display: flex; align-items: center; gap: 6px; font-weight: 500;">
             <i class="ph-fill ${callIcon}" style="font-size: 18px; color: ${callColor}"></i> 
-            ${escapeHtml(callText)}
+            ${highlightLabel(callText)}
         </div>`;
 }
 
 // ── Text ────────────────────────────────────────────────────────────────────
 
 const currentSearchQuery = () => $("live-search")?.value.trim();
+
+/**
+ * Escapes and highlights a short label the search can match on (a sender, a
+ * filename). Without this a row can be reached for a reason nothing on screen
+ * shows — the reader lands on a message with no visible match.
+ */
+export function highlightLabel(text) {
+    const escaped = escapeHtml(text || "");
+    const query = currentSearchQuery();
+    return query ? highlightOutsideTags(escaped, query) : escaped;
+}
 
 /** Message body: rich text when the setting is on, else escaped + highlighted. */
 export function renderMessageText(text) {
@@ -183,7 +195,7 @@ function renderMediaItem(item) {
                 <div class="media-missing-head">
                     <i class="ph-fill ph-warning-circle"></i>
                     <div>
-                        <strong>${escapeHtml(item.name === "Media omitted" ? t("Multimedia omitido") : (item.name || t("Archivo adjunto faltante")))}</strong>
+                        <strong>${highlightLabel(missingMediaLabel(item.name))}</strong>
                         <span>${t("Archivo mencionado en el chat pero ausente en la exportación.")}</span>
                     </div>
                 </div>
@@ -237,7 +249,7 @@ function renderMediaItem(item) {
             <div class="media-doc-head">
                 <i class="ph-fill ph-file"></i>
                 <div>
-                    <strong>${escapeHtml(item.name)}</strong>
+                    <strong>${highlightLabel(item.name)}</strong>
                     <span>${t(mediaKindSourceLabel(item.kind))}${item.size ? ` • ${formatBytes(item.size)}` : ""}</span>
                 </div>
             </div>

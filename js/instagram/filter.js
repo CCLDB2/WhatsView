@@ -1,5 +1,5 @@
 /** Sender filtering for Instagram messages, retaining only relevant date markers. */
-import { t } from "../i18n.js?v=1.8.27";
+import { t } from "../i18n.js?v=1.8.28";
 
 export function filterMessagesBySender(messages, selectedSenders) {
     const selected = selectedSenders instanceof Set

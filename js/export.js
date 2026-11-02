@@ -1,5 +1,5 @@
 /**
- * ChatLume HTML Export (v1.8.27)
+ * ChatLume HTML Export (v1.8.28)
  *
  * Builds a self-contained, themed HTML document from already-parsed message
  * data. Exports can be downloaded as a standalone HTML file or as a ZIP
@@ -27,7 +27,7 @@
  *     { type: "msg", sender, time, isMe, color, text,
  *       media: [{ kind, name }], shareLink?, shareText?, reactions? }
  */
-import { buildRichText } from './shared/text.js?v=1.8.27';
+import { buildRichText } from './shared/text.js?v=1.8.28';
 
 export async function exportChatAsHTML({
   filename,

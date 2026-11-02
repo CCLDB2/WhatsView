@@ -8,7 +8,7 @@
  * tests/shared.test.mjs. Callers must escape first (see dom.js).
  * ============================================================================
  */
-import { escapeRegExp } from "./dom.js?v=1.8.27";
+import { searchPattern } from "./search-text.js?v=1.8.28";
 
 export const URL_PATTERN = /(https?:\/\/[^\s<]+)/gi;
 
@@ -53,11 +53,17 @@ export function buildRichText(escaped, { formatting = true } = {}) {
  * Wraps `query` matches in <span class="hl">, touching text nodes only.
  * Running the query over the whole string would inject <span> into href or
  * class attributes for common queries like "a", "http" or "class".
+ *
+ * The pattern comes from searchPattern(), so it folds accents the same way
+ * the result list does: anything found is also visible. A query typed without
+ * accents still highlights the accented text it matched.
  */
 export function highlightOutsideTags(html, query) {
-    const regex = new RegExp(`(${escapeRegExp(query)})`, "gi");
+    const regex = searchPattern(query);
+    if (!regex) return html;
     return html.replace(/(<[^>]+>)|([^<]+)/g, (_, tag, text) => {
         if (tag) return tag;
-        return text.replace(regex, '<span class="hl">$1</span>');
+        regex.lastIndex = 0;
+        return text.replace(regex, '<span class="hl">$&</span>');
     });
 }

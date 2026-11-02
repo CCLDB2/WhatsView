@@ -7,8 +7,8 @@
  * the empty-state copy ("chat" vs "conversation") differ.
  * ============================================================================
  */
-import { $, escapeHtml, prefersReducedMotion } from "./dom.js?v=1.8.27";
-import { t } from "../i18n.js?v=1.8.27";
+import { $, escapeHtml, prefersReducedMotion } from "./dom.js?v=1.8.28";
+import { t } from "../i18n.js?v=1.8.28";
 
 /**
  * @param {Object} options

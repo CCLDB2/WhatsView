@@ -9,10 +9,10 @@
  * with in-chat search.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.27";
-import { t } from "../i18n.js?v=1.8.27";
-import { state } from "./state.js?v=1.8.27";
-import { parseExportDateLabel } from "./format.js?v=1.8.27";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.28";
+import { t } from "../i18n.js?v=1.8.28";
+import { state } from "./state.js?v=1.8.28";
+import { parseExportDateLabel } from "./format.js?v=1.8.28";
 
 /** Keeps messages and their day divider only for the selected ISO calendar day. */
 export function filterMessagesByDate(messages, dateValue) {

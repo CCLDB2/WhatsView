@@ -8,12 +8,13 @@
  * message list the HTML export consumes.
  * ============================================================================
  */
-import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.27";
-import { colorForName } from "../shared/colors.js?v=1.8.27";
-import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.27";
-import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.27";
-import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.27";
-import { t } from "../i18n.js?v=1.8.27";
+import { $, escapeAttribute, escapeHtml } from "../shared/dom.js?v=1.8.28";
+import { colorForName } from "../shared/colors.js?v=1.8.28";
+import { releaseOffscreenMediaUrls } from "../shared/media-urls.js?v=1.8.28";
+import { mediaRatioStyle } from "../shared/lazy-media.js?v=1.8.28";
+import { buildRichText, highlightOutsideTags } from "../shared/text.js?v=1.8.28";
+import { missingMediaLabel } from "../shared/search-index.js?v=1.8.28";
+import { t } from "../i18n.js?v=1.8.28";
 import {
     clampRenderRange,
     getScrollAnchor,
@@ -23,11 +24,11 @@ import {
     settleAnchorOffset,
     syncScrollLatestButton,
     tailRange
-} from "../shared/virtual-list.js?v=1.8.27";
-import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.27";
-import { lazyMedia } from "./media.js?v=1.8.27";
-import { closeMenu } from "./ui.js?v=1.8.27";
-import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.27";
+} from "../shared/virtual-list.js?v=1.8.28";
+import { IG_BATCH_SIZE, IG_MAX_RENDERED, igState } from "./state.js?v=1.8.28";
+import { lazyMedia } from "./media.js?v=1.8.28";
+import { closeMenu } from "./ui.js?v=1.8.28";
+import { formatDateLabel, formatMessageTime } from "./format.js?v=1.8.28";
 
 export const getColor = (name) => colorForName(name, igState.colorMap);
 
@@ -79,7 +80,7 @@ function renderMessageRow(item, isFirst) {
     const rowClass = `msg-row ${item.isMe ? "sent" : "received"} ${isFirst ? "tail" : ""} ${tailClass}`.trim();
 
     const senderHtml = igState.settings.showSenderNames && !item.isMe && isFirst
-        ? `<div class="sender" style="color:${getColor(item.sender)}">${escapeHtml(item.sender)}</div>`
+        ? `<div class="sender" style="color:${getColor(item.sender)}">${highlightLabel(item.sender)}</div>`
         : "";
 
     let textHtml = "";
@@ -91,7 +92,7 @@ function renderMessageRow(item, isFirst) {
 
     let shareHtml = "";
     if (item.shareLink) {
-        const label = item.shareText ? escapeHtml(item.shareText) : escapeHtml(item.shareLink);
+        const label = item.shareText ? highlightLabel(item.shareText) : highlightLabel(item.shareLink);
         shareHtml = `<div class="ig-share-link has-meta"><i class="ph ph-link-simple"></i><a href="${escapeAttribute(item.shareLink)}" target="_blank" rel="noopener noreferrer">${label}</a></div>`;
     }
 
@@ -109,9 +110,23 @@ function renderMessageRow(item, isFirst) {
 
 // ── Text ────────────────────────────────────────────────────────────────────
 
+const currentSearchQuery = () => $("ig-live-search")?.value.trim();
+
+/**
+ * Escapes and highlights a short label the search can match on (a sender, a
+ * filename, a shared-post caption, a reaction). Instagram aimed search at all
+ * of them but only highlighted message bodies, so most hits landed on a row
+ * with no visible reason.
+ */
+export function highlightLabel(text) {
+    const escaped = escapeHtml(text || "");
+    const query = currentSearchQuery();
+    return query ? highlightOutsideTags(escaped, query) : escaped;
+}
+
 /** Links (no WhatsApp-style formatting markers), then the search highlight. */
 export function linkifyAndHighlight(text) {
-    const query = $("ig-live-search")?.value.trim();
+    const query = currentSearchQuery();
     let html = buildRichText(escapeHtml(text || ""), { formatting: false });
     if (query) html = highlightOutsideTags(html, query);
     return html;
@@ -125,7 +140,7 @@ function renderMediaStack(items) {
 
 function renderMediaItem(item) {
     if (item.status === "missing") {
-        return `<div class="media-missing"><div class="media-missing-head"><i class="ph-fill ph-warning-circle"></i><div><strong>${escapeHtml(item.name === "Media omitted" ? t("Multimedia omitido") : (item.name || t("Archivo adjunto faltante")))}</strong><span>${escapeHtml(t("Archivo mencionado en el chat pero ausente en la exportación."))}</span></div></div></div>`;
+        return `<div class="media-missing"><div class="media-missing-head"><i class="ph-fill ph-warning-circle"></i><div><strong>${highlightLabel(missingMediaLabel(item.name))}</strong><span>${escapeHtml(t("Archivo mencionado en el chat pero ausente en la exportación."))}</span></div></div></div>`;
     }
 
     const media = igState.mediaStore.get(item.id);
@@ -151,7 +166,7 @@ function renderMediaItem(item) {
         return `<div class="media-audio ig-voice-note"><div class="voice-note-row"><i class="ph-fill ph-microphone voice-mic-icon"></i><div class="voice-waveform">${waveHtml}</div><span class="voice-duration" data-media-id="${item.id}">–:––</span></div><audio controls preload="metadata" data-lazy-media="${item.id}" data-media-id="${item.id}"></audio></div>`;
     }
 
-    return `<div class="media-doc"><div class="media-doc-head"><i class="ph-fill ph-file"></i><div><strong>${escapeHtml(item.name)}</strong></div></div><div class="media-doc-actions"><button type="button" class="media-doc-link" data-open-media="${item.id}">${escapeHtml(t("Vista previa"))}</button><button type="button" class="media-doc-link" data-download-media="${item.id}">${escapeHtml(t("Descargar"))}</button></div></div>`;
+    return `<div class="media-doc"><div class="media-doc-head"><i class="ph-fill ph-file"></i><div><strong>${highlightLabel(item.name)}</strong></div></div><div class="media-doc-actions"><button type="button" class="media-doc-link" data-open-media="${item.id}">${escapeHtml(t("Vista previa"))}</button><button type="button" class="media-doc-link" data-download-media="${item.id}">${escapeHtml(t("Descargar"))}</button></div></div>`;
 }
 
 /** Groups reactions by emoji; hovering a pill lists who reacted. */
@@ -161,8 +176,10 @@ function renderReactions(reactions) {
         if (!grouped[r.reaction]) grouped[r.reaction] = [];
         grouped[r.reaction].push(r.actor);
     });
+    // Instagram finds a message by who reacted and with what, so both are
+    // highlighted; only the tooltip stays plain text.
     const pills = Object.entries(grouped).map(([emoji, actors]) =>
-        `<span class="ig-reaction" title="${escapeAttribute(actors.join(", "))}">${escapeHtml(emoji)}${actors.length > 1 ? ` <small>${actors.length}</small>` : ""}</span>`
+        `<span class="ig-reaction" title="${escapeAttribute(actors.join(", "))}">${highlightLabel(emoji)}${actors.length > 1 ? ` <small>${actors.length}</small>` : ""}</span>`
     ).join("");
     return `<div class="ig-reactions">${pills}</div>`;
 }

@@ -11,7 +11,7 @@
  * the viewer keeps the same language (subject to the server's stored value).
  * ============================================================================
  */
-import { applyI18n, getLanguage, initI18n, setLanguage, t } from "./i18n.js?v=1.8.27";
+import { applyI18n, getLanguage, initI18n, setLanguage, t } from "./i18n.js?v=1.8.28";
 
 const nextLanguage = (language) => (language === "es" ? "en" : "es");
 const languageLabel = (language) => (language === "es" ? "EN" : "ES");

@@ -57,6 +57,30 @@ describe("shared/text", () => {
         assert.equal(highlightOutsideTags("A.b a.B", "a.b"), '<span class="hl">A.b</span> <span class="hl">a.B</span>');
         assert.equal(highlightOutsideTags("axb", "a.b"), "axb");
     });
+
+    test("the highlight folds accents exactly like the result list does", () => {
+        // A query without accents must still mark the accented text it found,
+        // and a query with accents must match the plain spelling.
+        assert.equal(highlightOutsideTags("Canción de cuna", "cancion"),
+            '<span class="hl">Canción</span> de cuna');
+        assert.equal(highlightOutsideTags("cancion", "canción"),
+            '<span class="hl">cancion</span>');
+        assert.equal(highlightOutsideTags("camión", "camion"), '<span class="hl">camión</span>');
+        // Decomposed text keeps its accent inside the highlighted run.
+        const decomposed = "cancio\u0301n";
+        assert.equal(highlightOutsideTags(decomposed, "cancion"),
+            '<span class="hl">cancio\u0301n</span>');
+    });
+
+    test("the highlight collapses whitespace runs, like the match", () => {
+        assert.equal(highlightOutsideTags("hola   mundo", "hola mundo"),
+            '<span class="hl">hola   mundo</span>');
+    });
+
+    test("an empty query leaves the html untouched", () => {
+        assert.equal(highlightOutsideTags("hola", ""), "hola");
+        assert.equal(highlightOutsideTags("hola", "   "), "hola");
+    });
 });
 
 describe("shared/media-types", () => {

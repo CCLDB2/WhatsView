@@ -8,18 +8,11 @@
  * result list, the pointer and the toolbar.
  * ============================================================================
  */
-import { $, isTypingTarget } from "../shared/dom.js?v=1.8.27";
-import { t } from "../i18n.js?v=1.8.27";
-import { MAX_RENDERED_ITEMS, SEARCH_DEBOUNCE_MS, state } from "./state.js?v=1.8.27";
-import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.27";
-
-/** The text a message is matched against. */
-function getSearchableText(entry) {
-    // Defensive: one message without mediaItems would otherwise throw and take
-    // down search for the whole chat.
-    const mediaNames = (entry.mediaItems || []).map((item) => item.name).join(" ");
-    return `${entry.sender || ""} ${entry.text || ""} ${mediaNames}`.toLowerCase();
-}
+import { $, isTypingTarget } from "../shared/dom.js?v=1.8.28";
+import { findMessageSearchResults } from "../shared/search-index.js?v=1.8.28";
+import { t } from "../i18n.js?v=1.8.28";
+import { MAX_RENDERED_ITEMS, SEARCH_DEBOUNCE_MS, state } from "./state.js?v=1.8.28";
+import { renderChatList, resetRenderToBottom, syncFocusedSearchResult } from "./render.js?v=1.8.28";
 
 /** Opens or closes the search toolbar; closing clears the query and results. */
 export function toggleSearch() {
@@ -57,7 +50,7 @@ export function handleSearch(query) {
     // debounced input, or its older query can overwrite these results later.
     window.clearTimeout(state.searchTimer);
     state.searchTimer = null;
-    const normalized = query.trim().toLowerCase();
+    const normalized = query.trim();
 
     if (!normalized) {
         state.searchResults = [];
@@ -68,9 +61,8 @@ export function handleSearch(query) {
         return;
     }
 
-    state.searchResults = state.filteredMessages
-        .filter((entry) => entry.type === "msg" && getSearchableText(entry).includes(normalized))
-        .map((entry) => entry.id);
+    // Same rule as the highlight: case, accents and whitespace runs are folded.
+    state.searchResults = findMessageSearchResults(state.filteredMessages, normalized);
 
     if (!state.searchResults.length) {
         state.searchPointer = -1;
